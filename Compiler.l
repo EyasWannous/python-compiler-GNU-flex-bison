@@ -99,7 +99,7 @@ sp          [:,.;]
 
 literal     (\"([^\"]|\\.)*\")|(\'([^\']|\\.)*\')
 
-literal_2   ({keyword}" "|(("["|"{"|"(")|"="{ws}*))
+literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 %x DOUBLE_STRING
 %x SINGLE_STRING
@@ -203,8 +203,8 @@ literal_2   ({keyword}" "|(("["|"{"|"(")|"="{ws}*))
 
 <DOUBLE_STRING>{
     \"  {*string_buf_ptr = '\0'; printf("line%d, DOUBLE STRING: %s\n", yylineno, string_buf); BEGIN(INITIAL);} 
-    \\\n  {              }
-    \n  {printf("error in line %d\n", yylineno);}
+    \\\n {              }
+    \n   {printf("error in line %d\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
@@ -221,8 +221,8 @@ literal_2   ({keyword}" "|(("["|"{"|"(")|"="{ws}*))
 \'        { string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }    
 <SINGLE_STRING>{
     \'  {*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", yylineno, string_buf); BEGIN(INITIAL);}
-    \\\n  {              }
-    \n  {printf("line%d, ERROR: new line in string\n", yylineno);}
+    \\\n {              }
+    \n   {printf("line%d, ERROR: new line in string\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
@@ -236,16 +236,38 @@ literal_2   ({keyword}" "|(("["|"{"|"(")|"="{ws}*))
     }
 }
 
-{literal_2}"'''"        { string_buf_ptr = string_buf; BEGIN(COMMENT_STRING); }    
+{literal_2}"'''"        {   
+                            int i = 0;
+                            strcpy(keyword, " ");
+                            while(yytext[i] != ' ') {
+                                if (yytext[i] == '\'') break;
+                                keyword[i] = yytext[i];
+                                i++;
+                            }
+
+                            if (strcmp(keyword, "=") == 0) {
+                                printf("assignment oper = %s in line = %d\n",keyword,yylineno);
+                            }
+
+                            else if (strcmp(keyword, "(") == 0 || strcmp(keyword, "{") == 0 || strcmp(keyword, "[") == 0) {
+                                printf("parenthesis = %s in line = %d\n",keyword,yylineno);
+                            }
+
+                            else {
+                                printf("keyword = %s in line = %d\n",keyword,yylineno);
+                            }
+
+                            string_buf_ptr = string_buf; BEGIN(COMMENT_STRING); 
+                        }    
 <COMMENT_STRING>{
     "'''"  {*string_buf_ptr = '\0'; printf("line%d, COMMENT STRING: %s\n", yylineno, string_buf); BEGIN(INITIAL);}
-    \\\n  {              }
+    \\\n {}
+    \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
     \\b  {*string_buf_ptr++ = '\b';}
     \\f  {*string_buf_ptr++ = '\f';}
-    \\\' {*string_buf_ptr++ = '\'';} 
     [^\\\n"'''"]+  {
         char *yptr = yytext;
         while ( *yptr )
@@ -253,16 +275,38 @@ literal_2   ({keyword}" "|(("["|"{"|"(")|"="{ws}*))
     }
 }
 
-{literal_2}\"{3}      { string_buf_ptr = string_buf; BEGIN(COMMENT_STRING_DOUBLE); }    
+{literal_2}\"{3}        {   
+                            int i = 0;
+                            strcpy(keyword, " ");
+                            while(yytext[i] != ' ') {
+                                if (yytext[i] == '\"') break;
+                                keyword[i] = yytext[i];
+                                i++;
+                            }
+
+                            if (strcmp(keyword, "=") == 0) {
+                                printf("assignment oper = %s in line = %d\n",keyword,yylineno);
+                            }
+
+                            else if (strcmp(keyword, "(") == 0 || strcmp(keyword, "{") == 0 || strcmp(keyword, "[") == 0) {
+                                printf("parenthesis = %s in line = %d\n",keyword,yylineno);
+                            }
+
+                            else {
+                                printf("keyword = %s in line = %d\n",keyword,yylineno);
+                            }
+                            string_buf_ptr = string_buf; BEGIN(COMMENT_STRING_DOUBLE); 
+                        }
+
 <COMMENT_STRING_DOUBLE>{
     \"{3}   {*string_buf_ptr = '\0'; printf("line%d, COMMENT STRING DOUBLE: %s\n", yylineno, string_buf); BEGIN(INITIAL);}
-    \\\n  {              }
+    \\\n {}
+    \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
     \\b  {*string_buf_ptr++ = '\b';}
     \\f  {*string_buf_ptr++ = '\f';}
-    \\\' {*string_buf_ptr++ = '\'';} 
     [^\\\n\\"{3}]+  {
         char *yptr = yytext;
         while ( *yptr )
@@ -272,6 +316,7 @@ literal_2   ({keyword}" "|(("["|"{"|"(")|"="{ws}*))
 
 
 .                       {printf("error in %d is %s",yylineno,yytext);}
+
 %%
 
 
