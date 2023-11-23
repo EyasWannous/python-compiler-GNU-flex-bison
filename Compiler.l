@@ -1,14 +1,14 @@
 %{
-    #include<stdio.h>
-    #include<ctype.h>
+    #include <stdio.h>
+    #include <ctype.h>
     #include <stdlib.h>
+    #include <string.h>
 
     //Stack Definition
     #define Stack_SIZE 100
     void push();
     void pop();
     void show();
-    /////////////////////
 
     // Stack Start
     int top = -1;
@@ -53,6 +53,9 @@
         }
     } 
     // Stack End
+
+    #define keyword_size 10
+    char keyword[keyword_size];
 
     int current_indentation = 0;
 
@@ -109,17 +112,9 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 %%
 
-":"                     {
-                            printf("special symbols = %s in line = %d\n",yytext,yylineno);
-                            current_indentation = 0;
-                        }
-
-
-{newL}{whiteSpaces}     {
+":"{newL}{whiteSpaces}  {
                             if(top < 0)
-                            {
                                 push(0);
-                            }
 
                             spaces = 0;
                             for(int i = 0; i < yyleng; i++){
@@ -129,45 +124,48 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                                     spaces += 8;
                                 }
                             }
-                            indentations = spaces / 8 + spaces % 8;
+                            indentations = spaces;
 
-                            if(indentations > stack_arr[top])
-                            {
-                                while(indentations > stack_arr[top])
-                                {
-                                    push(stack_arr[top] + 1);
-                                    printf("INDENT in line = %d\n",yylineno);
-                                }
-                            }
-                            else if(indentations < stack_arr[top])
-                            {
-                                int num_greater = 0;
+                            push(indentations);
 
-                                while(indentations < stack_arr[top])
-                                {
-                                    pop();
-                                    num_greater++;
-                                }
-
-                                while(num_greater != 0)
-                                {
-                                    printf("DEDENT in line = %d\n",yylineno);
-                                    num_greater--;
-                                }
-                            }
-                            else // Ignore this set of WhiteSpaces
-                            {}
+                            printf("special symbols = ':' in line = %d\n",yylineno- 1);
+                            printf("INDENT in line = %d\n",yylineno);
                         }
 
-{newL}                  { 
-                            if(top < 0)
-                            {
-                                push(0);
+{newL}{whiteSpaces}     {
+                            spaces = 0;
+                            for(int i = 0; i < yyleng; i++){
+                                if (yytext[i] == ' ') {
+                                    spaces++;
+                                } else if (yytext[i] == '\t') {
+                                    spaces += 8;
+                                }
                             }
-                            while(stack_arr[top] > 0){
-                                printf("DEDENT in line = %d\n",yylineno, stack_arr[top]);
+                            current_indentation = spaces;
+
+                            int flag = 0, topOfStack = 0;
+                            while(current_indentation < stack_arr[top])
+                            {
+                                flag = 1;
+                                topOfStack = stack_arr[top];
                                 pop();
-                            } 
+                            }
+
+                            if(current_indentation > stack_arr[top])
+                                printf("Indentation Error in line = %d\n",yylineno);
+
+                            else if(flag == 1)
+                                printf("DEDENT in line = %d\n",yylineno);
+
+
+                        }
+
+
+{newL}                  { 
+                            if(current_indentation > 0){
+                                printf("DEDENT in line = %d\n",yylineno);
+                                current_indentation = 0;
+                            }
                         }
 
 
