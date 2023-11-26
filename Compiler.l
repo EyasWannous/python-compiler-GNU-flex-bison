@@ -3,6 +3,7 @@
     #include <ctype.h>
     #include <stdlib.h>
     #include <string.h>
+    #include "parser.tab.h"
 
     //Stack Definition
     #define Stack_SIZE 100
@@ -14,37 +15,32 @@
     int top = -1;
     int stack_arr[Stack_SIZE];
 
-    void push(int x)
+    void push(int insert_item)
     {
         if (top == Stack_SIZE - 1)
-        {
             printf("\nOverflow!!");
-        }
+
         else
         {
-            top = top + 1;
-            stack_arr[top] = x;
+            top++;
+            stack_arr[top] = insert_item;
         }
     }
 
     void pop()
     {
         if (top == -1)
-        {
             printf("\nUnderflow!!");
-        }
+
         else
-        {
-            top = top - 1;
-        }
+            top--;
     }
 
     void stackshow()
     {
         if (top == -1)
-        {
             printf("\nUnderflow!!");
-        }
+
         else
         {
             printf("\nElements present in the stack: \n");
@@ -58,18 +54,69 @@
     char keyword[keyword_size];
 
     int current_indentation = 0;
-
     int spaces = 0;
-    int indentations = 0;
 
     // string buffer
     #define MAX_STR_CONST 256
     char string_buf[MAX_STR_CONST];
     char *string_buf_ptr;
     ////////////////////
+
+
+    ////////////////////
+    #include <stdio.h>
+    #define Queue_Size 100
+    void enqueue();
+    void dequeue();
+    void queueshow();
+    int queue_arr[Queue_Size];
+    int Rear = - 1, Front = - 1;
+
+    void enqueue(int insert_item)
+    {
+        if (Rear == Queue_Size - 1)
+            printf("Overflow \n");
+
+        else
+        {
+            if (Front == - 1)
+                Front = 0;
+
+            Rear++;
+            queue_arr[Rear] = insert_item;
+        }
+    } 
+
+    void dequeue()
+    {
+        if (Front == - 1 || Front > Rear)
+            printf("Underflow \n");
+
+        else
+            Front++;
+    } 
+
+    void queueshow()
+    {
+        
+        if (Front == - 1)
+            printf("Empty Queue \n");
+
+        else
+        {
+            printf("Queue: \n");
+            for (int i = Front; i <= Rear; i++)
+                printf("%d ", queue_arr[i]);
+            printf("\n");
+        }
+    }
+
 %}
 
 %option yylineno
+%option noyywrap
+
+
 
 newL        \n
 whiteSpaces [ \t]+
@@ -124,15 +171,17 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                                     spaces += 8;
                                 }
                             }
-                            indentations = spaces;
-
-                            push(indentations);
+                            push(spaces);
 
                             printf("special symbols = ':' in line = %d\n",yylineno- 1);
                             printf("INDENT in line = %d\n",yylineno);
+                            return INDENT;
                         }
 
 {newL}{whiteSpaces}     {
+                            if(top < 0)
+                                push(0);
+
                             spaces = 0;
                             for(int i = 0; i < yyleng; i++){
                                 if (yytext[i] == ' ') {
@@ -143,29 +192,46 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             }
                             current_indentation = spaces;
 
-                            int flag = 0, topOfStack = 0;
+                            int flag = 0;
+                            //int topOfStack = 0;
                             while(current_indentation < stack_arr[top])
                             {
                                 flag = 1;
-                                topOfStack = stack_arr[top];
+                                // topOfStack = stack_arr[top];
                                 pop();
                             }
 
-                            if(current_indentation > stack_arr[top])
+                            if(current_indentation > stack_arr[top]) {
                                 printf("Indentation Error in line = %d\n",yylineno);
+                                // yylval.strval = yytext;
+                                return IndentError;
+                            }
 
-                            else if(flag == 1)
+                            else if(flag == 1) {
+                                int counter = 0;
+                                while (current_indentation != stack_arr[top]) {
+                                    counter++;
+                                    pop();
+                                }
+
                                 printf("DEDENT in line = %d\n",yylineno);
-
+                                // yylval.strval = yytext;
+                                return DEDENT;
+                            }
 
                         }
 
 
 {newL}                  { 
-                            if(current_indentation > 0){
-                                printf("DEDENT in line = %d\n",yylineno);
+                            int counter = stack_arr[top];
+                            top = -1;
+
+                            if (current_indentation > 0) {
                                 current_indentation = 0;
+                                printf("DEDENT in line = %d\n",yylineno);
+                                return DEDENT;
                             }
+                            // yylval.strval = yytext;
                         }
 
 
@@ -312,30 +378,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
     }
 }
 
-
 .                       {printf("error in %d is %s",yylineno,yytext);}
 
 %%
-
-
-void main(int argc, char **argv)
-{
-
-    if (argc > 1){
-        for(int i=0;i<argc;i++)
-            printf("value of argv[%d] = %s\n\n",i,argv[i]);
-            yyin=fopen(argv[1],"r");
-    }
-        
-    else
-        yyin=stdin;
-    yylex();
-
-    
-    
-}
-/*yywrap is called whenever lex reaches an end-of-file we must define this function because yylex() need it*/
-int yywrap()
-{
-    exit(0);
-}
