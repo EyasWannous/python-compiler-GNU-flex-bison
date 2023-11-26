@@ -1,3 +1,4 @@
 .vscode
-a.exe
-lex.yy.c
+*.exe
+*.c
+*.h
