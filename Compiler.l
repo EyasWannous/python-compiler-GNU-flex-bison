@@ -64,13 +64,15 @@
 
 
     ////////////////////
-    #include <stdio.h>
     #define Queue_Size 100
     void enqueue();
     void dequeue();
     void queueshow();
+    void dequeueAll();
+
     int queue_arr[Queue_Size];
     int Rear = - 1, Front = - 1;
+
 
     void enqueue(int insert_item)
     {
@@ -110,6 +112,31 @@
             printf("\n");
         }
     }
+
+    void dequeueAll() {
+        Front = -1;
+        Rear = -1;
+    }
+
+    extern YYSTYPE yylval; 
+
+    // YYSTYPE arr;
+
+    // #include <openssl/stack.h>
+
+    // YYSTYPE yylval;
+    // YYLTYPE yylloc;
+
+    // auto pstate = yypstate_new();
+
+    // #define PUSH_TOKEN(token) do {  \
+    //     int s = yypush_parse(pstate, token, &yylval, &yylloc);  \
+    //     if (s != YYPUSH_MORE) {                                         \
+    //         yypstate_delete(pstate);                                    \
+    //         return s;                                                   \
+    //     }                                                               \
+    // } while(0)
+
 
 %}
 
@@ -155,7 +182,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 %x SINGLE_STRING
 %x COMMENT_STRING
 %x COMMENT_STRING_DOUBLE
-
+%x NEWLINE
 
 %%
 
@@ -173,12 +200,16 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             }
                             push(spaces);
 
-                            printf("special symbols = ':' in line = %d\n",yylineno- 1);
+                            current_indentation = spaces;
+
+                            printf("special symbols = : in line = %d\n",yylineno- 1);
                             printf("INDENT in line = %d\n",yylineno);
+                            // enqueue(INDENT);
                             return INDENT;
                         }
 
 {newL}{whiteSpaces}     {
+                            // BEGIN(NEWLINE);
                             if(top < 0)
                                 push(0);
 
@@ -191,6 +222,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                                 }
                             }
                             current_indentation = spaces;
+                            // printf("current_indentation = %d\n",current_indentation);
 
                             int flag = 0;
                             //int topOfStack = 0;
@@ -204,6 +236,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             if(current_indentation > stack_arr[top]) {
                                 printf("Indentation Error in line = %d\n",yylineno);
                                 // yylval.strval = yytext;
+                                // enqueue(IndentError);
                                 return IndentError;
                             }
 
@@ -216,6 +249,8 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
                                 printf("DEDENT in line = %d\n",yylineno);
                                 // yylval.strval = yytext;
+                                // enqueue(DEDENT);
+                                // BEGIN(INITIAL);
                                 return DEDENT;
                             }
 
@@ -223,16 +258,53 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 
 {newL}                  { 
+                            BEGIN(NEWLINE);
                             int counter = stack_arr[top];
-                            top = -1;
+                            // top = -1;
+                            // printf("current_indentation = %d\n",current_indentation);
 
                             if (current_indentation > 0) {
                                 current_indentation = 0;
-                                printf("DEDENT in line = %d\n",yylineno);
-                                return DEDENT;
+                                // enqueue(DEDENT);
+                                // return DEDENT;
+
+                                printf("top = %d\n",top);
+                                while (top > -1){
+                                    // BEGIN(INITIAL);
+                                    printf("DEDENT in line = %d\n",yylineno);
+                                    pop();
+                                    return 267;
+                                }
                             }
+                            // BEGIN(INITIAL);
                             // yylval.strval = yytext;
                         }
+
+
+
+<<EOF>>         {
+                    if (current_indentation > 0) {
+
+                        current_indentation = 0;
+                        // enqueue(DEDENT);
+                        // return DEDENT;
+                        // pr   intf("top = %d\n",top);
+                        while (top > -1){
+                            printf("DEDENT in line = %d\n",yylineno);
+                            return DEDENT;
+                            // enqueue(DEDENT);
+                            // pop();
+                        }
+                    }
+
+                    // while(Front <= Rear && Front >= 0){
+                    //     int temp = Front;
+                    //     dequeue();
+                    //     return queue_arr[temp];
+                    // }
+                    return 0;
+                }
+
 
 
 {ws}                    {}
@@ -377,6 +449,16 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
             *string_buf_ptr++ = *yptr++;        
     }
 }
+
+
+<NEWLINE>{
+    .   {
+            printf("NewLine in line = %d\n",yylineno);
+            BEGIN(INITIAL);
+            return NewLine;
+        }
+}
+
 
 .                       {printf("error in %d is %s",yylineno,yytext);}
 

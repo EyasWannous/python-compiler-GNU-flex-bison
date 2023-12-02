@@ -2,8 +2,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int yydebug=1;
+
+
+// int status;
+// yypstate *ps = yypstate_new ();
+// do {
+//     status = yypush_parse (ps, yylex (), NULL);
+// } while (status == YYPUSH_MORE);
+// yypstate_delete (ps);
+// extern int yychar;
+// int status;
+// yypstate *ps = yypstate_new ();
+// do {
+//     yychar = yylex ();
+//     status = yypush_parse (ps);
+// } while (status == YYPUSH_MORE);
+// yypstate_delete (ps);
+// yypstate *ps = yypstate_new ();
+// yypull_parse (ps); /* Will call the lexer */
+// yypstate_delete (ps);
+
+
+int yydebug = 1;
 void yyerror(const char *);
+// void yyerror(YYLTYPE* loc, const char* err);
+
 
 extern int yylex();
 extern int yyparse();
@@ -12,12 +35,19 @@ extern FILE *yyin;
 
 %}
 
+%locations
+
+// %define api.pure full
+// %define api.push-pull push
+
+%error-verbose
+
 // tokens
-%token ID NUMBER STRING ASSIGN RETURN
-%token EQ PLUS MINUS MUL DIVIDE LBRACKET RBRACKET SEMICOLON EQUAL
-%token PRINT KEYWORD IDENTIFIER DEF
-%token INDENT DEDENT NEWLINE
-%token IndentError statement string
+%token ID NUMBER STRING RETURN
+%token EQUAL
+%token PRINT KEYWORD DEF
+%token INDENT DeDent NewLine
+%token IndentError statement string EOFF
 
 %nonassoc EQUAL
 %left '+' '-'
@@ -29,12 +59,22 @@ extern FILE *yyin;
     int intval;
 }
 
+// %left
+
+// %left input
+// %right blank
+
+// %type<strval> string
+
+// %start input
+
+// %start statements
 
 
 %%
-// %type<strval> string
 
-// %start statements
+
+
 
 // statements:
 //     statement
@@ -42,62 +82,75 @@ extern FILE *yyin;
 //     ;
 
 /* Parser Grammar */
-input: 
+input
+    : blank {printf("BLANK INPUT WOOOO \n");}
     | IndentError {printf("IndentError || WOOOO \n");}
-    | input INDENT  {printf("INDENT  || WOOOO \n");}
-    | input DEDENT  {printf("DENDENT || WOOOO \n");};
-
-in: 
-    INDENT
-{
-    printf(1);
-    // printf("INDENT\n");
-    // YYACCEPT;
-};
-
-de: 
-    DEDENT
-{
-    printf(1);
-    // printf("DEDENT\n");
-    // YYACCEPT;
-};
-
-ie: IndentError{
-    printf(1);
-    // printf("IndentError\n"); 
-    // YYACCEPT;
-};
-
-function: DEF IDENTIFIER '(' args ')' ':' block {
-            printf("Function successfully parsed:\n"); 
-            // YYACCEPT;
-            };
-
-args    : /* empty params */ { }
-        | args_  { }
-        ;
-
-
-
-args_   : arg { }
-        | args_ ',' arg { }
-        ;
-
-
-
-arg     : IDENTIFIER { }
-        | NUMBER { }
-        ;
-
-
-block : NEWLINE INDENT statements DEDENT { }
+    | input INDENT {printf("INDENT || WOOOO \n");}
+    | input DEDENT {printf("DENDENT || WOOOO \n");}
+    | input NewLine {printf("NewLine || WOOOO \n");}
+    // | input EOFF {printf("EOFF || WOOOO \n"); YYACCEPT;}
+    // | block input {printf("Block || WOOOO \n");}
     ;
+
+block
+    : blank {printf("BLANK BLOCK WOOOO \n");}
+    | INDENT block DEDENT {printf("Block || WOOOO || WOOOO \n");}
+    ;
+
+blank
+    :
+    ;
+
+function
+    : DEF ID '(' args ')' ':' {}
+    ;
+
+args
+    : blank {}
+    | arg ',' args {}
+    | arg {}
+    ;
+
+arg
+    : NUMBER
+    | ID
+    ;
+
+// block 
+//     : NewLine INDENT statements DEDENT { }
+//     ;
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+
+
+// function: DEF IDENTIFIER '(' args ')' ':' block {
+//             printf("Function successfully parsed:\n"); 
+//             // YYACCEPT;
+//             };
+
+// args    : /* empty params */ { }
+//         | args_  { }
+//         ;
+
+
+
+// args_   : arg { }
+//         | args_ ',' arg { }
+//         ;
+
+
+
+// arg     : IDENTIFIER { }
+//         | NUMBER { }
+//         ;
+
+
 
 
 statements 
-            : simple_stmt NEWLINE {}
-            | statements simple_stmt NEWLINE {}
+    : simple_stmt NewLine {}
+    | statements simple_stmt NewLine {}
     ;
 
 simple_stmt
@@ -106,10 +159,9 @@ simple_stmt
     ;
 
 
-assignment
-    : IDENTIFIER ASSIGN expression  {
-        }
-    ;
+assignment:
+//     : IDENTIFIER ASSIGN expression  {}
+//     ;
 
 
 
@@ -124,15 +176,16 @@ expression
                                     which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                     rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/}
     | '(' expression ')'            { }
-    | '-' expression %prec UMINUS          { }
+    | '-' expression %prec UMINUS   { }
     | NUMBER                        { }
     | STRING                        { }
-;
+    ;
 
-return_stmt
-            : RETURN NUMBER { }
-            | RETURN IDENTIFIER { }
-            ;
+return_stmt:
+    // : RETURN NUMBER { }
+    // | RETURN IDENTIFIER { }
+    // ;
+
 %%
 
 
@@ -161,6 +214,10 @@ void yyerror(const char *msg)
 {
     printf(" %s \n", msg); 
 }
+
+// void yyerror(YYLTYPE* loc, const char* err) {
+//     printf("Error:  %s \n", err); 
+// }
 
 // void yyerror (char const *s)
 // {
