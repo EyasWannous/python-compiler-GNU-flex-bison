@@ -43,11 +43,10 @@ extern FILE *yyin;
 %error-verbose
 
 // tokens
-%token ID NUMBER STRING RETURN
-%token EQUAL
+%token ID NUMBER STRING RETURN EQUAL
 %token PRINT KEYWORD DEF
-%token INDENT DeDent NewLine
-%token IndentError statement string EOFF
+%token INDENT DEDENT NEWLINE
+%token INDENTERROR statement string EOFF
 
 %nonassoc EQUAL
 %left '+' '-'
@@ -84,10 +83,10 @@ extern FILE *yyin;
 /* Parser Grammar */
 input
     : blank {printf("BLANK INPUT WOOOO \n");}
-    | IndentError {printf("IndentError || WOOOO \n");}
+    | INDENTERROR {printf("INDENTERROR || WOOOO \n");}
     | input INDENT {printf("INDENT || WOOOO \n");}
-    | input DEDENT {printf("DENDENT || WOOOO \n");}
-    | input NewLine {printf("NewLine || WOOOO \n");}
+    | input DEDENT {printf("DEDENT || WOOOO \n");}
+    | input NEWLINE {printf("NEWLINE || WOOOO \n");}
     // | input EOFF {printf("EOFF || WOOOO \n"); YYACCEPT;}
     // | block input {printf("Block || WOOOO \n");}
     ;
@@ -117,7 +116,7 @@ arg
     ;
 
 // block 
-//     : NewLine INDENT statements DEDENT { }
+//     : NEWLINE INDENT statements DEDENT { }
 //     ;
 
 ///////////////////////////////////////////
@@ -149,8 +148,8 @@ arg
 
 
 statements 
-    : simple_stmt NewLine {}
-    | statements simple_stmt NewLine {}
+    : simple_stmt NEWLINE {}
+    | statements simple_stmt NEWLINE {}
     ;
 
 simple_stmt

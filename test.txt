@@ -1,7 +1,7 @@
 def f(x):
-	 if(x > 5):
-		 return x - 5
-	 if(x < 5):
-	 		return x + 5
-	 return x
-hello = 'ksmasdksm'
+	if(x > 5):
+		if(x - 5 > 5):
+			return x
+	if(x < 5):
+		return x + 5
+leema = 'kkk'
