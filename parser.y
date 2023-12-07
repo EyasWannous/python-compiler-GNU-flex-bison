@@ -3,187 +3,457 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-// int status;
-// yypstate *ps = yypstate_new ();
-// do {
-//     status = yypush_parse (ps, yylex (), NULL);
-// } while (status == YYPUSH_MORE);
-// yypstate_delete (ps);
-// extern int yychar;
-// int status;
-// yypstate *ps = yypstate_new ();
-// do {
-//     yychar = yylex ();
-//     status = yypush_parse (ps);
-// } while (status == YYPUSH_MORE);
-// yypstate_delete (ps);
-// yypstate *ps = yypstate_new ();
-// yypull_parse (ps); /* Will call the lexer */
-// yypstate_delete (ps);
-
-
-int yydebug = 1;
+int yydebug=1;
 void yyerror(const char *);
-// void yyerror(YYLTYPE* loc, const char* err);
 
-
+extern FILE *yyin;
 extern int yylex();
 extern int yyparse();
-extern FILE *yyin;
-// extern int yylex(void);
 
 %}
 
-%locations
-
-// %define api.pure full
-// %define api.push-pull push
-
-%error-verbose
-
-// tokens
-%token ID NUMBER STRING RETURN EQUAL
-%token PRINT KEYWORD DEF
-%token INDENT DEDENT NEWLINE
-%token INDENTERROR statement string EOFF
-
-%nonassoc EQUAL
-%left '+' '-'
-%left '*' '/'
-%nonassoc '|' UMINUS
 
 %union {
     char *strval;
     int intval;
+    float flval;
 }
 
-// %left
+%error-verbose
 
-// %left input
-// %right blank
 
-// %type<strval> string
+// tokens
+%token ID NUMBER STRING ARRAY RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD 
+%token INDENT DEDENT INDENTERROR NEWLINE GT LT GTE LTE EQUAL 
+%token IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS
+%token INT FLOAT STR BOOL LIST
 
-// %start input
+%type<strval> ID STRING 
+%type<intval> NUMBER 
 
-// %start statements
+
+%nonassoc '='
+%left '+' '-'
+%left '*' '/'
+%nonassoc '|' UMINUS
 
 
 %%
 
-
-
-
-// statements:
-//     statement
-//     | statements statement
-//     ;
-
 /* Parser Grammar */
-input
-    : blank {printf("BLANK INPUT WOOOO \n");}
-    | INDENTERROR {printf("INDENTERROR || WOOOO \n");}
-    | input INDENT {printf("INDENT || WOOOO \n");}
-    | input DEDENT {printf("DEDENT || WOOOO \n");}
-    | input NEWLINE {printf("NEWLINE || WOOOO \n");}
-    // | input EOFF {printf("EOFF || WOOOO \n"); YYACCEPT;}
-    // | block input {printf("Block || WOOOO \n");}
-    ;
 
-block
-    : blank {printf("BLANK BLOCK WOOOO \n");}
-    | INDENT block DEDENT {printf("Block || WOOOO || WOOOO \n");}
-    ;
+prog
+    : { /* for empty put % empty */}
+    | statements {
+        printf("prog accepted:\n");YYACCEPT;
+    }
+;
 
-blank
-    :
-    ;
+statements  
+        : statement { }
+        | statements NEWLINE statement { }
+        | statements NEWLINE { }
+;
 
-function
-    : DEF ID '(' args ')' ':' {}
-    ;
 
-args
-    : blank {}
-    | arg ',' args {}
-    | arg {}
-    ;
+statement   
+        : if_stmt { }
+        | while_stmt { }
+        | for_stmt { }
+        | function { }
+        | function_call { }
+        | assignment { }
+        | class { }
+        | try_except_stmt { }
+        | match_stmt { }
+        | with_statement { }
+;
 
-arg
-    : NUMBER
+// IF statment START
+
+if_stmt     
+        : if_header block elif_else_  { printf("if statement successfully parsed:\n"); }                     
+;
+
+if_header   
+        : IF relation_stmt  
+;
+
+elif_else_  
+        :     {/* empty no next elif or else*/}
+        | elif_else { }
+;
+
+elif_else   
+        : elif_stmts else_stmt
+        | elif_stmts
+        | else_stmt
+;
+
+else_stmt   
+        : ELSE  block 
+;
+
+elif_stmts  
+        : elif_stmt
+        | elif_stmts elif_stmt 
+;
+
+elif_stmt   
+        : elif_header block
+;
+
+elif_header 
+        : ELIF relation_stmt    
+;
+
+// IF statement END
+
+// FUNCTION statement START
+function    
+        : DEF ID '(' args ')' function_block {
+            printf("Function successfully parsed:\n"); 
+        }
+        | DEF ID '(' args ')' '-' GT data_type function_block {
+            printf("Generic Function successfully parsed:\n"); 
+        }
+;
+
+function_block
+            : NEWLINE INDENT function_stmts DEDENT { }
+;
+
+function_stmts   
+            : function_stmt_
+            | function_stmts function_stmt_
+;
+
+function_stmt_   
+            : simple_stmt NEWLINE {}
+            | compound_stmt {}
+            | function_sp_stmt NEWLINE
+            | function
+;
+
+function_sp_stmt 
+            : return_stmt
+            | global_stmt
+            | nonlocal_stmt
+            | yield_stmt
+;   
+
+// args for define function
+args    
+    : /* empty params */ { }
+    | args_  { }
+;
+
+
+
+args_ 
+    : arg { }
+    | args_ ',' arg { }
+;
+
+
+
+arg   
+    : ID { }
+    | ID ':' data_type { }
+;
+
+// args for print function
+argsp  
+    : /* empty params */ { }
+    | args_p { }
+;
+
+
+args_p
+    : argp { }
+    | args_p  argp { }
+;
+
+
+
+argp  
+    : ID { }
+    | NUMBER { }
+    | STRING { }
+;
+
+// FUNCTION statement END
+
+// WHILE statement START
+while_stmt
+        : WHILE relation_stmt for_block { 
+            printf("while statement successfully parsed:\n"); 
+        }
+;
+// WHILE statement END
+
+// FOR statement START
+range_args  
+        : '(' NUMBER ')'
+        | '(' NUMBER ',' NUMBER')'
+        | '(' NUMBER ',' NUMBER ',' NUMBER ')'
+;
+
+for_stmt    
+        : FOR ID IN RANGE range_args for_block { 
+            printf("for statement successfully parsed:\n"); 
+        }
+        | FOR ID IN ARRAY for_block { 
+            printf("for statement successfully parsed:\n"); 
+        }
+;
+
+for_block
+        : NEWLINE INDENT for_stmts DEDENT { }
+;
+
+for_stmts   
+        : for_stmt_
+        | for_stmts for_stmt_
+;
+
+for_stmt_   
+        : simple_stmt NEWLINE {}
+        | compound_stmt {}
+        | for_sp_stmt NEWLINE
+;
+
+for_sp_stmt 
+        : BREAK
+        | CONTINUE
+;    
+
+// FOR statement END
+
+// FUNCTION_CALL statement START
+function_call     
+            : ID '(' args ')' {}
+            | PRINT '(' argsp ')' {}
+            | INPUT '(' STRING ')' {}
+;
+// FUNCTION_CALL statement END
+
+// CLASS statement START
+
+class 
+    : CLASS ID class_block { 
+        printf("class statement successfully parsed:\n");
+    }
+;
+
+class_block
+        : NEWLINE INDENT class_stmts DEDENT { }
+;
+
+class_stmts   
+        : class_stmt_
+        | class_stmts class_stmt_
+;
+
+class_stmt_   
+        : simple_stmt NEWLINE {}
+        | compound_stmt {}
+        | class_sp_stmt NEWLINE
+        | function
+;
+
+class_sp_stmt 
+            : global_stmt
+;  
+// CLASS statement END
+
+// TRY_EXCEPT statement START
+try_except_stmt 
+            : TRY block except_clauses { 
+                printf("try_except statement successfully parsed:\n"); 
+            }
+;
+
+except_clauses    
+            : except_clause {}
+            | except_clauses except_clause {}
+;
+
+except_clause 
+            : EXCEPT block {}
+;
+
+// TRY_EXCEPT statement END
+
+// MATCH statement START
+match_stmt  
+        : MATCH ID match_block { 
+            printf("match statement successfully parsed:\n"); 
+        }
+;
+
+case_statements   
+            :
+            case_statement 
+            | case_statements case_statement 
+;
+
+case_statement    
+            : CASE argp block 
+;
+
+final_case  
+        : CASE '_' block
+;
+
+match_block 
+        : NEWLINE INDENT case_statements final_case DEDENT { }
+;
+
+// MATCH statement END
+
+
+// WITH statement START
+
+with_statement
+            : WITH with_statement_body block { 
+                printf("with statement successfully parsed:\n"); 
+            }
+;
+
+with_statement_body
+                : with_body ',' with_statement_body
+                | with_body
+;
+
+with_body
+        : with_stmt_contents
+        |'(' with_stmt_contents ')'
+;
+
+/////////////////////////////
+with_stmt_contents
+                : with_item 
+                //|with_item ',' with_stmt_contents
+;
+
+with_item
+        : ID '(' inside_brackets ')' AS target
+        | expression
+        | expression AS target
+;
+//////////////////////////////
+
+inside_brackets
+            : expression
+            | expression ',' inside_brackets
+;
+
+target
+    : '(' targets ')' 
+    | target '.' ID 
     | ID
-    ;
+;
 
-// block 
-//     : NEWLINE INDENT statements DEDENT { }
-//     ;
+targets
+    : target
+    | targets ',' target
+;
 
-///////////////////////////////////////////
-///////////////////////////////////////////
-
-
-// function: DEF IDENTIFIER '(' args ')' ':' block {
-//             printf("Function successfully parsed:\n"); 
-//             // YYACCEPT;
-//             };
-
-// args    : /* empty params */ { }
-//         | args_  { }
-//         ;
+// WITH statement END
 
 
+block //: NEWLINE INDENT stmts NEWLINE DEDENT { }
+    : NEWLINE INDENT stmts DEDENT { }
+;
 
-// args_   : arg { }
-//         | args_ ',' arg { }
-//         ;
+stmts 
+    : stmt
+    | stmts stmt
+;
 
-
-
-// arg     : IDENTIFIER { }
-//         | NUMBER { }
-//         ;
-
-
-
-
-statements 
+stmt  
     : simple_stmt NEWLINE {}
-    | statements simple_stmt NEWLINE {}
-    ;
+    | compound_stmt {}
+;
+
 
 simple_stmt
-    : assignment {}
-    | return_stmt {}
-    ;
+        : assignment      {}
+        //| return_stmt     {}
+        //| BREAK           {}
+        //| CONTINUE        {}
+        //| yield_stmt      {}
+        //| global_stmt     {}
+        //| nonlocal_stmt   {}
+        | function_call   {}
+;
 
+compound_stmt
+        : if_stmt    {}
+        | while_stmt {}
+        | for_stmt   {}
+        //| function   {}
+        | try_except_stmt {}
+        | with_statement {}
+        | match_stmt {}
+;
 
-assignment:
-//     : IDENTIFIER ASSIGN expression  {}
-//     ;
+assignment
+        : ID '=' expression  {}
+        | ID '=' ARRAY       {}
+;
 
+return_stmt
+        : RETURN NUMBER { }
+        | RETURN ID { }
+        | RETURN STRING { }
+;
 
+yield_stmt
+        : YIELD ID { }
+;
 
+global_stmt
+        : GLOBAL ID { }
+;
 
+nonlocal_stmt
+        : NONLOCAL ID { }
+;
+
+relation_stmt
+        : ID GT NUMBER    {}
+        | ID LT NUMBER    {}
+        | ID GTE NUMBER   {}
+        | ID LTE NUMBER   {}
+        | ID EQUAL NUMBER {}
+        | ID EQUAL STRING {}
+;
 
 expression
-    : expression '+' expression     { }
-    | expression '-' expression     { }
-    | expression '*' expression     { }
-    | expression '/' expression     { }
-    | '|' expression  %prec UMINUS  { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
-                                    which has low precedence, but we want unary minus to have higher precedence than multiplication 
-                                    rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/}
-    | '(' expression ')'            { }
-    | '-' expression %prec UMINUS   { }
-    | NUMBER                        { }
-    | STRING                        { }
-    ;
+        : expression '+' expression     { }
+        | expression '-' expression     { }
+        | expression '*' expression     { }
+        | expression '/' expression     { }
+        | '|' expression  %prec UMINUS  { }
+        //| '(' expression ')'           { }
+        | '-' expression %prec UMINUS   { }
+        | NUMBER                        { }
+        | STRING                        { }
+;
 
-return_stmt:
-    // : RETURN NUMBER { }
-    // | RETURN IDENTIFIER { }
-    // ;
+data_type   
+        : INT
+        | FLOAT
+        | BOOL
+        | STR
+        | LIST '[' INT ']'
+        | LIST '[' FLOAT ']'
+        | LIST '[' STR ']'
+;
+
+
 
 %%
 
@@ -200,25 +470,8 @@ void main(int argc, char **argv)
     else
         yyin=stdin;
     yyparse();
-    // while(yylex());
-    // while(yyparse());
 }
 
-// int yyerror(const char* s) {
-//     fprintf(stderr, "Error: %s\n", s);
-//     return 1;
-// }
-
-void yyerror(const char *msg)
-{
-    printf(" %s \n", msg); 
+void yyerror(const char *msg) {
+    printf(" %s \n", msg);
 }
-
-// void yyerror(YYLTYPE* loc, const char* err) {
-//     printf("Error:  %s \n", err); 
-// }
-
-// void yyerror (char const *s)
-// {
-//     fprintf (stderr, "%s\n", s);
-// }
