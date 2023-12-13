@@ -159,8 +159,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 {newL}{comments}        {}
 
-
-
 <<EOF>>         {
                     BEGIN(DEDENTALLSTATE);
                     unput(' ');
@@ -168,8 +166,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                     if(stack_arr[top] == 0)
                         return 0;
                 }
-
-
 
 {ws}                    {}
 
@@ -179,13 +175,11 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 {array}                 {return ARRAY;}
 
-
 {comments}              {}
-
 
 "="                     {return yytext[0];}
 
-"+"|"-"|"*"|"/"|"_"         {return yytext[0];}
+"+"|"-"|"*"|"/"|"_"     {return yytext[0];}
 
 "["|"]"|"{"|"}"|"("|")" {return yytext[0];}
 
@@ -334,7 +328,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                         }
 
 
-
 <INDENTSTATE>{
     [ ] {
         BEGIN(INITIAL);
@@ -371,7 +364,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
     }
 }
 
-
 <DEDENTALLSTATE>{
     [ ] {
         if (top < 0)
@@ -390,7 +382,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
         }
     }
 }
-
 
 \"       { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
 
@@ -456,7 +447,8 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             }
 
                             
-                        }    
+                        }
+
 <COMMENT_STRING>{
     "'''"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
     \\\n {}
@@ -516,7 +508,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
             *string_buf_ptr++ = *yptr++;        
     }
 }
-
 
 .                       {printf("error in %d is %s",yylineno,yytext);}
 

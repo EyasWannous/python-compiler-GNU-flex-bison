@@ -21,7 +21,6 @@ extern int yyparse();
 
 %error-verbose
 
-
 // tokens
 %token ID NUMBER STRING ARRAY RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD 
 %token INDENT DEDENT INDENTERROR NEWLINE GT LT GTE LTE EQUAL 
@@ -31,12 +30,10 @@ extern int yyparse();
 %type<strval> ID STRING 
 %type<intval> NUMBER 
 
-
 %nonassoc '='
 %left '+' '-'
 %left '*' '/'
 %nonassoc '|' UMINUS
-
 
 %%
 
