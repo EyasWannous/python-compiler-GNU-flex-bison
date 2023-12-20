@@ -3,6 +3,7 @@
     #include <ctype.h>
     #include <stdlib.h>
     #include <string.h>
+    #include "parser.tab.h"
 
     //Stack Definition
     #define Stack_SIZE 100
@@ -14,37 +15,32 @@
     int top = -1;
     int stack_arr[Stack_SIZE];
 
-    void push(int x)
+    void push(int insert_item)
     {
         if (top == Stack_SIZE - 1)
-        {
             printf("\nOverflow!!");
-        }
+
         else
         {
-            top = top + 1;
-            stack_arr[top] = x;
+            top++;
+            stack_arr[top] = insert_item;
         }
     }
 
     void pop()
     {
         if (top == -1)
-        {
             printf("\nUnderflow!!");
-        }
+
         else
-        {
-            top = top - 1;
-        }
+            top--;
     }
 
     void stackshow()
     {
         if (top == -1)
-        {
             printf("\nUnderflow!!");
-        }
+
         else
         {
             printf("\nElements present in the stack: \n");
@@ -57,19 +53,22 @@
     #define keyword_size 10
     char keyword[keyword_size];
 
-    int current_indentation = 0;
-
-    int spaces = 0;
-    int indentations = 0;
-
     // string buffer
     #define MAX_STR_CONST 256
     char string_buf[MAX_STR_CONST];
     char *string_buf_ptr;
     ////////////////////
+
+    int current_indentation = 0;
+    int spaces = 0;
+
+    extern YYSTYPE yylval; 
+
 %}
 
 %option yylineno
+%option noyywrap
+
 
 newL        \n
 whiteSpaces [ \t]+
@@ -82,19 +81,17 @@ id          ({letter}|"_")({letter}|{digit}|"_")*
 
 num         {digit}+
 
-function    "print"|"input"|"range"
-
 keyword     "yield"|"with"|"try"|"True"|"return"|"raise"|"pass"|"or"|"and"|"not"|"nonlocal"|"None"|"lambda"|"is"|"in"|"import"|"if"|"else"|"global"|"from"|"for"|"finally"|"False"|"except"|"def"|"assert"|"break"|"class"|"continue"|"del"|"elif"|"while"
 
-array       "["(({literal}|{num}|{id})",")*?({literal}|{num}|{id})"]"
+array       "["(({literal}|{num}|{id})","" "*)*?({literal}|{num}|{id})"]"
 
 ws          [ \t]
 
 comment_1   #.*
 
-comment_2   "'''"(\n|.*)*"'''"
+comment_2   \'{3}[^\'{3}]*\'{3}
 
-comment_3   "\"\"\""(\n|.*)*"\"\"\""
+comment_3   \"{3}[^\"{3}]*\"{3}
 
 comments    ({comment_1}|{comment_2}|{comment_3})
 
@@ -108,11 +105,14 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 %x SINGLE_STRING
 %x COMMENT_STRING
 %x COMMENT_STRING_DOUBLE
-
+%x INDENTSTATE
+%x DEDENTALLSTATE
+%x DEDENTSTATE
 
 %%
 
 ":"{newL}{whiteSpaces}  {
+                            BEGIN(INDENTSTATE);
                             if(top < 0)
                                 push(0);
 
@@ -124,15 +124,18 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                                     spaces += 8;
                                 }
                             }
-                            indentations = spaces;
+                            push(spaces);
 
-                            push(indentations);
+                            current_indentation = spaces;
+                            unput(' ');
 
-                            printf("special symbols = ':' in line = %d\n",yylineno- 1);
-                            printf("INDENT in line = %d\n",yylineno);
+                            return NEWLINE;
                         }
 
-{newL}{whiteSpaces}     {
+{newL}{whiteSpaces}   {
+                            if(top < 0)
+                                push(0);
+
                             spaces = 0;
                             for(int i = 0; i < yyleng; i++){
                                 if (yytext[i] == ' ') {
@@ -143,64 +146,247 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             }
                             current_indentation = spaces;
 
-                            int flag = 0, topOfStack = 0;
-                            while(current_indentation < stack_arr[top])
-                            {
-                                flag = 1;
-                                topOfStack = stack_arr[top];
-                                pop();
-                            }
-
-                            if(current_indentation > stack_arr[top])
-                                printf("Indentation Error in line = %d\n",yylineno);
-
-                            else if(flag == 1)
-                                printf("DEDENT in line = %d\n",yylineno);
-
-
+                            unput(' ');
+                            BEGIN(DEDENTSTATE);
+                            return NEWLINE;
                         }
-
 
 {newL}                  { 
-                            if(current_indentation > 0){
-                                printf("DEDENT in line = %d\n",yylineno);
-                                current_indentation = 0;
-                            }
+                            BEGIN(DEDENTALLSTATE);
+                            unput(' ');
+                            return NEWLINE;
                         }
 
+{newL}{comments}        {}
+
+<<EOF>>         {
+                    BEGIN(DEDENTALLSTATE);
+                    unput(' ');
+
+                    if(stack_arr[top] == 0)
+                        return 0;
+                }
 
 {ws}                    {}
 
 \\$                     {}
 
-{sp}                    {printf("special symbols = %s in line = %d\n",yytext,yylineno);}
+{sp}                    {return yytext[0];}
 
-{array}                 {printf("array = %s in line = %d\n",yytext,yylineno);}
+{array}                 {return ARRAY;}
 
-">"|"<"|"<="|">="|"=="  {printf("relation operator = %s in line = %d\n",yytext,yylineno);}
+{comments}              {}
 
-{comments}              {printf("comment = %s in line = %d\n",yytext,yylineno);}
+"="                     {return yytext[0];}
+
+"+"|"-"|"*"|"/"|"_"     {return yytext[0];}
+
+"["|"]"|"{"|"}"|"("|")" {return yytext[0];}
+
+"def"                   {
+                            yylval.strval = strdup(yytext);
+                            return DEF;
+                        }
+
+"if"                    {
+                            return IF;
+                        }
+
+"elif"                  {
+                            return ELIF;
+                        }
+
+"else"                  {
+                            return ELSE;
+                        }
+
+"break"                 {
+                            return BREAK;
+                        }
+
+"continue"              {
+                            return CONTINUE;
+                        }
+
+"global"                {
+                            return GLOBAL;
+                        }
+
+"nonlocal"              {
+                            return NONLOCAL;
+                        }
+
+"yield"                 {
+                            return YIELD;
+                        }
+
+"return"                {
+                            return RETURN;
+                        }
+
+"<"                     {
+                            return LT;
+                        }
+
+">"                     {
+                            return GT;
+                        }
+
+"<="                    {
+                            return LTE;
+                        }
+
+">="                    {
+                            return GTE;
+                        }
+
+"=="                    {
+                            return EQUAL;
+                        }
+
+"while"                 {
+                            return WHILE;
+                        }
+
+"for"                   {
+                            return FOR;
+                        }
+
+"in"                    {
+                            return IN;
+                        }
+
+"range"                 {
+                            return RANGE;
+                        }
+
+"print"                 {
+                            return PRINT;
+                        }
+
+"input"                 {
+                            return INPUT;
+                        }
+
+"class"                 {
+                            return CLASS;
+                        }
+
+"try"                   {
+                            return TRY;
+                        }
+
+"except"                {
+                            return EXCEPT;
+                        }
+
+"match"                 {
+                            return MATCH;
+                        }
+
+"case"                  {
+                            return CASE;
+                        }
+
+"with"                  {
+                            return WITH;
+                        }
+
+"as"                    {
+                            return AS;
+                        }
+
+"int"                   {
+                            return INT;
+                        }
+
+"float"                 {
+                            return FLOAT;
+                        }
+
+"str"                   {
+                            return STR;
+                        }
+
+"bool"                  {
+                            return BOOL;
+                        }
+
+"list"                  {
+                            return LIST;
+                        }
 
 
-"="                     {printf("assignment oper = %s in line = %d\n",yytext,yylineno);}
+{id}                    {
+                            yylval.strval = strdup(yytext);
+                            return ID;
+                        }
 
-"+"|"-"|"*"|"/"         {printf("arithmetic oper= %s in line = %d\n",yytext,yylineno);}
+{num}                   {
+                            yylval.intval = atoi(yytext);
+                            return NUMBER;
+                        }
 
-"["|"]"|"{"|"}"|"("|")" {printf("parenthesis = %s in line = %d\n",yytext,yylineno);}
 
-{function}              {printf("function = %s in line = %d\n",yytext,yylineno);}
+<INDENTSTATE>{
+    [ ] {
+        BEGIN(INITIAL);
+        return INDENT;
+    }
+}
 
-{keyword}               {printf("keyword = %s in line = %d\n",yytext,yylineno);}
+<DEDENTSTATE>{
+    [ ] {
 
-{id}                    {printf("identifier = %s in line = %d\n",yytext,yylineno);}
+        int flag = 1;
+        for (int i = 0; i <= top; i++) {
+            if (current_indentation == stack_arr[i])
+                flag = 0;
+        }
 
-{num}                   {printf("number constant= %s in line = %d\n",yytext,yylineno);}
+        if(flag)
+            return INDENTERROR;
 
+        int end = 1;
+        while(current_indentation < stack_arr[top])
+        {
+            unput(' ');
+            BEGIN(DEDENTSTATE);
+            end = 0;
+            pop();
+
+            return DEDENT;
+        }
+
+        if(end)
+            BEGIN(INITIAL);
+
+    }
+}
+
+<DEDENTALLSTATE>{
+    [ ] {
+        if (top < 0)
+            push(0);
+
+        if (stack_arr[top] > 0) {
+            while (top > 0) {
+                unput(' ');
+                BEGIN(DEDENTALLSTATE);
+                pop();
+
+                return DEDENT;
+            }
+        } else {
+            BEGIN(INITIAL);
+        }
+    }
+}
 
 \"       { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
 
 <DOUBLE_STRING>{
-    \"  {*string_buf_ptr = '\0'; printf("line%d, DOUBLE STRING: %s\n", yylineno, string_buf); BEGIN(INITIAL);} 
+    \"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;} 
     \\\n {              }
     \n   {printf("error in line %d\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -218,7 +404,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 \'        { string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }    
 <SINGLE_STRING>{
-    \'  {*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", yylineno, string_buf); BEGIN(INITIAL);}
+    \'  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
     \\\n {              }
     \n   {printf("line%d, ERROR: new line in string\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -237,28 +423,34 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 {literal_2}"'''"        {   
                             int i = 0;
                             strcpy(keyword, " ");
+
                             while(yytext[i] != ' ') {
-                                if (yytext[i] == '\'') break;
+                                if (yytext[i] == '\'') 
+                                    break;
+
                                 keyword[i] = yytext[i];
                                 i++;
                             }
 
-                            if (strcmp(keyword, "=") == 0) {
-                                printf("assignment oper = %s in line = %d\n",keyword,yylineno);
-                            }
+                            string_buf_ptr = string_buf; BEGIN(COMMENT_STRING); 
+
+                            if (strcmp(keyword, "=") == 0)
+                                return yytext[0];
 
                             else if (strcmp(keyword, "(") == 0 || strcmp(keyword, "{") == 0 || strcmp(keyword, "[") == 0) {
-                                printf("parenthesis = %s in line = %d\n",keyword,yylineno);
+                                return yytext[0];
                             }
 
                             else {
-                                printf("keyword = %s in line = %d\n",keyword,yylineno);
+                                if ( strcmp(keyword, "return") == 0)
+                                    return RETURN;
                             }
 
-                            string_buf_ptr = string_buf; BEGIN(COMMENT_STRING); 
-                        }    
+                            
+                        }
+
 <COMMENT_STRING>{
-    "'''"  {*string_buf_ptr = '\0'; printf("line%d, COMMENT STRING: %s\n", yylineno, string_buf); BEGIN(INITIAL);}
+    "'''"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
     \\\n {}
     \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -276,28 +468,33 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 {literal_2}\"{3}        {   
                             int i = 0;
                             strcpy(keyword, " ");
+
                             while(yytext[i] != ' ') {
-                                if (yytext[i] == '\"') break;
+                                if (yytext[i] == '\"') 
+                                    break;
+
                                 keyword[i] = yytext[i];
                                 i++;
                             }
 
-                            if (strcmp(keyword, "=") == 0) {
-                                printf("assignment oper = %s in line = %d\n",keyword,yylineno);
-                            }
+                            string_buf_ptr = string_buf; BEGIN(COMMENT_STRING_DOUBLE); 
+
+                            if (strcmp(keyword, "=") == 0)
+                                return yytext[0];
 
                             else if (strcmp(keyword, "(") == 0 || strcmp(keyword, "{") == 0 || strcmp(keyword, "[") == 0) {
-                                printf("parenthesis = %s in line = %d\n",keyword,yylineno);
+                                return yytext[0];
                             }
 
                             else {
-                                printf("keyword = %s in line = %d\n",keyword,yylineno);
+                                if ( strcmp(keyword, "return") == 0)
+                                    return RETURN;
                             }
-                            string_buf_ptr = string_buf; BEGIN(COMMENT_STRING_DOUBLE); 
+                            
                         }
 
 <COMMENT_STRING_DOUBLE>{
-    \"{3}   {*string_buf_ptr = '\0'; printf("line%d, COMMENT STRING DOUBLE: %s\n", yylineno, string_buf); BEGIN(INITIAL);}
+    \"{3}   {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
     \\\n {}
     \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -312,30 +509,6 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
     }
 }
 
-
 .                       {printf("error in %d is %s",yylineno,yytext);}
 
 %%
-
-
-void main(int argc, char **argv)
-{
-
-    if (argc > 1){
-        for(int i=0;i<argc;i++)
-            printf("value of argv[%d] = %s\n\n",i,argv[i]);
-            yyin=fopen(argv[1],"r");
-    }
-        
-    else
-        yyin=stdin;
-    yylex();
-
-    
-    
-}
-/*yywrap is called whenever lex reaches an end-of-file we must define this function because yylex() need it*/
-int yywrap()
-{
-    exit(0);
-}
