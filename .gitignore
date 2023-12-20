@@ -2,3 +2,4 @@
 *.exe
 *.c
 *.h
+*.output
