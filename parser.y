@@ -458,14 +458,15 @@ data_type
 
 void main(int argc, char **argv)
 {
-/*success("This is a valid python expression");*/
     if (argc > 1){
         for(int i=0;i<argc;i++)
             printf("value of argv[%d] = %s\n\n",i,argv[i]);
-            yyin=fopen(argv[1],"r");
+
+        yyin=fopen(argv[1],"r");
     }
     else
         yyin=stdin;
+
     yyparse();
 }
 

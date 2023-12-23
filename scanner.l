@@ -5,13 +5,11 @@
     #include <string.h>
     #include "parser.tab.h"
 
-    //Stack Definition
     #define Stack_SIZE 100
     void push();
     void pop();
     void show();
 
-    // Stack Start
     int top = -1;
     int stack_arr[Stack_SIZE];
 
@@ -48,22 +46,18 @@
                 printf("%d\n", stack_arr[i]);
         }
     } 
-    // Stack End
 
     #define keyword_size 10
     char keyword[keyword_size];
 
-    // string buffer
     #define MAX_STR_CONST 256
     char string_buf[MAX_STR_CONST];
     char *string_buf_ptr;
-    ////////////////////
 
     int current_indentation = 0;
     int spaces = 0;
 
     extern YYSTYPE yylval; 
-
 %}
 
 %option yylineno
@@ -132,7 +126,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             return NEWLINE;
                         }
 
-{newL}{whiteSpaces}   {
+{newL}{whiteSpaces}     {
                             if(top < 0)
                                 push(0);
 
