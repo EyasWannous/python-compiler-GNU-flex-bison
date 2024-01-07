@@ -596,7 +596,7 @@ data_type
 
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     if (argc > 1){
         for(int i=0;i<argc;i++)
@@ -608,6 +608,7 @@ void main(int argc, char **argv)
         yyin=stdin;
 
     yyparse();
+    return 0;
 }
 
 void yyerror(const char *msg) {
