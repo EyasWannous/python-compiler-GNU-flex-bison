@@ -73,7 +73,11 @@ digit       [0-9]
 
 id          ({letter}|"_")({letter}|{digit}|"_")*
 
-num         {digit}+
+int         -?{digit}+
+
+float       -?{digit}+\.{digit}+
+
+num         ({int}|{float})
 
 keyword     "yield"|"with"|"try"|"True"|"return"|"raise"|"pass"|"or"|"and"|"not"|"nonlocal"|"None"|"lambda"|"is"|"in"|"import"|"if"|"else"|"global"|"from"|"for"|"finally"|"False"|"except"|"def"|"assert"|"break"|"class"|"continue"|"del"|"elif"|"while"
 
@@ -165,17 +169,17 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 \\$                     {}
 
-{sp}                    {return yytext[0];}
+{sp}                    {yylval.strval = strdup(yytext); return yytext[0];}
 
 {array}                 {return ARRAY;}
 
 {comments}              {}
 
-"="                     {return yytext[0];}
+"="                     {yylval.strval = strdup(yytext); return yytext[0];}
 
-"+"|"-"|"*"|"/"|"_"     {return yytext[0];}
+"+"|"-"|"*"|"/"|"_"     {yylval.strval = strdup(yytext); return yytext[0];}
 
-"["|"]"|"{"|"}"|"("|")" {return yytext[0];}
+"["|"]"|"{"|"}"|"("|")" {yylval.strval = strdup(yytext); return yytext[0];} 
 
 "def"                   {
                             yylval.strval = strdup(yytext);
@@ -183,134 +187,167 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                         }
 
 "if"                    {
+                            yylval.strval = strdup(yytext);
                             return IF;
                         }
 
 "elif"                  {
+                            yylval.strval = strdup(yytext);
                             return ELIF;
                         }
 
 "else"                  {
+                            yylval.strval = strdup(yytext);
                             return ELSE;
                         }
 
 "break"                 {
+                            yylval.strval = strdup(yytext);
                             return BREAK;
                         }
 
 "continue"              {
+                            yylval.strval = strdup(yytext);
                             return CONTINUE;
                         }
 
 "global"                {
+                            yylval.strval = strdup(yytext);
                             return GLOBAL;
                         }
 
 "nonlocal"              {
+                            yylval.strval = strdup(yytext);
                             return NONLOCAL;
                         }
 
 "yield"                 {
+                            yylval.strval = strdup(yytext);
                             return YIELD;
                         }
 
 "return"                {
+                            yylval.strval = strdup(yytext);
                             return RETURN;
                         }
 
 "<"                     {
+                            yylval.strval = strdup(yytext);
                             return LT;
                         }
 
 ">"                     {
+                            yylval.strval = strdup(yytext);
                             return GT;
                         }
 
 "<="                    {
+                            yylval.strval = strdup(yytext);
                             return LTE;
                         }
 
 ">="                    {
+                            yylval.strval = strdup(yytext);
                             return GTE;
                         }
 
 "=="                    {
+                            yylval.strval = strdup(yytext);
                             return EQUAL;
                         }
 
 "while"                 {
+                            yylval.strval = strdup(yytext);
                             return WHILE;
                         }
 
 "for"                   {
+                            yylval.strval = strdup(yytext);
                             return FOR;
                         }
 
 "in"                    {
+                            yylval.strval = strdup(yytext);
                             return IN;
                         }
 
 "range"                 {
+                            yylval.strval = strdup(yytext);
                             return RANGE;
                         }
 
 "print"                 {
+                            yylval.strval = strdup(yytext);
                             return PRINT;
                         }
 
 "input"                 {
+                            yylval.strval = strdup(yytext);
                             return INPUT;
                         }
 
 "class"                 {
+                            yylval.strval = strdup(yytext);
                             return CLASS;
                         }
 
 "try"                   {
+                            yylval.strval = strdup(yytext);
                             return TRY;
                         }
 
 "except"                {
+                            yylval.strval = strdup(yytext);
                             return EXCEPT;
                         }
 
 "match"                 {
+                            yylval.strval = strdup(yytext);
                             return MATCH;
                         }
 
 "case"                  {
+                            yylval.strval = strdup(yytext);
                             return CASE;
                         }
 
 "with"                  {
+                            yylval.strval = strdup(yytext);
                             return WITH;
                         }
 
 "as"                    {
+                            yylval.strval = strdup(yytext);
                             return AS;
                         }
 
 "int"                   {
+                            yylval.strval = strdup(yytext);
                             return INT;
                         }
 
 "float"                 {
+                            yylval.strval = strdup(yytext);
                             return FLOAT;
                         }
 
 "str"                   {
+                            yylval.strval = strdup(yytext);
                             return STR;
                         }
 
 "bool"                  {
+                            yylval.strval = strdup(yytext);
                             return BOOL;
                         }
 
 "list"                  {
+                            yylval.strval = strdup(yytext);
                             return LIST;
                         }
 
 "pass"                  {
+                            yylval.strval = strdup(yytext);
                             return PASS;
                         }
 
@@ -320,9 +357,14 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             return ID;
                         }
 
-{num}                   {
+{int}                   {
                             yylval.intval = atoi(yytext);
-                            return NUMBER;
+                            return INT_NUMBER;
+                        }
+
+{float}                 {
+                            yylval.flval = atof(yytext);
+                            return FLOAT_NUMBER;
                         }
 
 
@@ -432,16 +474,17 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
                             string_buf_ptr = string_buf; BEGIN(COMMENT_STRING); 
 
-                            if (strcmp(keyword, "=") == 0)
+                            if (strcmp(keyword, "=") == 0) {
                                 return yytext[0];
-
+                            }
                             else if (strcmp(keyword, "(") == 0 || strcmp(keyword, "{") == 0 || strcmp(keyword, "[") == 0) {
                                 return yytext[0];
                             }
 
                             else {
-                                if ( strcmp(keyword, "return") == 0)
+                                if ( strcmp(keyword, "return") == 0) {
                                     return RETURN;
+                                }
                             }
 
                             
@@ -477,16 +520,18 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
                             string_buf_ptr = string_buf; BEGIN(COMMENT_STRING_DOUBLE); 
 
-                            if (strcmp(keyword, "=") == 0)
+                            if (strcmp(keyword, "=") == 0) {
                                 return yytext[0];
+                            }
 
                             else if (strcmp(keyword, "(") == 0 || strcmp(keyword, "{") == 0 || strcmp(keyword, "[") == 0) {
                                 return yytext[0];
                             }
 
                             else {
-                                if ( strcmp(keyword, "return") == 0)
+                                if ( strcmp(keyword, "return") == 0) {
                                     return RETURN;
+                                }
                             }
                             
                         }

@@ -4,4 +4,10 @@ def f(x):
 			return x
 	if (x < 5) :
 		x = x + 1
-leema = 'kkk'
+
+
+for i in range(10):
+	if i == 5:
+		break
+	else:
+		print(i)
