@@ -310,6 +310,10 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             return LIST;
                         }
 
+"pass"                  {
+                            return PASS;
+                        }
+
 
 {id}                    {
                             yylval.strval = strdup(yytext);

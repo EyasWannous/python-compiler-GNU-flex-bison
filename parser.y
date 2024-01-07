@@ -14,9 +14,9 @@ extern int yyparse();
 
 
 %union {
-    char *strval;
-    int intval;
-    float flval;
+        char *strval;
+        int intval;
+        float flval;
 }
 
 %error-verbose
@@ -24,7 +24,7 @@ extern int yyparse();
 // tokens
 %token ID NUMBER STRING ARRAY RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD 
 %token INDENT DEDENT INDENTERROR NEWLINE GT LT GTE LTE EQUAL 
-%token IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS
+%token IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS PASS
 %token INT FLOAT STR BOOL LIST
 
 %type<strval> ID STRING 
@@ -73,7 +73,8 @@ if_stmt
 ;
 
 if_header   
-        : IF relation_stmt  
+        : IF relation_stmt
+        | IF '(' relation_stmt ')'  
 ;
 
 elif_else_  
@@ -101,7 +102,8 @@ elif_stmt
 ;
 
 elif_header 
-        : ELIF relation_stmt    
+        : ELIF relation_stmt
+        | ELIF '(' relation_stmt ')'    
 ;
 
 // IF statement END
@@ -127,9 +129,8 @@ function_stmts
 
 function_stmt_   
             : simple_stmt NEWLINE {}
-            | compound_stmt {}
+            | function_compound_stmt {}
             | function_sp_stmt NEWLINE
-            | function
 ;
 
 function_sp_stmt 
@@ -137,7 +138,89 @@ function_sp_stmt
             | global_stmt
             | nonlocal_stmt
             | yield_stmt
-;   
+;
+
+function_compound_stmt
+        : func_if_stmt
+        | func_while_stmt
+        | func_for_stmt
+        | try_except_stmt {}
+        | with_statement {}
+        | match_stmt {}
+        | function
+;
+
+//!================================================================
+func_while_stmt
+        : WHILE relation_stmt func_for_block { 
+            printf("while statement successfully parsed:\n"); 
+        }
+;
+
+func_for_stmt    
+        : FOR ID IN RANGE range_args func_for_block { 
+            printf("for statement successfully parsed:\n"); 
+        }
+        | FOR ID IN ARRAY func_for_block { 
+            printf("for statement successfully parsed:\n"); 
+        }
+;
+
+func_for_block
+        : NEWLINE INDENT func_for_stmts DEDENT { }
+;
+
+func_for_stmts   
+        : func_for_stmt_
+        | func_for_stmts func_for_stmt_
+;
+
+func_for_stmt_   
+        : simple_stmt NEWLINE {}
+        | for_compound_stmt {}
+        | for_sp_stmt NEWLINE
+        | function_sp_stmt
+;
+//!================================================================
+func_if_stmt     
+        : func_if_header function_block func_elif_else_  { printf("if statement successfully parsed:\n"); }                     
+;
+
+func_if_header   
+        : IF relation_stmt
+        | IF '(' relation_stmt ')'  
+;
+
+func_elif_else_  
+        :     {/* empty no next elif or else*/}
+        | func_elif_else { }
+;
+
+func_elif_else   
+        : func_elif_stmts func_else_stmt
+        | func_elif_stmts
+        | func_else_stmt
+;
+
+func_else_stmt   
+        : ELSE  function_block 
+;
+
+func_elif_stmts  
+        : func_elif_stmt
+        | func_elif_stmts func_elif_stmt 
+;
+
+func_elif_stmt   
+        : func_elif_header function_block
+;
+
+func_elif_header 
+        : ELIF relation_stmt
+        | ELIF '(' relation_stmt ')'    
+;
+
+//!===============================================================
 
 // args for define function
 args    
@@ -216,14 +299,64 @@ for_stmts
 
 for_stmt_   
         : simple_stmt NEWLINE {}
-        | compound_stmt {}
+        | for_compound_stmt {}
         | for_sp_stmt NEWLINE
 ;
 
 for_sp_stmt 
         : BREAK
         | CONTINUE
-;    
+;
+
+for_compound_stmt
+        : for_if_stmt
+        | while_stmt
+        | for_stmt
+        | try_except_stmt {}
+        | with_statement {}
+        | match_stmt {}
+;
+
+//!===============================================================
+for_if_stmt     
+        : for_if_header for_block for_elif_else_  { printf("if statement successfully parsed:\n"); }                     
+;
+
+for_if_header   
+        : IF relation_stmt
+        | IF '(' relation_stmt ')'  
+;
+
+for_elif_else_  
+        :     {/* empty no next elif or else*/}
+        | for_elif_else { }
+;
+
+for_elif_else   
+        : for_elif_stmts for_else_stmt
+        | for_elif_stmts
+        | for_else_stmt
+;
+
+for_else_stmt   
+        : ELSE  for_block 
+;
+
+for_elif_stmts  
+        : for_elif_stmt
+        | for_elif_stmts for_elif_stmt 
+;
+
+for_elif_stmt   
+        : for_elif_header for_block
+;
+
+for_elif_header 
+        : ELIF relation_stmt
+        | ELIF '(' relation_stmt ')'    
+;
+
+
 
 // FOR statement END
 
@@ -438,6 +571,7 @@ expression
         | '-' expression %prec UMINUS   { }
         | NUMBER                        { }
         | STRING                        { }
+        | ID
 ;
 
 data_type   

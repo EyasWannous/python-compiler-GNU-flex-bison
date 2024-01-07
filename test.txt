@@ -1,7 +1,7 @@
 def f(x):
-	if x > 5 :
-		if x > 5 :
-			x = 1
-	if x < 5 :
-		x = 5
+	if (x > 5) :
+		if (x > 5) :
+			return x
+	if (x < 5) :
+		x = x + 1
 leema = 'kkk'
