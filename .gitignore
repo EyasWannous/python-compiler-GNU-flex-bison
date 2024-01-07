@@ -1,5 +1,2 @@
 .vscode
 *.exe
-*.c
-*.h
-*.output
