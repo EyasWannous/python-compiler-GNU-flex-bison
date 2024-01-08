@@ -1,3 +1,16 @@
+%code requires {
+        #include "astNodes.hpp"
+        #include <iostream>
+        #include <string>
+}
+
+%union {
+        char *strval;
+        int intval;
+        float flval;
+        AstNode* astNode;
+}
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,15 +22,12 @@ void yyerror(const char *);
 extern FILE *yyin;
 extern int yylex();
 extern int yyparse();
+AstNode* root = NULL;
+int n_nodes = 0;
 
 %}
 
 
-%union {
-        char *strval;
-        int intval;
-        float flval;
-}
 
 %error-verbose
 
@@ -598,19 +608,24 @@ data_type
 
 int main(int argc, char **argv)
 {
-    if (argc > 1){
-        for(int i=0;i<argc;i++)
-            printf("value of argv[%d] = %s\n\n",i,argv[i]);
+        if (argc > 1){
+                for(int i=0;i<argc;i++)
+                printf("value of argv[%d] = %s\n\n",i,argv[i]);
 
-        yyin=fopen(argv[1],"r");
-    }
-    else
-        yyin=stdin;
+                yyin=fopen(argv[1],"r");
+        }
+        else
+                yyin=stdin;
 
-    yyparse();
-    return 0;
+        yyparse();
+        // AST is constructed, you can print it now
+        if (root != NULL) {
+                AST ast(root);
+                ast.Print();
+        }
+        return 0;
 }
 
 void yyerror(const char *msg) {
-    printf(" %s \n", msg);
+        printf(" %s \n", msg);
 }

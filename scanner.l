@@ -5,6 +5,11 @@
     #include <string.h>
     #include "parser.tab.h"
 
+    #pragma warning (disable: 4005)
+    #include "parser.hpp"
+    #include "astNodes.hpp"
+    using namespace std;
+
     #define Stack_SIZE 100
     void push();
     void pop();
@@ -75,7 +80,7 @@ id          ({letter}|"_")({letter}|{digit}|"_")*
 
 int         -?{digit}+
 
-float       -?{digit}+\.{digit}+
+float       -?{digit}+"."{digit}+
 
 num         ({int}|{float})
 

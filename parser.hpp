@@ -39,6 +39,14 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 1 "parser.y" /* yacc.c:1909  */
+
+        #include "astNodes.hpp"
+        #include <iostream>
+        #include <string>
+
+#line 50 "parser.hpp" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -97,13 +105,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 16 "parser.y" /* yacc.c:1909  */
+#line 7 "parser.y" /* yacc.c:1909  */
 
         char *strval;
         int intval;
         float flval;
+        AstNode* astNode;
 
-#line 107 "parser.hpp" /* yacc.c:1909  */
+#line 116 "parser.hpp" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

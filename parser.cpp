@@ -62,21 +62,8 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "parser.y" /* yacc.c:339  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-int yydebug=1;
-void yyerror(const char *);
-
-extern FILE *yyin;
-extern int yylex();
-extern int yyparse();
-
-
-#line 80 "parser.cpp" /* yacc.c:339  */
+#line 67 "parser.cpp" /* yacc.c:339  */
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -105,6 +92,14 @@ extern int yyparse();
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 1 "parser.y" /* yacc.c:355  */
+
+        #include "astNodes.hpp"
+        #include <iostream>
+        #include <string>
+
+#line 103 "parser.cpp" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -163,13 +158,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 16 "parser.y" /* yacc.c:355  */
+#line 7 "parser.y" /* yacc.c:355  */
 
         char *strval;
         int intval;
         float flval;
+        AstNode* astNode;
 
-#line 173 "parser.cpp" /* yacc.c:355  */
+#line 169 "parser.cpp" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -183,8 +179,23 @@ int yyparse (void);
 #endif /* !YY_YY_PARSER_HPP_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
+#line 14 "parser.y" /* yacc.c:358  */
 
-#line 188 "parser.cpp" /* yacc.c:358  */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int yydebug=1;
+void yyerror(const char *);
+
+extern FILE *yyin;
+extern int yylex();
+extern int yyparse();
+AstNode* root = NULL;
+int n_nodes = 0;
+
+
+#line 199 "parser.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -467,27 +478,27 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    44,    44,    45,    51,    52,    53,    58,    59,    60,
-      61,    62,    63,    64,    65,    66,    67,    71,    72,    78,
-      82,    83,    87,    88,    92,    93,    94,    98,   102,   103,
-     107,   111,   112,   119,   122,   128,   132,   133,   137,   138,
-     139,   143,   144,   145,   146,   150,   151,   152,   153,   154,
-     155,   156,   161,   167,   170,   176,   180,   181,   185,   186,
-     187,   188,   192,   196,   197,   201,   202,   206,   207,   208,
-     212,   216,   217,   221,   225,   226,   233,   234,   240,   241,
-     247,   248,   253,   254,   259,   260,   266,   267,   268,   275,
-     283,   284,   285,   289,   292,   298,   302,   303,   307,   308,
-     309,   313,   314,   318,   319,   320,   321,   322,   323,   328,
-     332,   333,   337,   338,   342,   343,   344,   348,   352,   353,
-     357,   361,   362,   371,   372,   373,   380,   386,   390,   391,
-     395,   396,   397,   398,   402,   408,   414,   415,   419,   426,
-     433,   434,   438,   442,   446,   455,   461,   462,   466,   467,
-     472,   477,   478,   479,   484,   485,   489,   490,   491,   495,
-     496,   503,   507,   508,   512,   513,   518,   525,   529,   530,
-     531,   533,   534,   535,   539,   540,   544,   545,   546,   550,
-     554,   558,   562,   563,   564,   565,   566,   567,   571,   572,
-     573,   574,   575,   577,   578,   579,   580,   584,   585,   586,
-     587,   588,   589,   590
+       0,    54,    54,    55,    61,    62,    63,    68,    69,    70,
+      71,    72,    73,    74,    75,    76,    77,    81,    82,    88,
+      92,    93,    97,    98,   102,   103,   104,   108,   112,   113,
+     117,   121,   122,   129,   132,   138,   142,   143,   147,   148,
+     149,   153,   154,   155,   156,   160,   161,   162,   163,   164,
+     165,   166,   171,   177,   180,   186,   190,   191,   195,   196,
+     197,   198,   202,   206,   207,   211,   212,   216,   217,   218,
+     222,   226,   227,   231,   235,   236,   243,   244,   250,   251,
+     257,   258,   263,   264,   269,   270,   276,   277,   278,   285,
+     293,   294,   295,   299,   302,   308,   312,   313,   317,   318,
+     319,   323,   324,   328,   329,   330,   331,   332,   333,   338,
+     342,   343,   347,   348,   352,   353,   354,   358,   362,   363,
+     367,   371,   372,   381,   382,   383,   390,   396,   400,   401,
+     405,   406,   407,   408,   412,   418,   424,   425,   429,   436,
+     443,   444,   448,   452,   456,   465,   471,   472,   476,   477,
+     482,   487,   488,   489,   494,   495,   499,   500,   501,   505,
+     506,   513,   517,   518,   522,   523,   528,   535,   539,   540,
+     541,   543,   544,   545,   549,   550,   554,   555,   556,   560,
+     564,   568,   572,   573,   574,   575,   576,   577,   581,   582,
+     583,   584,   585,   587,   588,   589,   590,   594,   595,   596,
+     597,   598,   599,   600
 };
 #endif
 
@@ -1539,675 +1550,675 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 44 "parser.y" /* yacc.c:1646  */
+#line 54 "parser.y" /* yacc.c:1646  */
     { /* for empty put % empty */}
-#line 1545 "parser.cpp" /* yacc.c:1646  */
+#line 1556 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 45 "parser.y" /* yacc.c:1646  */
+#line 55 "parser.y" /* yacc.c:1646  */
     {
         printf("prog accepted:\n");YYACCEPT;
     }
-#line 1553 "parser.cpp" /* yacc.c:1646  */
+#line 1564 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 51 "parser.y" /* yacc.c:1646  */
+#line 61 "parser.y" /* yacc.c:1646  */
     { }
-#line 1559 "parser.cpp" /* yacc.c:1646  */
+#line 1570 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 52 "parser.y" /* yacc.c:1646  */
+#line 62 "parser.y" /* yacc.c:1646  */
     { }
-#line 1565 "parser.cpp" /* yacc.c:1646  */
+#line 1576 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 53 "parser.y" /* yacc.c:1646  */
+#line 63 "parser.y" /* yacc.c:1646  */
     { }
-#line 1571 "parser.cpp" /* yacc.c:1646  */
+#line 1582 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 58 "parser.y" /* yacc.c:1646  */
+#line 68 "parser.y" /* yacc.c:1646  */
     { }
-#line 1577 "parser.cpp" /* yacc.c:1646  */
+#line 1588 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 59 "parser.y" /* yacc.c:1646  */
+#line 69 "parser.y" /* yacc.c:1646  */
     { }
-#line 1583 "parser.cpp" /* yacc.c:1646  */
+#line 1594 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 60 "parser.y" /* yacc.c:1646  */
+#line 70 "parser.y" /* yacc.c:1646  */
     { }
-#line 1589 "parser.cpp" /* yacc.c:1646  */
+#line 1600 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 61 "parser.y" /* yacc.c:1646  */
+#line 71 "parser.y" /* yacc.c:1646  */
     { }
-#line 1595 "parser.cpp" /* yacc.c:1646  */
+#line 1606 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 62 "parser.y" /* yacc.c:1646  */
+#line 72 "parser.y" /* yacc.c:1646  */
     { }
-#line 1601 "parser.cpp" /* yacc.c:1646  */
+#line 1612 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 63 "parser.y" /* yacc.c:1646  */
+#line 73 "parser.y" /* yacc.c:1646  */
     { }
-#line 1607 "parser.cpp" /* yacc.c:1646  */
+#line 1618 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 64 "parser.y" /* yacc.c:1646  */
+#line 74 "parser.y" /* yacc.c:1646  */
     { }
-#line 1613 "parser.cpp" /* yacc.c:1646  */
+#line 1624 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 65 "parser.y" /* yacc.c:1646  */
+#line 75 "parser.y" /* yacc.c:1646  */
     { }
-#line 1619 "parser.cpp" /* yacc.c:1646  */
+#line 1630 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 66 "parser.y" /* yacc.c:1646  */
+#line 76 "parser.y" /* yacc.c:1646  */
     { }
-#line 1625 "parser.cpp" /* yacc.c:1646  */
+#line 1636 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 67 "parser.y" /* yacc.c:1646  */
+#line 77 "parser.y" /* yacc.c:1646  */
     { }
-#line 1631 "parser.cpp" /* yacc.c:1646  */
+#line 1642 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 78 "parser.y" /* yacc.c:1646  */
+#line 88 "parser.y" /* yacc.c:1646  */
     { printf("if statement successfully parsed:\n"); }
-#line 1637 "parser.cpp" /* yacc.c:1646  */
+#line 1648 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 87 "parser.y" /* yacc.c:1646  */
+#line 97 "parser.y" /* yacc.c:1646  */
     {/* empty no next elif or else*/}
-#line 1643 "parser.cpp" /* yacc.c:1646  */
+#line 1654 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 88 "parser.y" /* yacc.c:1646  */
+#line 98 "parser.y" /* yacc.c:1646  */
     { }
-#line 1649 "parser.cpp" /* yacc.c:1646  */
+#line 1660 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 119 "parser.y" /* yacc.c:1646  */
+#line 129 "parser.y" /* yacc.c:1646  */
     {
             printf("Function successfully parsed:\n"); 
         }
-#line 1657 "parser.cpp" /* yacc.c:1646  */
+#line 1668 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 122 "parser.y" /* yacc.c:1646  */
+#line 132 "parser.y" /* yacc.c:1646  */
     {
             printf("Generic Function successfully parsed:\n"); 
         }
-#line 1665 "parser.cpp" /* yacc.c:1646  */
+#line 1676 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 128 "parser.y" /* yacc.c:1646  */
+#line 138 "parser.y" /* yacc.c:1646  */
     { }
-#line 1671 "parser.cpp" /* yacc.c:1646  */
+#line 1682 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 137 "parser.y" /* yacc.c:1646  */
+#line 147 "parser.y" /* yacc.c:1646  */
     {}
-#line 1677 "parser.cpp" /* yacc.c:1646  */
+#line 1688 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 138 "parser.y" /* yacc.c:1646  */
+#line 148 "parser.y" /* yacc.c:1646  */
     {}
-#line 1683 "parser.cpp" /* yacc.c:1646  */
+#line 1694 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 153 "parser.y" /* yacc.c:1646  */
+#line 163 "parser.y" /* yacc.c:1646  */
     {}
-#line 1689 "parser.cpp" /* yacc.c:1646  */
+#line 1700 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 154 "parser.y" /* yacc.c:1646  */
+#line 164 "parser.y" /* yacc.c:1646  */
     {}
-#line 1695 "parser.cpp" /* yacc.c:1646  */
+#line 1706 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 155 "parser.y" /* yacc.c:1646  */
+#line 165 "parser.y" /* yacc.c:1646  */
     {}
-#line 1701 "parser.cpp" /* yacc.c:1646  */
+#line 1712 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 161 "parser.y" /* yacc.c:1646  */
+#line 171 "parser.y" /* yacc.c:1646  */
     { 
             printf("while statement successfully parsed:\n"); 
         }
-#line 1709 "parser.cpp" /* yacc.c:1646  */
+#line 1720 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 167 "parser.y" /* yacc.c:1646  */
+#line 177 "parser.y" /* yacc.c:1646  */
     { 
             printf("for statement successfully parsed:\n"); 
         }
-#line 1717 "parser.cpp" /* yacc.c:1646  */
+#line 1728 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 170 "parser.y" /* yacc.c:1646  */
+#line 180 "parser.y" /* yacc.c:1646  */
     { 
             printf("for statement successfully parsed:\n"); 
         }
-#line 1725 "parser.cpp" /* yacc.c:1646  */
+#line 1736 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 176 "parser.y" /* yacc.c:1646  */
+#line 186 "parser.y" /* yacc.c:1646  */
     { }
-#line 1731 "parser.cpp" /* yacc.c:1646  */
+#line 1742 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 185 "parser.y" /* yacc.c:1646  */
+#line 195 "parser.y" /* yacc.c:1646  */
     {}
-#line 1737 "parser.cpp" /* yacc.c:1646  */
+#line 1748 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 186 "parser.y" /* yacc.c:1646  */
+#line 196 "parser.y" /* yacc.c:1646  */
     {}
-#line 1743 "parser.cpp" /* yacc.c:1646  */
+#line 1754 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 192 "parser.y" /* yacc.c:1646  */
+#line 202 "parser.y" /* yacc.c:1646  */
     { printf("if statement successfully parsed:\n"); }
-#line 1749 "parser.cpp" /* yacc.c:1646  */
+#line 1760 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 201 "parser.y" /* yacc.c:1646  */
+#line 211 "parser.y" /* yacc.c:1646  */
     {/* empty no next elif or else*/}
-#line 1755 "parser.cpp" /* yacc.c:1646  */
+#line 1766 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 202 "parser.y" /* yacc.c:1646  */
+#line 212 "parser.y" /* yacc.c:1646  */
     { }
-#line 1761 "parser.cpp" /* yacc.c:1646  */
+#line 1772 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 233 "parser.y" /* yacc.c:1646  */
+#line 243 "parser.y" /* yacc.c:1646  */
     { }
-#line 1767 "parser.cpp" /* yacc.c:1646  */
+#line 1778 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 234 "parser.y" /* yacc.c:1646  */
+#line 244 "parser.y" /* yacc.c:1646  */
     { }
-#line 1773 "parser.cpp" /* yacc.c:1646  */
+#line 1784 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 240 "parser.y" /* yacc.c:1646  */
+#line 250 "parser.y" /* yacc.c:1646  */
     { }
-#line 1779 "parser.cpp" /* yacc.c:1646  */
+#line 1790 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 241 "parser.y" /* yacc.c:1646  */
+#line 251 "parser.y" /* yacc.c:1646  */
     { }
-#line 1785 "parser.cpp" /* yacc.c:1646  */
+#line 1796 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 247 "parser.y" /* yacc.c:1646  */
+#line 257 "parser.y" /* yacc.c:1646  */
     { }
-#line 1791 "parser.cpp" /* yacc.c:1646  */
+#line 1802 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 248 "parser.y" /* yacc.c:1646  */
+#line 258 "parser.y" /* yacc.c:1646  */
     { }
-#line 1797 "parser.cpp" /* yacc.c:1646  */
+#line 1808 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 253 "parser.y" /* yacc.c:1646  */
+#line 263 "parser.y" /* yacc.c:1646  */
     { }
-#line 1803 "parser.cpp" /* yacc.c:1646  */
+#line 1814 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 254 "parser.y" /* yacc.c:1646  */
+#line 264 "parser.y" /* yacc.c:1646  */
     { }
-#line 1809 "parser.cpp" /* yacc.c:1646  */
+#line 1820 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 259 "parser.y" /* yacc.c:1646  */
+#line 269 "parser.y" /* yacc.c:1646  */
     { }
-#line 1815 "parser.cpp" /* yacc.c:1646  */
+#line 1826 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 260 "parser.y" /* yacc.c:1646  */
+#line 270 "parser.y" /* yacc.c:1646  */
     { }
-#line 1821 "parser.cpp" /* yacc.c:1646  */
+#line 1832 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 266 "parser.y" /* yacc.c:1646  */
+#line 276 "parser.y" /* yacc.c:1646  */
     { }
-#line 1827 "parser.cpp" /* yacc.c:1646  */
+#line 1838 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 267 "parser.y" /* yacc.c:1646  */
+#line 277 "parser.y" /* yacc.c:1646  */
     { }
-#line 1833 "parser.cpp" /* yacc.c:1646  */
+#line 1844 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 268 "parser.y" /* yacc.c:1646  */
+#line 278 "parser.y" /* yacc.c:1646  */
     { }
-#line 1839 "parser.cpp" /* yacc.c:1646  */
+#line 1850 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 275 "parser.y" /* yacc.c:1646  */
+#line 285 "parser.y" /* yacc.c:1646  */
     { 
             printf("while statement successfully parsed:\n"); 
         }
-#line 1847 "parser.cpp" /* yacc.c:1646  */
+#line 1858 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 289 "parser.y" /* yacc.c:1646  */
+#line 299 "parser.y" /* yacc.c:1646  */
     { 
             printf("for statement successfully parsed:\n"); 
         }
-#line 1855 "parser.cpp" /* yacc.c:1646  */
+#line 1866 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 292 "parser.y" /* yacc.c:1646  */
+#line 302 "parser.y" /* yacc.c:1646  */
     { 
             printf("for statement successfully parsed:\n"); 
         }
-#line 1863 "parser.cpp" /* yacc.c:1646  */
+#line 1874 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 298 "parser.y" /* yacc.c:1646  */
+#line 308 "parser.y" /* yacc.c:1646  */
     { }
-#line 1869 "parser.cpp" /* yacc.c:1646  */
+#line 1880 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 307 "parser.y" /* yacc.c:1646  */
+#line 317 "parser.y" /* yacc.c:1646  */
     {}
-#line 1875 "parser.cpp" /* yacc.c:1646  */
+#line 1886 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 308 "parser.y" /* yacc.c:1646  */
+#line 318 "parser.y" /* yacc.c:1646  */
     {}
-#line 1881 "parser.cpp" /* yacc.c:1646  */
+#line 1892 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 321 "parser.y" /* yacc.c:1646  */
+#line 331 "parser.y" /* yacc.c:1646  */
     {}
-#line 1887 "parser.cpp" /* yacc.c:1646  */
+#line 1898 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 322 "parser.y" /* yacc.c:1646  */
+#line 332 "parser.y" /* yacc.c:1646  */
     {}
-#line 1893 "parser.cpp" /* yacc.c:1646  */
+#line 1904 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 323 "parser.y" /* yacc.c:1646  */
+#line 333 "parser.y" /* yacc.c:1646  */
     {}
-#line 1899 "parser.cpp" /* yacc.c:1646  */
+#line 1910 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 328 "parser.y" /* yacc.c:1646  */
+#line 338 "parser.y" /* yacc.c:1646  */
     { printf("if statement successfully parsed:\n"); }
-#line 1905 "parser.cpp" /* yacc.c:1646  */
+#line 1916 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 337 "parser.y" /* yacc.c:1646  */
+#line 347 "parser.y" /* yacc.c:1646  */
     {/* empty no next elif or else*/}
-#line 1911 "parser.cpp" /* yacc.c:1646  */
+#line 1922 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 338 "parser.y" /* yacc.c:1646  */
+#line 348 "parser.y" /* yacc.c:1646  */
     { }
-#line 1917 "parser.cpp" /* yacc.c:1646  */
+#line 1928 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 371 "parser.y" /* yacc.c:1646  */
+#line 381 "parser.y" /* yacc.c:1646  */
     {}
-#line 1923 "parser.cpp" /* yacc.c:1646  */
+#line 1934 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 372 "parser.y" /* yacc.c:1646  */
+#line 382 "parser.y" /* yacc.c:1646  */
     {}
-#line 1929 "parser.cpp" /* yacc.c:1646  */
+#line 1940 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 373 "parser.y" /* yacc.c:1646  */
+#line 383 "parser.y" /* yacc.c:1646  */
     {}
-#line 1935 "parser.cpp" /* yacc.c:1646  */
+#line 1946 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 380 "parser.y" /* yacc.c:1646  */
+#line 390 "parser.y" /* yacc.c:1646  */
     { 
         printf("class statement successfully parsed:\n");
     }
-#line 1943 "parser.cpp" /* yacc.c:1646  */
+#line 1954 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 386 "parser.y" /* yacc.c:1646  */
+#line 396 "parser.y" /* yacc.c:1646  */
     { }
-#line 1949 "parser.cpp" /* yacc.c:1646  */
+#line 1960 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 395 "parser.y" /* yacc.c:1646  */
+#line 405 "parser.y" /* yacc.c:1646  */
     {}
-#line 1955 "parser.cpp" /* yacc.c:1646  */
+#line 1966 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 396 "parser.y" /* yacc.c:1646  */
+#line 406 "parser.y" /* yacc.c:1646  */
     {}
-#line 1961 "parser.cpp" /* yacc.c:1646  */
+#line 1972 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 408 "parser.y" /* yacc.c:1646  */
+#line 418 "parser.y" /* yacc.c:1646  */
     { 
                 printf("try_except statement successfully parsed:\n"); 
             }
-#line 1969 "parser.cpp" /* yacc.c:1646  */
+#line 1980 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 414 "parser.y" /* yacc.c:1646  */
+#line 424 "parser.y" /* yacc.c:1646  */
     {}
-#line 1975 "parser.cpp" /* yacc.c:1646  */
+#line 1986 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 415 "parser.y" /* yacc.c:1646  */
+#line 425 "parser.y" /* yacc.c:1646  */
     {}
-#line 1981 "parser.cpp" /* yacc.c:1646  */
+#line 1992 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 419 "parser.y" /* yacc.c:1646  */
+#line 429 "parser.y" /* yacc.c:1646  */
     {}
-#line 1987 "parser.cpp" /* yacc.c:1646  */
+#line 1998 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 426 "parser.y" /* yacc.c:1646  */
+#line 436 "parser.y" /* yacc.c:1646  */
     { 
             printf("match statement successfully parsed:\n"); 
         }
-#line 1995 "parser.cpp" /* yacc.c:1646  */
+#line 2006 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 446 "parser.y" /* yacc.c:1646  */
+#line 456 "parser.y" /* yacc.c:1646  */
     { }
-#line 2001 "parser.cpp" /* yacc.c:1646  */
+#line 2012 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 455 "parser.y" /* yacc.c:1646  */
+#line 465 "parser.y" /* yacc.c:1646  */
     { 
                 printf("with statement successfully parsed:\n"); 
             }
-#line 2009 "parser.cpp" /* yacc.c:1646  */
+#line 2020 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 161:
-#line 503 "parser.y" /* yacc.c:1646  */
+#line 513 "parser.y" /* yacc.c:1646  */
     { }
-#line 2015 "parser.cpp" /* yacc.c:1646  */
+#line 2026 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 164:
-#line 512 "parser.y" /* yacc.c:1646  */
+#line 522 "parser.y" /* yacc.c:1646  */
     {}
-#line 2021 "parser.cpp" /* yacc.c:1646  */
+#line 2032 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 165:
-#line 513 "parser.y" /* yacc.c:1646  */
+#line 523 "parser.y" /* yacc.c:1646  */
     {}
-#line 2027 "parser.cpp" /* yacc.c:1646  */
+#line 2038 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 166:
-#line 518 "parser.y" /* yacc.c:1646  */
+#line 528 "parser.y" /* yacc.c:1646  */
     {}
-#line 2033 "parser.cpp" /* yacc.c:1646  */
+#line 2044 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 167:
-#line 525 "parser.y" /* yacc.c:1646  */
+#line 535 "parser.y" /* yacc.c:1646  */
     {}
-#line 2039 "parser.cpp" /* yacc.c:1646  */
+#line 2050 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 168:
-#line 529 "parser.y" /* yacc.c:1646  */
+#line 539 "parser.y" /* yacc.c:1646  */
     {}
-#line 2045 "parser.cpp" /* yacc.c:1646  */
+#line 2056 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 169:
-#line 530 "parser.y" /* yacc.c:1646  */
+#line 540 "parser.y" /* yacc.c:1646  */
     {}
-#line 2051 "parser.cpp" /* yacc.c:1646  */
+#line 2062 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 170:
-#line 531 "parser.y" /* yacc.c:1646  */
+#line 541 "parser.y" /* yacc.c:1646  */
     {}
-#line 2057 "parser.cpp" /* yacc.c:1646  */
+#line 2068 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 171:
-#line 533 "parser.y" /* yacc.c:1646  */
+#line 543 "parser.y" /* yacc.c:1646  */
     {}
-#line 2063 "parser.cpp" /* yacc.c:1646  */
+#line 2074 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 172:
-#line 534 "parser.y" /* yacc.c:1646  */
+#line 544 "parser.y" /* yacc.c:1646  */
     {}
-#line 2069 "parser.cpp" /* yacc.c:1646  */
+#line 2080 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 173:
-#line 535 "parser.y" /* yacc.c:1646  */
+#line 545 "parser.y" /* yacc.c:1646  */
     {}
-#line 2075 "parser.cpp" /* yacc.c:1646  */
+#line 2086 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 174:
-#line 539 "parser.y" /* yacc.c:1646  */
+#line 549 "parser.y" /* yacc.c:1646  */
     {}
-#line 2081 "parser.cpp" /* yacc.c:1646  */
+#line 2092 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 175:
-#line 540 "parser.y" /* yacc.c:1646  */
+#line 550 "parser.y" /* yacc.c:1646  */
     {}
-#line 2087 "parser.cpp" /* yacc.c:1646  */
+#line 2098 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 176:
-#line 544 "parser.y" /* yacc.c:1646  */
+#line 554 "parser.y" /* yacc.c:1646  */
     { }
-#line 2093 "parser.cpp" /* yacc.c:1646  */
+#line 2104 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 177:
-#line 545 "parser.y" /* yacc.c:1646  */
+#line 555 "parser.y" /* yacc.c:1646  */
     { }
-#line 2099 "parser.cpp" /* yacc.c:1646  */
+#line 2110 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 178:
-#line 546 "parser.y" /* yacc.c:1646  */
+#line 556 "parser.y" /* yacc.c:1646  */
     { }
-#line 2105 "parser.cpp" /* yacc.c:1646  */
+#line 2116 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 179:
-#line 550 "parser.y" /* yacc.c:1646  */
+#line 560 "parser.y" /* yacc.c:1646  */
     { }
-#line 2111 "parser.cpp" /* yacc.c:1646  */
+#line 2122 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 180:
-#line 554 "parser.y" /* yacc.c:1646  */
+#line 564 "parser.y" /* yacc.c:1646  */
     { }
-#line 2117 "parser.cpp" /* yacc.c:1646  */
+#line 2128 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 181:
-#line 558 "parser.y" /* yacc.c:1646  */
+#line 568 "parser.y" /* yacc.c:1646  */
     { }
-#line 2123 "parser.cpp" /* yacc.c:1646  */
+#line 2134 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 182:
-#line 562 "parser.y" /* yacc.c:1646  */
+#line 572 "parser.y" /* yacc.c:1646  */
     {}
-#line 2129 "parser.cpp" /* yacc.c:1646  */
+#line 2140 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 183:
-#line 563 "parser.y" /* yacc.c:1646  */
+#line 573 "parser.y" /* yacc.c:1646  */
     {}
-#line 2135 "parser.cpp" /* yacc.c:1646  */
+#line 2146 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 184:
-#line 564 "parser.y" /* yacc.c:1646  */
+#line 574 "parser.y" /* yacc.c:1646  */
     {}
-#line 2141 "parser.cpp" /* yacc.c:1646  */
+#line 2152 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 185:
-#line 565 "parser.y" /* yacc.c:1646  */
+#line 575 "parser.y" /* yacc.c:1646  */
     {}
-#line 2147 "parser.cpp" /* yacc.c:1646  */
+#line 2158 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 186:
-#line 566 "parser.y" /* yacc.c:1646  */
+#line 576 "parser.y" /* yacc.c:1646  */
     {}
-#line 2153 "parser.cpp" /* yacc.c:1646  */
+#line 2164 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 187:
-#line 567 "parser.y" /* yacc.c:1646  */
+#line 577 "parser.y" /* yacc.c:1646  */
     {}
-#line 2159 "parser.cpp" /* yacc.c:1646  */
+#line 2170 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 188:
-#line 571 "parser.y" /* yacc.c:1646  */
+#line 581 "parser.y" /* yacc.c:1646  */
     { }
-#line 2165 "parser.cpp" /* yacc.c:1646  */
+#line 2176 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 189:
-#line 572 "parser.y" /* yacc.c:1646  */
+#line 582 "parser.y" /* yacc.c:1646  */
     { }
-#line 2171 "parser.cpp" /* yacc.c:1646  */
+#line 2182 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 190:
-#line 573 "parser.y" /* yacc.c:1646  */
+#line 583 "parser.y" /* yacc.c:1646  */
     { }
-#line 2177 "parser.cpp" /* yacc.c:1646  */
+#line 2188 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 191:
-#line 574 "parser.y" /* yacc.c:1646  */
+#line 584 "parser.y" /* yacc.c:1646  */
     { }
-#line 2183 "parser.cpp" /* yacc.c:1646  */
+#line 2194 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 192:
-#line 575 "parser.y" /* yacc.c:1646  */
+#line 585 "parser.y" /* yacc.c:1646  */
     { }
-#line 2189 "parser.cpp" /* yacc.c:1646  */
+#line 2200 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 193:
-#line 577 "parser.y" /* yacc.c:1646  */
+#line 587 "parser.y" /* yacc.c:1646  */
     { }
-#line 2195 "parser.cpp" /* yacc.c:1646  */
+#line 2206 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 194:
-#line 578 "parser.y" /* yacc.c:1646  */
+#line 588 "parser.y" /* yacc.c:1646  */
     { }
-#line 2201 "parser.cpp" /* yacc.c:1646  */
+#line 2212 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 195:
-#line 579 "parser.y" /* yacc.c:1646  */
+#line 589 "parser.y" /* yacc.c:1646  */
     { }
-#line 2207 "parser.cpp" /* yacc.c:1646  */
+#line 2218 "parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 2211 "parser.cpp" /* yacc.c:1646  */
+#line 2222 "parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2435,26 +2446,31 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 595 "parser.y" /* yacc.c:1906  */
+#line 605 "parser.y" /* yacc.c:1906  */
 
 
 
 
 int main(int argc, char **argv)
 {
-    if (argc > 1){
-        for(int i=0;i<argc;i++)
-            printf("value of argv[%d] = %s\n\n",i,argv[i]);
+        if (argc > 1){
+                for(int i=0;i<argc;i++)
+                printf("value of argv[%d] = %s\n\n",i,argv[i]);
 
-        yyin=fopen(argv[1],"r");
-    }
-    else
-        yyin=stdin;
+                yyin=fopen(argv[1],"r");
+        }
+        else
+                yyin=stdin;
 
-    yyparse();
-    return 0;
+        yyparse();
+        // AST is constructed, you can print it now
+        if (root != NULL) {
+                AST ast(root);
+                ast.Print();
+        }
+        return 0;
 }
 
 void yyerror(const char *msg) {
-    printf(" %s \n", msg);
+        printf(" %s \n", msg);
 }
