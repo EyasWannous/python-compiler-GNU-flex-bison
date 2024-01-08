@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+using namespace std;
 
 int yydebug=1;
 void yyerror(const char *);
@@ -24,7 +25,7 @@ extern int yylex();
 extern int yyparse();
 AstNode* root = NULL;
 int n_nodes = 0;
-
+1
 %}
 
 
