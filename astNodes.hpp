@@ -66,7 +66,6 @@ public:
     void print() const override
     {
         cout << "\t" << name << " [label=\"" << label << " : " << name << "\"]" << endl;
-        // vector<AstNode *>::iterator it;
         for (const auto &item : next)
         {
             cout << "\t" << name << " -> " << item->name << ";" << endl;
@@ -293,45 +292,45 @@ public:
 };
 
 // Composite node for representing binary expressions
-class BinaryExpressionNode : public AstNode
-{
-private:
-    char operation;
-    AstNode *left;
-    AstNode *right;
-
-public:
-    BinaryExpressionNode(char op, AstNode *l, AstNode *r)
-        : operation(op), left(l), right(r) {}
-
-    void add(AstNode *node) override
-    {
-        if (!left)
-            left = node;
-        else if (!right)
-            right = node;
-        else
-            cerr << "Binary expression already has two children." << endl;
-    }
-
-    void print() const override
-    {
-        cout << "\t"
-             << "BinaryExpressionNode"
-             << " [label=\"" << operation << "\"]" << endl;
-        left->print();
-        cout << "\t"
-             << "BinaryExpressionNode"
-             << " [label=\"" << operation << "\"]" << endl;
-        right->print();
-    }
-
-    ~BinaryExpressionNode()
-    {
-        delete left;
-        delete right;
-    }
-};
+// class BinaryExpressionNode : public AstNode
+// {
+// private:
+//     char operation;
+//     AstNode *left;
+//     AstNode *right;
+//
+// public:
+//     BinaryExpressionNode(char op, AstNode *l, AstNode *r)
+//         : operation(op), left(l), right(r) {}
+//
+//     void add(AstNode *node) override
+//     {
+//         if (!left)
+//             left = node;
+//         else if (!right)
+//             right = node;
+//         else
+//             cerr << "Binary expression already has two children." << endl;
+//     }
+//
+//     void print() const override
+//     {
+//         cout << "\t"
+//              << "BinaryExpressionNode"
+//              << " [label=\"" << operation << "\"]" << endl;
+//         left->print();
+//         cout << "\t"
+//              << "BinaryExpressionNode"
+//              << " [label=\"" << operation << "\"]" << endl;
+//         right->print();
+//     }
+//
+//     ~BinaryExpressionNode()
+//     {
+//         delete left;
+//         delete right;
+//     }
+// };
 
 class ReturnStatementNode : public AstNode
 {
@@ -361,6 +360,166 @@ public:
     ~ReturnStatementNode()
     {
         delete returnValue;
+    }
+};
+
+class AdditionExpressionNode : public AstNode
+{
+private:
+    const char operation = '+';
+    AstNode *left;
+    AstNode *right;
+
+public:
+    AdditionExpressionNode(AstNode *l, AstNode *r)
+        : left(l), right(r) {}
+
+    void add(AstNode *node) override
+    {
+        if (!left)
+            left = node;
+        else if (!right)
+            right = node;
+        else
+            cerr << "Addition expression already has two children." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t"
+             << "AdditionExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        left->print();
+        cout << "\t"
+             << "AdditionExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        right->print();
+    }
+
+    ~AdditionExpressionNode()
+    {
+        delete left;
+        delete right;
+    }
+};
+
+class SubtractionExpressionNode : public AstNode
+{
+private:
+    const char operation = '-';
+    AstNode *left;
+    AstNode *right;
+
+public:
+    SubtractionExpressionNode(AstNode *l, AstNode *r)
+        : left(l), right(r) {}
+
+    void add(AstNode *node) override
+    {
+        if (!left)
+            left = node;
+        else if (!right)
+            right = node;
+        else
+            cerr << "Subtraction expression already has two children." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t"
+             << "SubtractionExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        left->print();
+        cout << "\t"
+             << "SubtractionExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        right->print();
+    }
+
+    ~SubtractionExpressionNode()
+    {
+        delete left;
+        delete right;
+    }
+};
+
+class MultiplicationExpressionNode : public AstNode
+{
+private:
+    const char operation = '*';
+    AstNode *left;
+    AstNode *right;
+
+public:
+    MultiplicationExpressionNode(AstNode *l, AstNode *r)
+        : left(l), right(r) {}
+
+    void add(AstNode *node) override
+    {
+        if (!left)
+            left = node;
+        else if (!right)
+            right = node;
+        else
+            cerr << "Multiplication expression already has two children." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t"
+             << "MultiplicationExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        left->print();
+        cout << "\t"
+             << "MultiplicationExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        right->print();
+    }
+
+    ~MultiplicationExpressionNode()
+    {
+        delete left;
+        delete right;
+    }
+};
+
+class DivisionExpressionNode : public AstNode
+{
+private:
+    const char operation = '/';
+    AstNode *left;
+    AstNode *right;
+
+public:
+    DivisionExpressionNode(AstNode *l, AstNode *r)
+        : left(l), right(r) {}
+
+    void add(AstNode *node) override
+    {
+        if (!left)
+            left = node;
+        else if (!right)
+            right = node;
+        else
+            cerr << "Division expression already has two children." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t"
+             << "DivisionExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        left->print();
+        cout << "\t"
+             << "DivisionExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
+        right->print();
+    }
+
+    ~DivisionExpressionNode()
+    {
+        delete left;
+        delete right;
     }
 };
 
