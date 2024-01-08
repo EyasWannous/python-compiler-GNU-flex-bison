@@ -31,14 +31,15 @@
 
 #include <iostream>
 #include <vector>
+using namespace std;
 // #include <stdlib.h>
 
 // Abstract base class for AST nodes
 class AstNode
 {
 public:
-    std::string name = "undefined"; // String member variable with default value
-    std::string label = "undefined";
+    string name = "undefined"; // String member variable with default value
+    string label = "undefined";
     virtual void add(AstNode *node) = 0;
     virtual void print() const = 0;
     virtual ~AstNode() {}
@@ -48,10 +49,10 @@ public:
 class FunctionNode : public AstNode
 {
 private:
-    std::vector<AstNode *> next;
+    vector<AstNode *> next;
 
 public:
-    FunctionNode(const std::string &name)
+    FunctionNode(const string &name)
     {
         this->name = name;
         this->label = "Declare Fun";
@@ -64,18 +65,11 @@ public:
 
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\"" << label << " : " << name << "\"]" << std::endl;
-        std::vector<AstNode *>::iterator it;
-        // for (it = next.begin(); it != next.end(); ++it) {
-        //     // example
-        //     // Func -> args
-        //     // Func -> body
-        //     std::cout << "\t" << name << " -> " << (*it)->name << ";" << std::endl;
-        //     (*it)->print();
-        // }
+        cout << "\t" << name << " [label=\"" << label << " : " << name << "\"]" << endl;
+        // vector<AstNode *>::iterator it;
         for (const auto &item : next)
         {
-            std::cout << "\t" << name << " -> " << item->name << ";" << std::endl;
+            cout << "\t" << name << " -> " << item->name << ";" << endl;
             item->print();
         }
     }
@@ -94,8 +88,8 @@ class IdentifierNode : public AstNode
 {
 
 public:
-    std::string value = "undefined";
-    IdentifierNode(std::string name, std::string label, std::string value)
+    string value = "undefined";
+    IdentifierNode(string name, string label, string value)
     {
         this->name = name;
         this->label = label;
@@ -103,22 +97,22 @@ public:
     }
     void add(AstNode * /*node*/) override
     {
-        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+        cerr << "Cannot add a child to a leaf node." << endl;
     }
 
     void print() const override
     {
-        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << std::endl;
+        cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << endl;
     }
 };
 
 class Arg : public AstNode
 {
 private:
-    std::vector<AstNode *> next;
+    vector<AstNode *> next;
 
 public:
-    Arg(const std::string &name)
+    Arg(const string &name)
     {
         this->name = name;
         this->label = "Argument";
@@ -131,7 +125,7 @@ public:
 
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
         for (const auto &arg : next)
         {
             arg->print();
@@ -142,10 +136,10 @@ public:
 class Args : public AstNode
 {
 private:
-    std::vector<AstNode *> next;
+    vector<AstNode *> next;
 
 public:
-    Args(const std::string &name)
+    Args(const string &name)
     {
         this->name = name;
         this->label = "Arguments";
@@ -158,11 +152,11 @@ public:
 
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
 
         for (const auto &arg : next)
         {
-            std::cout << "\t" << name << " -> " << arg->name << ";" << std::endl;
+            cout << "\t" << name << " -> " << arg->name << ";" << endl;
             arg->print();
         }
     }
@@ -171,10 +165,10 @@ public:
 class BlockNode : public AstNode
 {
 private:
-    std::vector<AstNode *> next;
+    vector<AstNode *> next;
 
 public:
-    BlockNode(const std::string &name)
+    BlockNode(const string &name)
     {
         this->name = name;
         this->label = "Block";
@@ -185,15 +179,10 @@ public:
     }
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
-        // std::vector<AstNode*>::iterator it;
-        // for (it = next.begin(); it != next.end(); ++it) {
-        //     std::cout << "\t" << name << " -> " << (*it)->name << ";" << std::endl;
-        //     (*it)->print();
-        // }
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
         for (const auto &stmt : next)
         {
-            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
             stmt->print();
         }
     }
@@ -209,10 +198,10 @@ public:
 class StatementsNode : public AstNode
 {
 private:
-    std::vector<AstNode *> next;
+    vector<AstNode *> next;
 
 public:
-    StatementsNode(const std::string &name)
+    StatementsNode(const string &name)
     {
         this->name = name;
         this->label = "Block Statements";
@@ -225,10 +214,10 @@ public:
 
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
         for (const auto &stmt : next)
         {
-            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
             stmt->print();
         }
     }
@@ -245,10 +234,10 @@ public:
 class assignmentStatement : public AstNode
 {
 private:
-    std::vector<AstNode *> next;
+    vector<AstNode *> next;
 
 public:
-    assignmentStatement(const std::string &name)
+    assignmentStatement(const string &name)
     {
         this->name = name;
         this->label = "assignment";
@@ -261,15 +250,12 @@ public:
 
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
         for (const auto &stmt : next)
         {
-            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
             stmt->print();
         }
-        // for (const auto& stmt : next) {
-        //     stmt->print();
-        // }
     }
 
     ~assignmentStatement()
@@ -288,7 +274,7 @@ private:
     int value;
 
 public:
-    NumberNode(std::string name, std::string label, int value)
+    NumberNode(string name, string label, int value)
     {
         this->name = name;
         this->label = label;
@@ -297,12 +283,12 @@ public:
 
     void add(AstNode * /*node*/) override
     {
-        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+        cerr << "Cannot add a child to a leaf node." << endl;
     }
 
     void print() const override
     {
-        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << std::endl;
+        cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << endl;
     }
 };
 
@@ -325,18 +311,18 @@ public:
         else if (!right)
             right = node;
         else
-            std::cerr << "Binary expression already has two children." << std::endl;
+            cerr << "Binary expression already has two children." << endl;
     }
 
     void print() const override
     {
-        std::cout << "\t"
-                  << "BinaryExpressionNode"
-                  << " [label=\"" << operation << "\"]" << std::endl;
+        cout << "\t"
+             << "BinaryExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
         left->print();
-        std::cout << "\t"
-                  << "BinaryExpressionNode"
-                  << " [label=\"" << operation << "\"]" << std::endl;
+        cout << "\t"
+             << "BinaryExpressionNode"
+             << " [label=\"" << operation << "\"]" << endl;
         right->print();
     }
 
@@ -361,14 +347,14 @@ public:
 
     void add(AstNode * /*node*/) override
     {
-        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+        cerr << "Cannot add a child to a leaf node." << endl;
     }
 
     void print() const override
     {
-        std::cout << "\t" << name << " [label=\""
-                  << "ReturnStatement"
-                  << "\"]" << std::endl;
+        cout << "\t" << name << " [label=\""
+             << "ReturnStatement"
+             << "\"]" << endl;
         returnValue->print();
     }
 
@@ -386,6 +372,13 @@ private:
 public:
     AST(AstNode *r) : root(r) {}
 
+    void Print()
+    {
+        cout << "digraph G {" << endl;
+        root->print();
+        cout << "}" << endl;
+    }
+
     ~AST()
     {
         if (root != nullptr)
@@ -393,12 +386,6 @@ public:
             delete root;
             root = nullptr;
         }
-    }
-    void Print()
-    {
-        std::cout << "digraph G {" << std::endl;
-        root->print();
-        std::cout << "}" << std::endl;
     }
 };
 #endif
