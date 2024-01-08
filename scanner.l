@@ -62,7 +62,7 @@
     int current_indentation = 0;
     int spaces = 0;
 
-    extern YYSTYPE yylval; 
+    extern YYSTYPE yylval;
 %}
 
 %option yylineno
@@ -111,6 +111,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 %x INDENTSTATE
 %x DEDENTALLSTATE
 %x DEDENTSTATE
+%x NEWNEW
 
 %%
 
@@ -163,12 +164,13 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 {newL}{comments}        {}
 
 <<EOF>>         {
-                    BEGIN(DEDENTALLSTATE);
+                    BEGIN(NEWNEW);
                     unput(' ');
 
                     if(stack_arr[top] == 0)
                         return 0;
                 }
+
 
 {ws}                    {}
 
@@ -427,6 +429,15 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
         }
     }
 }
+
+<NEWNEW>{
+    [ ] {
+        BEGIN(DEDENTALLSTATE);
+        unput(' ');
+        return NEWLINE;
+    }
+}
+
 
 \"       { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
 
