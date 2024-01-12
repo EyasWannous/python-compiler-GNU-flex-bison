@@ -42,9 +42,9 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 1 "parser.y" /* yacc.c:1909  */
 
-        #include "astNodes.hpp"
-        #include <iostream>
-        #include <string>
+#include "astNodes.hpp"
+#include <iostream>
+#include <string>
 
 #line 50 "parser.hpp" /* yacc.c:1909  */
 
