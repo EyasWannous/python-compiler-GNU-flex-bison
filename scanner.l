@@ -360,17 +360,17 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 
 {id}                    {
-                            yylval.strval = strdup(yytext);
+                            yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
                             return ID;
                         }
 
 {int}                   {
-                            yylval.intval = atoi(yytext);
+                            yylval.astNode = new NumberNode("INT", "int", atoi(yytext));
                             return INT_NUMBER;
                         }
 
 {float}                 {
-                            yylval.flval = atof(yytext);
+                            yylval.astNode = new NumberNode("FLOAT", "float", atoi(yytext));
                             return FLOAT_NUMBER;
                         }
 
@@ -442,7 +442,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 \"       { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
 
 <DOUBLE_STRING>{
-    \"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;} 
+    \"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf_ptr); return STRING;} 
     \\\n {              }
     \n   {printf("error in line %d\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -460,7 +460,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 \'        { string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }    
 <SINGLE_STRING>{
-    \'  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+    \'  {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf_ptr); return STRING;}
     \\\n {              }
     \n   {printf("line%d, ERROR: new line in string\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -507,7 +507,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                         }
 
 <COMMENT_STRING>{
-    "'''"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+    "'''"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf_ptr); return STRING;}
     \\\n {}
     \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -553,7 +553,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                         }
 
 <COMMENT_STRING_DOUBLE>{
-    \"{3}   {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+    \"{3}   {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf_ptr); return STRING;}
     \\\n {}
     \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}

@@ -291,6 +291,30 @@ public:
     }
 };
 
+class StringNode : public AstNode
+{
+private:
+    std::string value;
+
+public:
+    StringNode(std::string name, std::string label, std::string value)
+    {
+        this->name = name;
+        this->label = label;
+        this->value = value;
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+    }
+
+    void print() const override
+    {
+        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << std::endl;
+    }
+};
+
 // Composite node for representing binary expressions
 // class BinaryExpressionNode : public AstNode
 // {

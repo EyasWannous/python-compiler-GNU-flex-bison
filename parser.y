@@ -52,15 +52,16 @@ int n_nodes = 0;
 /* Parser Grammar */
 
 prog
-    : { /* for empty put % empty */}
-    | statements {
-        printf("prog accepted:\n");YYACCEPT;
-    }
+        : { $$=NULL; }
+        | statements {
+                root = $$;
+                YYACCEPT;
+        }
 ;
 
 statements  
-        : statement { }
-        | statements NEWLINE statement { }
+        : statement { $$ = $1 }
+        | statements NEWLINE statement { $1->add($3); $$ = $1 }
         | statements NEWLINE { }
 ;
 
@@ -69,7 +70,7 @@ statement
         : if_stmt { }
         | while_stmt { }
         | for_stmt { }
-        | function { }
+        | function { $$ = $1 }
         | function_call { }
         | assignment { }
         | class { }
@@ -128,7 +129,13 @@ elif_header
 // FUNCTION statement START
 function    
         : DEF ID '(' args ')' function_block {
-            printf("Function successfully parsed:\n"); 
+        //printf("Function successfully parsed:\n"); 
+                std::string name = "func" + std::to_string(n_nodes);
+                ++n_nodes;
+                IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                $$ = new FunctionNode(idFunc->value);
+                $$->add($4);
+                $$->add($6);
         }
         | DEF ID '(' args ')' '-' GT data_type function_block {
             printf("Generic Function successfully parsed:\n"); 
@@ -136,18 +143,29 @@ function
 ;
 
 function_block
-            : NEWLINE INDENT function_stmts DEDENT { }
+            : NEWLINE INDENT function_stmts DEDENT { $$ = $3 }
 ;
 
 function_stmts   
-            : function_stmt_
-            | function_stmts function_stmt_
+            : function_stmt_ { $$ = $1 }
+            | function_stmts function_stmt_ { $$ = $2 }
 ;
 
 function_stmt_   
-            : simple_stmt NEWLINE {}
-            | function_compound_stmt {}
-            | function_sp_stmt NEWLINE
+            : simple_stmt NEWLINE { 
+                $$=new StatementsNode("statement");
+                $$->add($1); 
+            }
+
+            | function_compound_stmt { 
+                $$=new StatementsNode("statement");
+                $$->add($1);
+            }
+
+            | function_sp_stmt NEWLINE { 
+                $$=new StatementsNode("statement");
+                $$->add($1);    
+            }
 ;
 
 function_sp_stmt 
@@ -241,22 +259,33 @@ func_elif_header
 
 // args for define function
 args    
-    : /* empty params */ { }
-    | args_  { }
+    : /* empty params */ { $$ = NULL }
+    | args_  { $$ = $1 }
 ;
 
 
 
 args_ 
-    : arg { }
-    | args_ ',' arg { }
+    : arg { $$ = new Args("Args"); $$->add($1); }
+    | args_ ',' arg { $1->add($3); $$ = $1; }
 ;
 
 
 
 arg   
-    : ID { }
-    | ID ':' data_type { }
+    : ID { 
+        std::string nname = "iden" + std::to_string(n_nodes);
+        ++n_nodes;
+        $1->name=nname;
+        $$ = $1;
+    }
+
+    | ID ':' data_type { 
+        std::string nname = "iden" + std::to_string(n_nodes);
+        ++n_nodes;
+        $1->name=nname;
+        $$ = $1;
+    }
 ;
 
 // args for print function
@@ -526,7 +555,7 @@ stmt
 
 
 simple_stmt
-        : assignment      {}
+        : assignment      { $$ = $1 }
         //| return_stmt     {}
         //| BREAK           {}
         //| CONTINUE        {}
@@ -547,8 +576,53 @@ compound_stmt
 ;
 
 assignment
-        : ID '=' expression  {}
-        | ID '=' ARRAY       {}
+        : ID '=' expression  {
+                std::string name = "assignment" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new assignmentStatement(name);
+                $$->add($1);
+                $$->add($3);
+        }
+
+        : ID '+=' expression  {
+                std::string name = "assignment" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new assignmentStatement(name);
+                $$->add($1);
+                $$->add($3);
+        }
+
+        : ID '-=' expression  {
+                std::string name = "assignment" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new assignmentStatement(name);
+                $$->add($1);
+                $$->add($3);
+        }
+
+        : ID '*=' expression  {
+                std::string name = "assignment" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new assignmentStatement(name);
+                $$->add($1);
+                $$->add($3);
+        }
+
+        : ID '/=' expression  {
+                std::string name = "assignment" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new assignmentStatement(name);
+                $$->add($1);
+                $$->add($3);
+        }
+
+        | ID '=' ARRAY       {
+                std::string name = "assignment" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new assignmentStatement(name);
+                $$->add($1);
+                $$->add($3);
+        }
 ;
 
 return_stmt
