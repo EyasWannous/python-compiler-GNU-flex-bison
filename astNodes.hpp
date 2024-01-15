@@ -758,6 +758,41 @@ public:
     }
 };
 
+class ExceptStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ExceptStatementNode()
+    {
+        this->name = "ExceptStatement";
+        this->label = "except";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~ExceptStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
 class withStatementNode : public AstNode
 {
 private:
@@ -834,10 +869,10 @@ private:
     vector<AstNode *> next;
 
 public:
-    CaseStatementNode(string labell)
+    CaseStatementNode(string name)
     {
-        this->name = "Case Statement";
-        this->label = labell;
+        this->name = name;
+        this->label = "Case Statement";
     }
 
     void add(AstNode *node) override

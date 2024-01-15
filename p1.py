@@ -35,3 +35,27 @@ else:
     pass
 
 x = 10
+
+while x > 10 :
+    break
+
+for i in range(1,10):
+    pass
+
+class ahmed :
+    pass
+
+try:
+    x = 10
+except:
+    x = 1
+except:
+    pass
+
+match x:
+    case 10:
+        pass
+    case 15:
+        pass
+    case _ :
+        x = 0

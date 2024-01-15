@@ -236,4 +236,98 @@ digraph G {
 	iden117 [shape=box,label="Identifier: x"]
 	assignment116 -> int115;
 	int115 [shape=box,label="int: 10"]
+	root -> while123;
+	while123 [label="While"]
+	while123 -> gt119;
+	gt119 [label=">"]
+	gt119 -> iden120;
+	iden120 [shape=box,label="Identifier: x"]
+	gt119 -> int118;
+	int118 [shape=box,label="int: 10"]
+	while123 -> stmt122;
+	stmt122 [label="Statements"]
+	stmt122 -> break121;
+	break121 [shape=box,label="break"]
+	root -> for129;
+	for129 [label="for"]
+	for129 -> range130;
+	range130 [label="Funiction Call : range130"]
+	range130 -> arg126;
+	arg126 [label="Arguments"]
+	arg126 -> int124;
+	int124 [shape=box,label="int: 1"]
+	arg126 -> int125;
+	int125 [shape=box,label="int: 10"]
+	for129 -> stmt128;
+	stmt128 [label="Statements"]
+	stmt128 -> pass127;
+	pass127 [shape=box,label="Pass"]
+	root -> ahmed;
+	ahmed [label="Declare Class : ahmed"]
+	ahmed -> stmt132;
+	stmt132 [label="Statements"]
+	stmt132 -> pass131;
+	pass131 [shape=box,label="Pass"]
+	root -> try147;
+	try147 [label="try"]
+	try147 -> stmt137;
+	stmt137 [label="Statements"]
+	stmt137 -> assignment135;
+	assignment135 [label="assignment"]
+	assignment135 -> iden136;
+	iden136 [shape=box,label="Identifier: x"]
+	assignment135 -> int134;
+	int134 [shape=box,label="int: 10"]
+	try147 -> block143;
+	block143 [label="Except..."]
+	block143 -> except142;
+	except142 [label="except"]
+	except142 -> stmt141;
+	stmt141 [label="Statements"]
+	stmt141 -> assignment139;
+	assignment139 [label="assignment"]
+	assignment139 -> iden140;
+	iden140 [shape=box,label="Identifier: x"]
+	assignment139 -> int138;
+	int138 [shape=box,label="int: 1"]
+	block143 -> except146;
+	except146 [label="except"]
+	except146 -> stmt145;
+	stmt145 [label="Statements"]
+	stmt145 -> pass144;
+	pass144 [shape=box,label="Pass"]
+	root -> match163;
+	match163 [label="Match"]
+	match163 -> iden164;
+	iden164 [shape=box,label="Identifier: x"]
+	match163 -> block162;
+	block162 [label="Match Block"]
+	block162 -> block152;
+	block152 [label="Case..."]
+	block152 -> case151;
+	case151 [label="Case Statement"]
+	case151 -> int148;
+	int148 [shape=box,label="int: 10"]
+	case151 -> stmt150;
+	stmt150 [label="Statements"]
+	stmt150 -> pass149;
+	pass149 [shape=box,label="Pass"]
+	block152 -> case156;
+	case156 [label="Case Statement"]
+	case156 -> int153;
+	int153 [shape=box,label="int: 15"]
+	case156 -> stmt155;
+	stmt155 [label="Statements"]
+	stmt155 -> pass154;
+	pass154 [shape=box,label="Pass"]
+	block162 -> case161;
+	case161 [label="Default Statement"]
+	case161 -> stmt160;
+	stmt160 [label="Statements"]
+	stmt160 -> assignment158;
+	assignment158 [label="assignment"]
+	assignment158 -> iden159;
+	iden159 [shape=box,label="Identifier: x"]
+	assignment158 -> int157;
+	int157 [shape=box,label="int: 0"]
 }

@@ -45,7 +45,10 @@ int n_nodes = 0;
 %type<astNode> func_while_stmt func_for_stmt func_for_block func_for_stmts func_for_stmt_ relation_stmt for_sp_stmt range_args for_compound_stmt
 %type<astNode> func_if_stmt func_if_header func_elif_else_ func_elif_else func_else_stmt func_elif_stmts func_elif_stmt func_elif_header
 %type<astNode> if_stmt if_header elif_else_ elif_else else_stmt elif_stmts elif_stmt elif_header
-%type<astNode> block stmts stmt compound_stmt pass
+%type<astNode> block stmts stmt compound_stmt pass class class_block class_stmts class_stmt_ class_sp_stmt
+%type<astNode> while_stmt for_stmt for_block for_stmts for_stmt_ for_if_stmt for_if_header for_elif_else_ for_elif_else for_else_stmt for_elif_stmts for_elif_stmt for_elif_header
+%type<astNode> try_except_stmt except_clauses except_clause match_stmt case_statements case_statement final_case match_block
+
 %nonassoc '='
 %left '+' '-'
 %left '*' '/'
@@ -79,14 +82,14 @@ statements
 
 statement   
         : if_stmt { $$ = $1; }
-        | while_stmt { /*$$ = $1;*/ }
-        | for_stmt { /*$$ = $1;*/ }
+        | while_stmt { $$ = $1; }
+        | for_stmt { $$ = $1; }
         | function { $$ = $1; }
         | function_call { $$ = $1; }
         | assignment NEWLINE { $$ = $1; }
-        | class { }
-        | try_except_stmt { }
-        | match_stmt { }
+        | class { $$ = $1; }
+        | try_except_stmt { $$ = $1; }
+        | match_stmt { $$ = $1; }
         | with_statement { }
         | pass NEWLINE { $$ = $1; }
 ;
@@ -244,9 +247,9 @@ function_compound_stmt
         : func_if_stmt{ $$ = $1; }
         | func_while_stmt{ $$ = $1; }
         | func_for_stmt{ $$ = $1; }
-        | try_except_stmt {}
+        | try_except_stmt { $$ = $1; }
         | with_statement {}
-        | match_stmt {}
+        | match_stmt { $$ = $1; }
         | function{ $$ = $1; }
 ;
 
@@ -487,15 +490,21 @@ argc
 
 // FUNCTION statement END
 
-// WHILE statement START
+//! WHILE statement START (AST)
 while_stmt
         : WHILE relation_stmt for_block { 
-            printf("while statement successfully parsed:\n"); 
+            //printf("while statement successfully parsed:\n");
+                std::string name = "while" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new WhileStatementNode();
+                $$->name = name;
+                $$->add($2);
+                $$->add($3);
         }
 ;
 // WHILE statement END
 
-// FOR statement START
+//! FOR statement START (AST)
 range_args  
         : '(' NUMBER ')' {
                 std::string nname = "arg" + std::to_string(n_nodes);
@@ -524,26 +533,43 @@ range_args
 
 for_stmt    
         : FOR ID IN RANGE range_args for_block { 
-            printf("for statement successfully parsed:\n"); 
+            //printf("for statement successfully parsed:\n");
+                std::string name = "for" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string nname = "range" + std::to_string(n_nodes);
+                ++n_nodes;
+                $4 = new FunctionCallNode(nname);
+                $4->add($5);
+                $$ = new ForStatementNode();
+                $$->name = name;
+                $$->add($4);
+                $$->add($6);
         }
+
         | FOR ID IN ARRAY for_block { 
             printf("for statement successfully parsed:\n"); 
         }
 ;
 
 for_block
-        : NEWLINE INDENT for_stmts DEDENT { }
+        : NEWLINE INDENT for_stmts DEDENT { $$ = $3; }
 ;
 
 for_stmts   
-        : for_stmt_
-        | for_stmts for_stmt_
+        : for_stmt_ {
+                std::string nname = "stmt" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new StatementsNode(nname); 
+                $$->add($1);
+        }
+
+        | for_stmts for_stmt_ { $1->add($2); $$ = $1; }
 ;
 
 for_stmt_   
-        : simple_stmt NEWLINE {}
-        | for_compound_stmt {}
-        | for_sp_stmt NEWLINE {}
+        : simple_stmt NEWLINE {  $$ = $1; }
+        | for_compound_stmt {  $$ = $1; }
+        | for_sp_stmt NEWLINE {  $$ = $1; }
 ;
 
 for_sp_stmt 
@@ -563,51 +589,84 @@ for_sp_stmt
 ;
 
 for_compound_stmt
-        : for_if_stmt {}
-        | while_stmt {}
-        | for_stmt {}
-        | try_except_stmt {}
-        | with_statement {}
-        | match_stmt {}
+        : for_if_stmt {  $$ = $1; }
+        | while_stmt {  $$ = $1; }
+        | for_stmt {  $$ = $1; }
+        | try_except_stmt {  $$ = $1; }
+        | with_statement {  /*$$ = $1;*/ }
+        | match_stmt { $$ = $1; }
 ;
 
 //!===============================================================
 for_if_stmt     
-        : for_if_header for_block for_elif_else_  { printf("if statement successfully parsed:\n"); }                     
+        : for_if_header for_block for_elif_else_  { 
+                //printf("if statement successfully parsed:\n");
+                std::string nname = "if" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new IfStatementNode();
+                $$->name = nname;
+                $$->add($1);
+                $$->add($2);
+                $$->add($3);
+            }                     
 ;
 
 for_if_header   
-        : IF relation_stmt
-        | IF '(' relation_stmt ')'  
+        : IF relation_stmt { $$ = $2; }
+        | IF '(' relation_stmt ')' { $$ = $3; }  
 ;
 
 for_elif_else_  
-        :     {/* empty no next elif or else*/}
-        | for_elif_else { }
+        :     { $$ = NULL; }
+        | for_elif_else { $$ = $1; }
 ;
 
 for_elif_else   
-        : for_elif_stmts for_else_stmt
-        | for_elif_stmts
-        | for_else_stmt
+        : for_elif_stmts for_else_stmt {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$=new BlockNode(nname);
+                $$->label = "Elif..._Else";
+                $$->add($1); 
+                $$->add($2); 
+        }
+        | for_elif_stmts { $$ = $1; }
+        | for_else_stmt { $$ = $1; }
 ;
 
 for_else_stmt   
-        : ELSE  for_block 
+        : ELSE  for_block {
+                std::string nname = "else" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ElseStatementNode(nname);
+                $$->add($2);
+        }
 ;
 
 for_elif_stmts  
-        : for_elif_stmt
-        | for_elif_stmts for_elif_stmt 
+        : for_elif_stmt {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes; 
+                $$=new BlockNode(nname);
+                $$->label = "Elif..."; 
+                $$->add($1); 
+        }
+        | for_elif_stmts for_elif_stmt { $1->add($2); $$ = $1; }
 ;
 
 for_elif_stmt   
-        : for_elif_header for_block
+        : for_elif_header for_block {
+                std::string nname = "elif" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ElIfStatementNode(nname);
+                $$->add($1);
+                $$->add($2);
+        }
 ;
 
 for_elif_header 
-        : ELIF relation_stmt
-        | ELIF '(' relation_stmt ')'    
+        : ELIF relation_stmt { $$ = $2; }
+        | ELIF '(' relation_stmt ')' { $$ = $3; }    
 ;
 
 
@@ -643,76 +702,138 @@ function_call
 ;
 // FUNCTION_CALL statement END
 
-// CLASS statement START
+//! CLASS statement START (AST)
 
-class 
+class
     : CLASS ID class_block { 
-        printf("class statement successfully parsed:\n");
+        //printf("class statement successfully parsed:\n");
+        std::string name = "class" + std::to_string(n_nodes);
+        ++n_nodes;
+        IdentifierNode* idclass = dynamic_cast<IdentifierNode*>($2);
+        $$ = new ClassNode(idclass->value);
+        $$->add($3);
     }
 ;
 
 class_block
-        : NEWLINE INDENT class_stmts DEDENT { }
+        : NEWLINE INDENT class_stmts DEDENT { $$ = $3; }
 ;
 
 class_stmts   
-        : class_stmt_
-        | class_stmts class_stmt_
+        : class_stmt_ {
+            std::string nname = "stmt" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new StatementsNode(nname); 
+            $$->add($1); 
+        }
+        | class_stmts class_stmt_ { $1->add($2); $$ = $1; }
 ;
 
 class_stmt_   
-        : simple_stmt NEWLINE {}
-        | compound_stmt {}
-        | class_sp_stmt NEWLINE
-        | function
+        : simple_stmt NEWLINE { $$ = $1; }
+        | compound_stmt { $$ = $1; }
+        | class_sp_stmt NEWLINE { $$ = $1; }
+        | function { $$ = $1; }
 ;
 
 class_sp_stmt 
-            : global_stmt
+            : global_stmt { $$ = $1; }
 ;  
 // CLASS statement END
 
-// TRY_EXCEPT statement START
+//! TRY_EXCEPT statement START (AST)
 try_except_stmt 
             : TRY block except_clauses { 
-                printf("try_except statement successfully parsed:\n"); 
+                //printf("try_except statement successfully parsed:\n");
+                std::string name = "try" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new TryStatementNode();
+                $$->name = name;
+                $$->add($2);
+                $$->add($3);
             }
 ;
 
 except_clauses    
-            : except_clause {}
-            | except_clauses except_clause {}
+            : except_clause {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes; 
+                $$=new BlockNode(nname);
+                $$->label = "Except..."; 
+                $$->add($1); 
+            }
+            | except_clauses except_clause { $1->add($2); $$ = $1; }
 ;
 
 except_clause 
-            : EXCEPT block {}
+            : EXCEPT block {
+                std::string nname = "except" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ExceptStatementNode();
+                $$->name = nname;
+                $$->add($2);
+            }
 ;
 
 // TRY_EXCEPT statement END
 
-// MATCH statement START
-match_stmt  
+//! MATCH statement START (AST)
+match_stmt   
         : MATCH ID match_block { 
-            printf("match statement successfully parsed:\n"); 
+            //printf("match statement successfully parsed:\n");
+            std::string name = "match" + std::to_string(n_nodes);
+            ++n_nodes;
+            std::string nname = "iden" + std::to_string(n_nodes);
+            ++n_nodes;
+            $2->name=nname;
+            $$ = new matchStatementNode();
+            $$->name = name;
+            $$->add($2);
+            $$->add($3);
         }
 ;
 
 case_statements   
             :
-            case_statement 
-            | case_statements case_statement 
+            case_statement {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes; 
+                $$=new BlockNode(nname);
+                $$->label = "Case..."; 
+                $$->add($1); 
+            }
+            | case_statements case_statement { $1->add($2); $$ = $1; }
 ;
 
 case_statement    
-            : CASE argp block 
+            : CASE argp block {
+                std::string nname = "case" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new CaseStatementNode(nname);
+                $$->add($2);
+                $$->add($3);
+            }
 ;
 
 final_case  
-        : CASE '_' block
+        : CASE '_' block {
+            std::string nname = "case" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new CaseStatementNode(nname);
+            $$->label = "Default Statement";
+            $$->add($3);
+        }
 ;
 
 match_block 
-        : NEWLINE INDENT case_statements final_case DEDENT { }
+        : NEWLINE INDENT case_statements final_case DEDENT {
+            std::string nname = "block" + std::to_string(n_nodes);
+            ++n_nodes; 
+            $$=new BlockNode(nname);
+            $$->label = "Match Block"; 
+            $$->add($3);
+            $$->add($4);
+        }
 ;
 
 // MATCH statement END
@@ -801,12 +922,12 @@ simple_stmt
 
 compound_stmt
         : if_stmt    { $$ = $1; }
-        | while_stmt { /*$$ = $1;*/ }
-        | for_stmt   { /*$$ = $1;*/ }
+        | while_stmt { $$ = $1; }
+        | for_stmt   { $$ = $1; }
         //| function   {}
-        | try_except_stmt {}
+        | try_except_stmt { $$ = $1; }
         | with_statement {}
-        | match_stmt {}
+        | match_stmt { $$ = $1; }
 ;
 
 assignment
