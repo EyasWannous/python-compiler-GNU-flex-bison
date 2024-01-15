@@ -1,8 +1,8 @@
 /*
  * @name astNodes.hpp
  * @description Hierachy of AST
- * @author EyasWannous
- * @example E = W + 100
+ * @author EyasWannous & MajdHammad
+ * @example x = y + z
  *                        |---------|
  *                        | AstNode |
  *                        |---------|
@@ -14,14 +14,14 @@
  *                          |        |
  *                         |           |
  *                        |              |
- *                    |------------|   |--------------|
- *                    |      E     |   |     Plus     |
- *                    |------------|   |--------------|
+ *                    |-------------|   |--------------|
+ *                    |      x      |   |     Plus     |
+ *                    |-------------|   |--------------|
  *                                       |          |
  *                                      |            |
  *                                     |              |
  *                           |-------------|     |-------------|
- *                           |      W      |     |     100     |
+ *                           |      y      |     |      z      |
  *                           |-------------|     |-------------|
  *
  */
@@ -32,20 +32,17 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-// #include <stdlib.h>
 
-// Abstract base class for AST nodes
 class AstNode
 {
 public:
-    string name = "undefined"; // String member variable with default value
+    string name = "undefined";
     string label = "undefined";
     virtual void add(AstNode *node) = 0;
     virtual void print() const = 0;
     virtual ~AstNode() {}
 };
 
-// Composite node for representing function declare
 class FunctionNode : public AstNode
 {
 private:
@@ -82,7 +79,43 @@ public:
     }
 };
 
-// base node for representing identifier ,will create object  from lexer
+class ClassNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ClassNode(const string &name)
+    {
+        this->name = name;
+        this->label = "Declare Class";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << " : " << name << "\"]" << endl;
+        vector<AstNode *>::iterator it;
+        for (const auto &item : next)
+        {
+            cout << "\t" << name << " -> " << item->name << ";" << endl;
+            item->print();
+        }
+    }
+
+    ~ClassNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
 class IdentifierNode : public AstNode
 {
 
@@ -161,6 +194,105 @@ public:
     }
 };
 
+class ControlFlowBlockNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ControlFlowBlockNode()
+    {
+        this->name = "Control Flow Block";
+        this->label = "Block of Control Flow (if,elif,else)";
+    }
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~ControlFlowBlockNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
+class ControlFlowBlockContentNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ControlFlowBlockContentNode(const string &name)
+    {
+        this->name = name;
+        this->label = "Content of Control Flow";
+    }
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~ControlFlowBlockContentNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
+class LoopBlockNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    LoopBlockNode()
+    {
+        this->name = "Loop Block";
+        this->label = "Block of Loop";
+    }
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~LoopBlockNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
 class BlockNode : public AstNode
 {
 private:
@@ -203,7 +335,7 @@ public:
     StatementsNode(const string &name)
     {
         this->name = name;
-        this->label = "Block Statements";
+        this->label = "Statements";
     }
 
     void add(AstNode *node) override
@@ -226,6 +358,270 @@ public:
         for (const auto &stmt : next)
         {
             delete stmt;
+        }
+    }
+};
+class BreakStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    BreakStatementNode()
+    {
+        this->name = "Break Statement";
+        this->label = "break";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [shape=box,label=\"" << label << "\"]" << endl;
+    }
+    ~BreakStatementNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
+class ContinueStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ContinueStatementNode()
+    {
+        this->name = "Continue Statement";
+        this->label = "Continue";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [shape=box,label=\"" << label << "\"]" << endl;
+    }
+    ~ContinueStatementNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
+class PassStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    PassStatementNode()
+    {
+        this->name = "pass Statement";
+        this->label = "Pass";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [shape=box,label=\"" << label << "\"]" << endl;
+    }
+    ~PassStatementNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
+class WhileStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    WhileStatementNode()
+    {
+        this->name = "While Statement";
+        this->label = "While";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~WhileStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class ForStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ForStatementNode()
+    {
+        this->name = "For Statement";
+        this->label = "for";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~ForStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class IfStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    IfStatementNode()
+    {
+        this->name = "if statement";
+        this->label = "If";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~IfStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class ElIfStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ElIfStatementNode(string nname)
+    {
+        this->name = nname;
+        this->label = "ElIf";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~ElIfStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class ElseStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    ElseStatementNode(string name)
+    {
+        this->name = name;
+        this->label = "Else";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~ElseStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
         }
     }
 };
@@ -266,7 +662,207 @@ public:
     }
 };
 
-// Leaf node for representing numeric literals
+class StringNode : public AstNode
+{
+private:
+    string value;
+
+public:
+    StringNode(string name, string label, string value)
+    {
+        this->name = name;
+        this->label = label;
+        this->value = value;
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << endl;
+    }
+};
+
+class FunctionCallNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    FunctionCallNode(const string &name)
+    {
+        this->name = name;
+        this->label = "Funiction Call";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << " : " << name << "\"]" << endl;
+        vector<AstNode *>::iterator it;
+        for (const auto &item : next)
+        {
+            cout << "\t" << name << " -> " << item->name << ";" << endl;
+            item->print();
+        }
+    }
+
+    ~FunctionCallNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class TryStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    TryStatementNode()
+    {
+        this->name = "TryStatement";
+        this->label = "try";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~TryStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class withStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    withStatementNode()
+    {
+        this->name = "With Statement";
+        this->label = "with";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~withStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class matchStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    matchStatementNode()
+    {
+        this->name = "Match Statement";
+        this->label = "Match";
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~matchStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
+class CaseStatementNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    CaseStatementNode(string labell)
+    {
+        this->name = "Case Statement";
+        this->label = labell;
+    }
+
+    void add(AstNode *node) override
+    {
+        next.push_back(node);
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\"" << label << "\"]" << endl;
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
+    }
+    ~CaseStatementNode()
+    {
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
+    }
+};
+
 class NumberNode : public AstNode
 {
 private:
@@ -291,71 +887,6 @@ public:
     }
 };
 
-class StringNode : public AstNode
-{
-private:
-    std::string value;
-
-public:
-    StringNode(std::string name, std::string label, std::string value)
-    {
-        this->name = name;
-        this->label = label;
-        this->value = value;
-    }
-
-    void add(AstNode * /*node*/) override
-    {
-        std::cerr << "Cannot add a child to a leaf node." << std::endl;
-    }
-
-    void print() const override
-    {
-        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << std::endl;
-    }
-};
-
-// Composite node for representing binary expressions
-// class BinaryExpressionNode : public AstNode
-// {
-// private:
-//     char operation;
-//     AstNode *left;
-//     AstNode *right;
-//
-// public:
-//     BinaryExpressionNode(char op, AstNode *l, AstNode *r)
-//         : operation(op), left(l), right(r) {}
-//
-//     void add(AstNode *node) override
-//     {
-//         if (!left)
-//             left = node;
-//         else if (!right)
-//             right = node;
-//         else
-//             cerr << "Binary expression already has two children." << endl;
-//     }
-//
-//     void print() const override
-//     {
-//         cout << "\t"
-//              << "BinaryExpressionNode"
-//              << " [label=\"" << operation << "\"]" << endl;
-//         left->print();
-//         cout << "\t"
-//              << "BinaryExpressionNode"
-//              << " [label=\"" << operation << "\"]" << endl;
-//         right->print();
-//     }
-//
-//     ~BinaryExpressionNode()
-//     {
-//         delete left;
-//         delete right;
-//     }
-// };
-
 class ReturnStatementNode : public AstNode
 {
 private:
@@ -378,12 +909,109 @@ public:
         cout << "\t" << name << " [label=\""
              << "ReturnStatement"
              << "\"]" << endl;
+        cout << "\t" << name << " -> " << returnValue->name << ";" << endl;
         returnValue->print();
     }
 
     ~ReturnStatementNode()
     {
         delete returnValue;
+    }
+};
+
+class yieldStatementNode : public AstNode
+{
+private:
+    AstNode *yieldValue;
+
+public:
+    yieldStatementNode(AstNode *value)
+        : yieldValue(value)
+    {
+        this->name = "yieldStatement";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\""
+             << "yieldStatement"
+             << "\"]" << endl;
+        cout << "\t" << name << " -> " << yieldValue->name << ";" << endl;
+        yieldValue->print();
+    }
+
+    ~yieldStatementNode()
+    {
+        delete yieldValue;
+    }
+};
+
+class globalStatementNode : public AstNode
+{
+private:
+    AstNode *globalValue;
+
+public:
+    globalStatementNode(AstNode *value)
+        : globalValue(value)
+    {
+        this->name = "GlobalStatement";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\""
+             << "GlobalStatement"
+             << "\"]" << endl;
+        cout << "\t" << name << " -> " << globalValue->name << ";" << endl;
+        globalValue->print();
+    }
+
+    ~globalStatementNode()
+    {
+        delete globalValue;
+    }
+};
+
+class nonLocalStatementNode : public AstNode
+{
+private:
+    AstNode *nonLocalValue;
+
+public:
+    nonLocalStatementNode(AstNode *value)
+        : nonLocalValue(value)
+    {
+        this->name = "nonLocalStatement";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [label=\""
+             << "nonLocalStatement"
+             << "\"]" << endl;
+        cout << "\t" << name << " -> " << nonLocalValue->name << ";" << endl;
+        nonLocalValue->print();
+    }
+
+    ~nonLocalStatementNode()
+    {
+        delete nonLocalValue;
     }
 };
 
@@ -410,13 +1038,20 @@ public:
 
     void print() const override
     {
+        // cout << "\t"
+        //      << name
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // left->print();
+        // cout << "\t"
+        //      << name
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // right->print();
         cout << "\t"
-             << "AdditionExpressionNode"
+             << name
              << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << left->name << ";" << endl;
         left->print();
-        cout << "\t"
-             << "AdditionExpressionNode"
-             << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << right->name << ";" << endl;
         right->print();
     }
 
@@ -450,13 +1085,20 @@ public:
 
     void print() const override
     {
+        // cout << "\t"
+        //      << "SubtractionExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // left->print();
+        // cout << "\t"
+        //      << "SubtractionExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // right->print();
         cout << "\t"
-             << "SubtractionExpressionNode"
+             << name
              << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << left->name << ";" << endl;
         left->print();
-        cout << "\t"
-             << "SubtractionExpressionNode"
-             << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << right->name << ";" << endl;
         right->print();
     }
 
@@ -490,13 +1132,20 @@ public:
 
     void print() const override
     {
+        // cout << "\t"
+        //      << "MultiplicationExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // left->print();
+        // cout << "\t"
+        //      << "MultiplicationExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // right->print();
         cout << "\t"
-             << "MultiplicationExpressionNode"
+             << name
              << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << left->name << ";" << endl;
         left->print();
-        cout << "\t"
-             << "MultiplicationExpressionNode"
-             << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << right->name << ";" << endl;
         right->print();
     }
 
@@ -530,17 +1179,67 @@ public:
 
     void print() const override
     {
+        // cout << "\t"
+        //      << "DivisionExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // left->print();
+        // cout << "\t"
+        //      << "DivisionExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        // right->print();
         cout << "\t"
-             << "DivisionExpressionNode"
+             << name
              << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << left->name << ";" << endl;
         left->print();
-        cout << "\t"
-             << "DivisionExpressionNode"
-             << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << right->name << ";" << endl;
         right->print();
     }
 
     ~DivisionExpressionNode()
+    {
+        delete left;
+        delete right;
+    }
+};
+
+// Composite node for representing binary expressions
+class BinaryExpressionNode : public AstNode
+{
+private:
+    string operation;
+    AstNode *left;
+    AstNode *right;
+
+public:
+    BinaryExpressionNode(string op, AstNode *l, AstNode *r)
+        : operation(op), left(l), right(r) {}
+
+    void add(AstNode *node) override
+    {
+        if (!left)
+            left = node;
+        else if (!right)
+            right = node;
+        else
+            cerr << "Binary expression already has two children." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t"
+             << name
+             << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << left->name << ";" << endl;
+        left->print();
+        // cout << "\t"
+        //      << "BinaryExpressionNode"
+        //      << " [label=\"" << operation << "\"]" << endl;
+        cout << "\t" << name << " -> " << right->name << ";" << endl;
+        right->print();
+    }
+
+    ~BinaryExpressionNode()
     {
         delete left;
         delete right;

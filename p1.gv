@@ -1,0 +1,239 @@
+digraph G {
+	root [label="Statements"]
+	root -> majd_Generic;
+	majd_Generic [label="Declare Fun : majd_Generic"]
+	majd_Generic -> arg1;
+	arg1 [label="Arguments"]
+	arg1 -> iden0;
+	iden0 [shape=box,label="Identifier: x"]
+	arg1 -> iden2;
+	iden2 [shape=box,label="Identifier: y"]
+	majd_Generic -> stmt8;
+	stmt8 [label="Statements"]
+	stmt8 -> assignment6;
+	assignment6 [label="assignment"]
+	assignment6 -> iden7;
+	iden7 [shape=box,label="Identifier: x"]
+	assignment6 -> sub5;
+	sub5 [label="-"]
+	sub5 -> iden3;
+	iden3 [shape=box,label="Identifier: y"]
+	sub5 -> int4;
+	int4 [shape=box,label="int: 5"]
+	stmt8 -> assignment10;
+	assignment10 [label="assignment"]
+	assignment10 -> iden11;
+	iden11 [shape=box,label="Identifier: z"]
+	assignment10 -> int9;
+	int9 [shape=box,label="int: 100"]
+	stmt8 -> print14;
+	print14 [label="Funiction Call : print14"]
+	print14 -> arg13;
+	arg13 [label="Arguments"]
+	arg13 -> iden12;
+	iden12 [shape=box,label="Identifier: x"]
+	stmt8 -> for21;
+	for21 [label="for"]
+	for21 -> range22;
+	range22 [label="Funiction Call : range22"]
+	range22 -> arg17;
+	arg17 [label="Arguments"]
+	arg17 -> int15;
+	int15 [shape=box,label="int: 1"]
+	arg17 -> int16;
+	int16 [shape=box,label="int: 10"]
+	for21 -> stmt20;
+	stmt20 [label="Statements"]
+	stmt20 -> return18;
+	return18 [label="ReturnStatement"]
+	return18 -> iden19;
+	iden19 [shape=box,label="Identifier: x"]
+	stmt8 -> return23;
+	return23 [label="ReturnStatement"]
+	return23 -> iden24;
+	iden24 [shape=box,label="Identifier: x"]
+	stmt8 -> asd;
+	asd [label="Declare Fun : asd"]
+	asd -> arg26;
+	arg26 [label="Arguments"]
+	arg26 -> iden25;
+	iden25 [shape=box,label="Identifier: a"]
+	arg26 -> iden27;
+	iden27 [shape=box,label="Identifier: b"]
+	asd -> stmt33;
+	stmt33 [label="Statements"]
+	stmt33 -> assignment31;
+	assignment31 [label="assignment"]
+	assignment31 -> iden32;
+	iden32 [shape=box,label="Identifier: w"]
+	assignment31 -> multi30;
+	multi30 [label="*"]
+	multi30 -> iden28;
+	iden28 [shape=box,label="Identifier: q"]
+	multi30 -> int29;
+	int29 [shape=box,label="int: 3"]
+	stmt33 -> assignment35;
+	assignment35 [label="assignment"]
+	assignment35 -> iden36;
+	iden36 [shape=box,label="Identifier: e"]
+	assignment35 -> int34;
+	int34 [shape=box,label="int: 12"]
+	stmt33 -> majd_func_call40;
+	majd_func_call40 [label="Funiction Call : majd_func_call40"]
+	majd_func_call40 -> arg38;
+	arg38 [label="Arguments"]
+	arg38 -> int37;
+	int37 [shape=box,label="int: 1"]
+	arg38 -> int39;
+	int39 [shape=box,label="int: 2"]
+	stmt33 -> while46;
+	while46 [label="While"]
+	while46 -> gt42;
+	gt42 [label=">"]
+	gt42 -> iden43;
+	iden43 [shape=box,label="Identifier: x"]
+	gt42 -> int41;
+	int41 [shape=box,label="int: 10"]
+	while46 -> stmt45;
+	stmt45 [label="Statements"]
+	stmt45 -> break44;
+	break44 [shape=box,label="break"]
+	stmt33 -> yield47;
+	yield47 [label="yieldStatement"]
+	yield47 -> iden48;
+	iden48 [shape=box,label="Identifier: a"]
+	root -> input51;
+	input51 [label="Funiction Call : input51"]
+	input51 -> string52;
+	string52 [shape=box,label="string: Hi:"]
+	root -> f;
+	f [label="Declare Fun : f"]
+	f -> arg54;
+	arg54 [label="Arguments"]
+	arg54 -> iden53;
+	iden53 [shape=box,label="Identifier: x"]
+	f -> stmt84;
+	stmt84 [label="Statements"]
+	stmt84 -> if83;
+	if83 [label="If"]
+	if83 -> equal56;
+	equal56 [label="=="]
+	equal56 -> iden57;
+	iden57 [shape=box,label="Identifier: x"]
+	equal56 -> int55;
+	int55 [shape=box,label="int: 5"]
+	if83 -> stmt60;
+	stmt60 [label="Statements"]
+	stmt60 -> return58;
+	return58 [label="ReturnStatement"]
+	return58 -> iden59;
+	iden59 [shape=box,label="Identifier: x"]
+	if83 -> block82;
+	block82 [label="Elif..._Else"]
+	block82 -> block69;
+	block69 [label="Elif..."]
+	block69 -> elif68;
+	elif68 [label="ElIf"]
+	elif68 -> equal62;
+	equal62 [label="=="]
+	equal62 -> iden63;
+	iden63 [shape=box,label="Identifier: x"]
+	equal62 -> int61;
+	int61 [shape=box,label="int: 10"]
+	elif68 -> stmt67;
+	stmt67 [label="Statements"]
+	stmt67 -> assignment65;
+	assignment65 [label="assignment"]
+	assignment65 -> iden66;
+	iden66 [shape=box,label="Identifier: x"]
+	assignment65 -> int64;
+	int64 [shape=box,label="int: 5"]
+	block69 -> elif77;
+	elif77 [label="ElIf"]
+	elif77 -> equal71;
+	equal71 [label="=="]
+	equal71 -> iden72;
+	iden72 [shape=box,label="Identifier: x"]
+	equal71 -> int70;
+	int70 [shape=box,label="int: 10"]
+	elif77 -> stmt76;
+	stmt76 [label="Statements"]
+	stmt76 -> assignment74;
+	assignment74 [label="assignment"]
+	assignment74 -> iden75;
+	iden75 [shape=box,label="Identifier: x"]
+	assignment74 -> int73;
+	int73 [shape=box,label="int: 5"]
+	block82 -> else81;
+	else81 [label="Else"]
+	else81 -> stmt80;
+	stmt80 [label="Statements"]
+	stmt80 -> return78;
+	return78 [label="ReturnStatement"]
+	return78 -> iden79;
+	iden79 [shape=box,label="Identifier: x"]
+	root -> if114;
+	if114 [label="If"]
+	if114 -> equal87;
+	equal87 [label="=="]
+	equal87 -> iden88;
+	iden88 [shape=box,label="Identifier: x"]
+	equal87 -> int86;
+	int86 [shape=box,label="int: 5"]
+	if114 -> stmt92;
+	stmt92 [label="Statements"]
+	stmt92 -> assignment90;
+	assignment90 [label="assignment"]
+	assignment90 -> iden91;
+	iden91 [shape=box,label="Identifier: x"]
+	assignment90 -> int89;
+	int89 [shape=box,label="int: 1"]
+	if114 -> block113;
+	block113 [label="Elif..._Else"]
+	block113 -> block101;
+	block101 [label="Elif..."]
+	block101 -> elif100;
+	elif100 [label="ElIf"]
+	elif100 -> equal94;
+	equal94 [label="=="]
+	equal94 -> iden95;
+	iden95 [shape=box,label="Identifier: x"]
+	equal94 -> int93;
+	int93 [shape=box,label="int: 10"]
+	elif100 -> stmt99;
+	stmt99 [label="Statements"]
+	stmt99 -> assignment97;
+	assignment97 [label="assignment"]
+	assignment97 -> iden98;
+	iden98 [shape=box,label="Identifier: x"]
+	assignment97 -> int96;
+	int96 [shape=box,label="int: 5"]
+	block101 -> elif109;
+	elif109 [label="ElIf"]
+	elif109 -> equal103;
+	equal103 [label="=="]
+	equal103 -> iden104;
+	iden104 [shape=box,label="Identifier: x"]
+	equal103 -> int102;
+	int102 [shape=box,label="int: 10"]
+	elif109 -> stmt108;
+	stmt108 [label="Statements"]
+	stmt108 -> assignment106;
+	assignment106 [label="assignment"]
+	assignment106 -> iden107;
+	iden107 [shape=box,label="Identifier: x"]
+	assignment106 -> int105;
+	int105 [shape=box,label="int: 5"]
+	block113 -> else112;
+	else112 [label="Else"]
+	else112 -> stmt111;
+	stmt111 [label="Statements"]
+	stmt111 -> pass110;
+	pass110 [shape=box,label="Pass"]
+	root -> assignment116;
+	assignment116 [label="assignment"]
+	assignment116 -> iden117;
+	iden117 [shape=box,label="Identifier: x"]
+	assignment116 -> int115;
+	int115 [shape=box,label="int: 10"]
+}

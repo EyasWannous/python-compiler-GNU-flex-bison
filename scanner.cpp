@@ -974,7 +974,7 @@ char *yytext;
     int current_indentation = 0;
     int spaces = 0;
 
-    extern YYSTYPE yylval; 
+    extern YYSTYPE yylval;
 #line 978 "scanner.cpp"
 
 #line 980 "scanner.cpp"
@@ -1675,7 +1675,7 @@ case 47:
 YY_RULE_SETUP
 #line 362 "scanner.l"
 {
-                            yylval.strval = strdup(yytext);
+                            yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
                             return ID;
                         }
 	YY_BREAK
@@ -1683,7 +1683,7 @@ case 48:
 YY_RULE_SETUP
 #line 367 "scanner.l"
 {
-                            yylval.intval = atoi(yytext);
+                            yylval.astNode = new NumberNode("INT", "int", atoi(yytext));
                             return INT_NUMBER;
                         }
 	YY_BREAK
@@ -1691,7 +1691,7 @@ case 49:
 YY_RULE_SETUP
 #line 372 "scanner.l"
 {
-                            yylval.flval = atof(yytext);
+                            yylval.astNode = new NumberNode("FLOAT", "float", atoi(yytext));
                             return FLOAT_NUMBER;
                         }
 	YY_BREAK
@@ -1779,7 +1779,7 @@ YY_RULE_SETUP
 case 55:
 YY_RULE_SETUP
 #line 445 "scanner.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;} 
+{*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;} 
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
@@ -1842,7 +1842,7 @@ YY_RULE_SETUP
 case 66:
 YY_RULE_SETUP
 #line 463 "scanner.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+{*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;}
 	YY_BREAK
 case 67:
 /* rule 67 can match eol */
@@ -1933,7 +1933,7 @@ YY_RULE_SETUP
 case 77:
 YY_RULE_SETUP
 #line 510 "scanner.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+{*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;}
 	YY_BREAK
 case 78:
 /* rule 78 can match eol */
@@ -2019,7 +2019,7 @@ YY_RULE_SETUP
 case 87:
 YY_RULE_SETUP
 #line 556 "scanner.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+{*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;}
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */

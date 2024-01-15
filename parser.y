@@ -25,7 +25,6 @@ extern int yylex();
 extern int yyparse();
 AstNode* root = NULL;
 int n_nodes = 0;
-1
 %}
 
 
@@ -36,12 +35,17 @@ int n_nodes = 0;
 %token ID STRING ARRAY RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD 
 %token INDENT DEDENT INDENTERROR NEWLINE GT LT GTE LTE EQUAL 
 %token INT FLOAT STR BOOL LIST INT_NUMBER FLOAT_NUMBER
-%token<strval> IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS PASS
 
-%type<strval> ID STRING RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD GT LT GTE LTE EQUAL INT FLOAT STR BOOL LIST
-%type<intval> INT_NUMBER 
-%type<flval> FLOAT_NUMBER 
+%token<astNode> IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS PASS
 
+%type<astNode> ID STRING RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD GT LT GTE LTE EQUAL INT FLOAT STR BOOL LIST
+%type<astNode> INT_NUMBER FLOAT_NUMBER 
+
+%type<astNode> prog statements statement function assignment expression NUMBER function_block function_stmts function_stmt_ function_sp_stmt function_compound_stmt args args_ arg simple_stmt ARRAY start function_call argsp args_p argp argsc args_c argc return_stmt global_stmt nonlocal_stmt yield_stmt
+%type<astNode> func_while_stmt func_for_stmt func_for_block func_for_stmts func_for_stmt_ relation_stmt for_sp_stmt range_args for_compound_stmt
+%type<astNode> func_if_stmt func_if_header func_elif_else_ func_elif_else func_else_stmt func_elif_stmts func_elif_stmt func_elif_header
+%type<astNode> if_stmt if_header elif_else_ elif_else else_stmt elif_stmts elif_stmt elif_header
+%type<astNode> block stmts stmt compound_stmt pass
 %nonassoc '='
 %left '+' '-'
 %left '*' '/'
@@ -51,82 +55,134 @@ int n_nodes = 0;
 
 /* Parser Grammar */
 
-prog
-        : { $$=NULL; }
-        | statements {
+start:
+prog    {
+                // Assign the root of the AST
                 root = $$;
                 YYACCEPT;
         }
 ;
 
+prog
+        : { $$=NULL; }
+        | statements {
+                $$=$1;
+        }
+;
+
 statements  
-        : statement { $$ = $1 }
-        | statements NEWLINE statement { $1->add($3); $$ = $1 }
+        : statement { $$=new StatementsNode("root"); $$->add($1); }
+        | statements NEWLINE statement { $1->add($3); $$ = $1; }
         | statements NEWLINE { }
 ;
 
 
 statement   
-        : if_stmt { }
-        | while_stmt { }
-        | for_stmt { }
-        | function { $$ = $1 }
-        | function_call { }
-        | assignment { }
+        : if_stmt { $$ = $1; }
+        | while_stmt { /*$$ = $1;*/ }
+        | for_stmt { /*$$ = $1;*/ }
+        | function { $$ = $1; }
+        | function_call { $$ = $1; }
+        | assignment NEWLINE { $$ = $1; }
         | class { }
         | try_except_stmt { }
         | match_stmt { }
         | with_statement { }
+        | pass NEWLINE { $$ = $1; }
 ;
 
 NUMBER
-        : INT_NUMBER
-        | FLOAT_NUMBER
+        : INT_NUMBER    { 
+                                std::string nname = "int" + std::to_string(n_nodes);
+                                ++n_nodes;
+                                $1->name=nname;
+                                $$ = $1;
+                        }
+
+        | FLOAT_NUMBER  { 
+                                std::string nname = "float" + std::to_string(n_nodes);
+                                ++n_nodes;
+                                $1->name=nname;
+                                $$ = $1;
+                        }
 ;
 
-// IF statment START
+//! IF statment START (AST)
 
 if_stmt     
-        : if_header block elif_else_  { printf("if statement successfully parsed:\n"); }                     
+        : if_header block elif_else_  { 
+                //printf("if statement successfully parsed:\n");
+                std::string nname = "if" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new IfStatementNode();
+                $$->name = nname;
+                $$->add($1);
+                $$->add($2);
+                $$->add($3);
+        }                     
 ;
 
 if_header   
-        : IF relation_stmt
-        | IF '(' relation_stmt ')'  
+        : IF relation_stmt { $$ = $2; }
+        | IF '(' relation_stmt ')' { $$ = $3; }  
 ;
 
 elif_else_  
-        :     {/* empty no next elif or else*/}
-        | elif_else { }
+        :     { $$ = NULL; }
+        | elif_else { $$ = $1; }
 ;
 
 elif_else   
-        : elif_stmts else_stmt
-        | elif_stmts
-        | else_stmt
+        : elif_stmts else_stmt {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$=new BlockNode(nname);
+                $$->label = "Elif..._Else";
+                $$->add($1); 
+                $$->add($2); 
+        }
+        | elif_stmts { $$ = $1; }
+        | else_stmt { $$ = $1; }
 ;
 
 else_stmt   
-        : ELSE  block 
+        : ELSE  block {
+                std::string nname = "else" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ElseStatementNode(nname);
+                $$->add($2);
+        }
 ;
 
 elif_stmts  
-        : elif_stmt
-        | elif_stmts elif_stmt 
+        : elif_stmt {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes; 
+                $$=new BlockNode(nname);
+                $$->label = "Elif..."; 
+                $$->add($1); 
+        }
+        | elif_stmts elif_stmt { $1->add($2); $$ = $1; }
 ;
 
 elif_stmt   
-        : elif_header block
+        : elif_header block {
+                std::string nname = "elif" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ElIfStatementNode(nname);
+                $$->add($1);
+                $$->add($2);
+        }
 ;
 
 elif_header 
-        : ELIF relation_stmt
-        | ELIF '(' relation_stmt ')'    
+        : ELIF relation_stmt { $$ = $2; }
+        | ELIF '(' relation_stmt ')' { $$ = $3; }    
 ;
 
 // IF statement END
 
-// FUNCTION statement START
+//! FUNCTION statement START (AST)
 function    
         : DEF ID '(' args ')' function_block {
         //printf("Function successfully parsed:\n"); 
@@ -138,135 +194,202 @@ function
                 $$->add($6);
         }
         | DEF ID '(' args ')' '-' GT data_type function_block {
-            printf("Generic Function successfully parsed:\n"); 
+            //printf("Generic Function successfully parsed:\n");
+                std::string name = "func" + std::to_string(n_nodes);
+                ++n_nodes;
+                IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                $$ = new FunctionNode(idFunc->value + "_Generic");
+                $$->add($4);
+                $$->add($9);
         }
 ;
 
 function_block
-            : NEWLINE INDENT function_stmts DEDENT { $$ = $3 }
+            : NEWLINE INDENT function_stmts DEDENT { $$ = $3; }
 ;
 
 function_stmts   
-            : function_stmt_ { $$ = $1 }
-            | function_stmts function_stmt_ { $$ = $2 }
+            : function_stmt_    { 
+                                        std::string nname = "stmt" + std::to_string(n_nodes);
+                                        ++n_nodes;
+                                        $$ = new StatementsNode(nname); 
+                                        $$->add($1); 
+                                }
+
+            | function_stmts function_stmt_ { $1->add($2); $$ = $1; }
 ;
 
 function_stmt_   
             : simple_stmt NEWLINE { 
-                $$=new StatementsNode("statement");
-                $$->add($1); 
+                $$ = $1;         
             }
 
             | function_compound_stmt { 
-                $$=new StatementsNode("statement");
-                $$->add($1);
+                $$ = $1;        
             }
 
             | function_sp_stmt NEWLINE { 
-                $$=new StatementsNode("statement");
-                $$->add($1);    
+                $$ = $1;            
             }
 ;
 
 function_sp_stmt 
-            : return_stmt
-            | global_stmt
-            | nonlocal_stmt
-            | yield_stmt
+            : return_stmt{ $$ = $1; }
+            | global_stmt{ $$ = $1; }
+            | nonlocal_stmt{ $$ = $1; }
+            | yield_stmt{ $$ = $1; }
 ;
 
 function_compound_stmt
-        : func_if_stmt
-        | func_while_stmt
-        | func_for_stmt
+        : func_if_stmt{ $$ = $1; }
+        | func_while_stmt{ $$ = $1; }
+        | func_for_stmt{ $$ = $1; }
         | try_except_stmt {}
         | with_statement {}
         | match_stmt {}
-        | function
+        | function{ $$ = $1; }
 ;
 
 //!================================================================
 func_while_stmt
         : WHILE relation_stmt func_for_block { 
-            printf("while statement successfully parsed:\n"); 
+            //printf("while statement successfully parsed:\n");
+                std::string name = "while" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new WhileStatementNode();
+                $$->name = name;
+                $$->add($2);
+                $$->add($3);
         }
 ;
 
 func_for_stmt    
         : FOR ID IN RANGE range_args func_for_block { 
-            printf("for statement successfully parsed:\n"); 
+            //printf("for statement successfully parsed:\n");
+                std::string name = "for" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string nname = "range" + std::to_string(n_nodes);
+                ++n_nodes;
+                $4 = new FunctionCallNode(nname);
+                $4->add($5);
+                $$ = new ForStatementNode();
+                $$->name = name;
+                $$->add($4);
+                $$->add($6);
         }
         | FOR ID IN ARRAY func_for_block { 
-            printf("for statement successfully parsed:\n"); 
+            //printf("for statement successfully parsed:\n"); 
         }
 ;
 
 func_for_block
-        : NEWLINE INDENT func_for_stmts DEDENT { }
+        : NEWLINE INDENT func_for_stmts DEDENT { $$ = $3; }
 ;
 
 func_for_stmts   
-        : func_for_stmt_
-        | func_for_stmts func_for_stmt_
+        : func_for_stmt_ {
+                std::string nname = "stmt" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new StatementsNode(nname); 
+                $$->add($1); 
+        }
+
+        | func_for_stmts func_for_stmt_ { $1->add($2); $$ = $1; }
 ;
 
 func_for_stmt_   
-        : simple_stmt NEWLINE {}
-        | for_compound_stmt {}
-        | for_sp_stmt NEWLINE
-        | function_sp_stmt
+        : simple_stmt NEWLINE { $$ = $1; }
+        | for_compound_stmt { $$ = $1; }
+        | for_sp_stmt NEWLINE { $$ = $1; }
+        | function_sp_stmt NEWLINE { $$ = $1; }
 ;
 //!================================================================
 func_if_stmt     
-        : func_if_header function_block func_elif_else_  { printf("if statement successfully parsed:\n"); }                     
+        : func_if_header function_block func_elif_else_  { 
+                //printf("if statement successfully parsed:\n");
+                std::string nname = "if" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new IfStatementNode();
+                $$->name = nname;
+                $$->add($1);
+                $$->add($2);
+                $$->add($3);
+            }                     
 ;
 
-func_if_header   
-        : IF relation_stmt
-        | IF '(' relation_stmt ')'  
+func_if_header
+        : IF relation_stmt { $$ = $2; }
+        | IF '(' relation_stmt ')' { $$ = $3; } 
 ;
 
 func_elif_else_  
-        :     {/* empty no next elif or else*/}
-        | func_elif_else { }
+        :     { $$ = NULL; }
+        | func_elif_else { $$ = $1; }
 ;
 
 func_elif_else   
-        : func_elif_stmts func_else_stmt
-        | func_elif_stmts
-        | func_else_stmt
+        : func_elif_stmts func_else_stmt {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$=new BlockNode(nname);
+                $$->label = "Elif..._Else";
+                $$->add($1); 
+                $$->add($2); 
+        }
+        | func_elif_stmts { $$ = $1; }
+        | func_else_stmt { $$ = $1; }
 ;
 
 func_else_stmt   
-        : ELSE  function_block 
+        : ELSE  function_block {
+                std::string nname = "else" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ElseStatementNode(nname);
+                $$->add($2);
+        }
 ;
 
 func_elif_stmts  
-        : func_elif_stmt
-        | func_elif_stmts func_elif_stmt 
+        : func_elif_stmt {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes; 
+                $$=new BlockNode(nname);
+                $$->label = "Elif..."; 
+                $$->add($1); 
+        }
+        | func_elif_stmts func_elif_stmt { $1->add($2); $$ = $1; }
 ;
 
 func_elif_stmt   
-        : func_elif_header function_block
+        : func_elif_header function_block {
+                std::string nname = "elif" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ElIfStatementNode(nname);
+                $$->add($1);
+                $$->add($2);
+        }
 ;
 
 func_elif_header 
-        : ELIF relation_stmt
-        | ELIF '(' relation_stmt ')'    
+        : ELIF relation_stmt { $$ = $2; }
+        | ELIF '(' relation_stmt ')' { $$ = $3; }    
 ;
 
 //!===============================================================
 
-// args for define function
+//! args for define function (AST)
 args    
-    : /* empty params */ { $$ = NULL }
-    | args_  { $$ = $1 }
+    : /* empty params */ { $$ = NULL; }
+    | args_  { $$ = $1; }
 ;
 
 
-
 args_ 
-    : arg { $$ = new Args("Args"); $$->add($1); }
+    : arg{ 
+                std::string nname = "arg" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new Args(nname); $$->add($1); 
+        }
     | args_ ',' arg { $1->add($3); $$ = $1; }
 ;
 
@@ -288,24 +411,78 @@ arg
     }
 ;
 
-// args for print function
+//! args for print function (AST)
 argsp  
-    : /* empty params */ { }
-    | args_p { }
+    : /* empty params */ { $$ = NULL; }
+    | args_p { $$ = $1; }
 ;
 
 
 args_p
-    : argp { }
-    | args_p  argp { }
+    : argp {
+                std::string nname = "arg" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new Args(nname); $$->add($1); 
+        }
+
+    | args_p  argp { $1->add($2); $$ = $1; }
 ;
 
 
 
 argp  
-    : ID { }
-    | NUMBER { }
-    | STRING { }
+    : ID { 
+        std::string nname = "iden" + std::to_string(n_nodes);
+        ++n_nodes;
+        $1->name=nname;
+        $$ = $1;
+        }
+
+    | NUMBER { $$ = $1; }
+
+    | STRING {
+                std::string nname = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
+                $$ = $1; 
+        }
+;
+
+//! args for function call (AST)
+argsc  
+    : /* empty params */ { $$ = NULL; }
+    | args_c { $$ = $1; }
+;
+
+
+args_c
+    : argc {
+                std::string nname = "arg" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new Args(nname); $$->add($1); 
+        }
+
+    | args_c ',' argc { $1->add($3); $$ = $1; }
+;
+
+
+
+argc  
+    : ID { 
+        std::string nname = "iden" + std::to_string(n_nodes);
+        ++n_nodes;
+        $1->name=nname;
+        $$ = $1;
+        }
+
+    | NUMBER { $$ = $1; }
+
+    | STRING {
+                std::string nname = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
+                $$ = $1; 
+        }
 ;
 
 // FUNCTION statement END
@@ -320,9 +497,29 @@ while_stmt
 
 // FOR statement START
 range_args  
-        : '(' NUMBER ')'
-        | '(' NUMBER ',' NUMBER')'
-        | '(' NUMBER ',' NUMBER ',' NUMBER ')'
+        : '(' NUMBER ')' {
+                std::string nname = "arg" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new Args(nname); 
+                $$->add($2); 
+        }
+
+        | '(' NUMBER ',' NUMBER')' {
+                std::string nname = "arg" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new Args(nname); 
+                $$->add($2); 
+                $$->add($4); 
+        }
+
+        | '(' NUMBER ',' NUMBER ',' NUMBER ')' {
+                std::string nname = "arg" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new Args(nname); 
+                $$->add($2); 
+                $$->add($4); 
+                $$->add($6); 
+        }
 ;
 
 for_stmt    
@@ -346,18 +543,29 @@ for_stmts
 for_stmt_   
         : simple_stmt NEWLINE {}
         | for_compound_stmt {}
-        | for_sp_stmt NEWLINE
+        | for_sp_stmt NEWLINE {}
 ;
 
 for_sp_stmt 
-        : BREAK
-        | CONTINUE
+        : BREAK {
+                std::string nname = "break" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new BreakStatementNode(); 
+                $$->name = nname;
+        }
+
+        | CONTINUE {
+                std::string nname = "continue" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ContinueStatementNode(); 
+                $$->name = nname;
+        }
 ;
 
 for_compound_stmt
-        : for_if_stmt
-        | while_stmt
-        | for_stmt
+        : for_if_stmt {}
+        | while_stmt {}
+        | for_stmt {}
         | try_except_stmt {}
         | with_statement {}
         | match_stmt {}
@@ -406,11 +614,32 @@ for_elif_header
 
 // FOR statement END
 
-// FUNCTION_CALL statement START
+//! FUNCTION_CALL statement START (AST)
 function_call     
-            : ID '(' args ')' {}
-            | PRINT '(' argsp ')' {}
-            | INPUT '(' STRING ')' {}
+            : ID '(' argsc ')' {
+                std::string name = "_func_call" + std::to_string(n_nodes);
+                ++n_nodes;
+                IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($1);
+                $$ = new FunctionCallNode(idFunc->value + name);
+                $$->add($3);
+            }
+
+            | PRINT '(' argsp ')' {
+                std::string name = "print" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new FunctionCallNode(name);
+                $$->add($3);
+            }
+
+            | INPUT '(' STRING ')' {
+                std::string name = "input" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new FunctionCallNode(name);
+                std::string nname = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                $3->name=nname;
+                $$->add($3);
+            }
 ;
 // FUNCTION_CALL statement END
 
@@ -538,37 +767,42 @@ targets
 
 // WITH statement END
 
-
 block //: NEWLINE INDENT stmts NEWLINE DEDENT { }
-    : NEWLINE INDENT stmts DEDENT { }
+    : NEWLINE INDENT stmts DEDENT { $$ = $3; }
 ;
 
 stmts 
-    : stmt
-    | stmts stmt
+    : stmt {
+            std::string nname = "stmt" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new StatementsNode(nname); 
+            $$->add($1); 
+    }
+    | stmts stmt { $1->add($2); $$ = $1; }
 ;
 
 stmt  
-    : simple_stmt NEWLINE {}
-    | compound_stmt {}
+    : simple_stmt NEWLINE { $$ = $1; }
+    | compound_stmt { $$ = $1; }
 ;
 
 
 simple_stmt
-        : assignment      { $$ = $1 }
+        : assignment      { $$ = $1; }
+        | pass            { $$ = $1; }
         //| return_stmt     {}
         //| BREAK           {}
         //| CONTINUE        {}
         //| yield_stmt      {}
         //| global_stmt     {}
         //| nonlocal_stmt   {}
-        | function_call   {}
+        | function_call   { $$ = $1; }
 ;
 
 compound_stmt
-        : if_stmt    {}
-        | while_stmt {}
-        | for_stmt   {}
+        : if_stmt    { $$ = $1; }
+        | while_stmt { /*$$ = $1;*/ }
+        | for_stmt   { /*$$ = $1;*/ }
         //| function   {}
         | try_except_stmt {}
         | with_statement {}
@@ -579,46 +813,64 @@ assignment
         : ID '=' expression  {
                 std::string name = "assignment" + std::to_string(n_nodes);
                 ++n_nodes;
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
                 $$ = new assignmentStatement(name);
                 $$->add($1);
                 $$->add($3);
         }
 
-        : ID '+=' expression  {
+        | ID '+' '=' expression  {
                 std::string name = "assignment" + std::to_string(n_nodes);
                 ++n_nodes;
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
                 $$ = new assignmentStatement(name);
                 $$->add($1);
-                $$->add($3);
+                $$->add($4);
         }
 
-        : ID '-=' expression  {
+        | ID '-' '=' expression  {
                 std::string name = "assignment" + std::to_string(n_nodes);
                 ++n_nodes;
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
                 $$ = new assignmentStatement(name);
                 $$->add($1);
-                $$->add($3);
+                $$->add($4);
         }
 
-        : ID '*=' expression  {
+        | ID '*' '=' expression  {
                 std::string name = "assignment" + std::to_string(n_nodes);
                 ++n_nodes;
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
                 $$ = new assignmentStatement(name);
                 $$->add($1);
-                $$->add($3);
+                $$->add($4);
         }
 
-        : ID '/=' expression  {
+        | ID '/' '=' expression  {
                 std::string name = "assignment" + std::to_string(n_nodes);
                 ++n_nodes;
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
                 $$ = new assignmentStatement(name);
                 $$->add($1);
-                $$->add($3);
+                $$->add($4);
         }
 
         | ID '=' ARRAY       {
                 std::string name = "assignment" + std::to_string(n_nodes);
                 ++n_nodes;
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
                 $$ = new assignmentStatement(name);
                 $$->add($1);
                 $$->add($3);
@@ -626,43 +878,192 @@ assignment
 ;
 
 return_stmt
-        : RETURN NUMBER { }
-        | RETURN ID { }
-        | RETURN STRING { }
+        : RETURN NUMBER {
+                std::string nname = "return" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ReturnStatementNode($2);
+                $1->name = nname;
+        }
+
+        | RETURN ID { 
+                std::string nname = "return" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $$ = new ReturnStatementNode($2);
+                $$->name = nname;
+        }
+
+        | RETURN STRING { 
+                std::string nname = "return" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $$ = new ReturnStatementNode($2);
+                $$->name = nname;
+        }
 ;
 
 yield_stmt
-        : YIELD ID { }
+        : YIELD ID {
+                std::string nname = "yield" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $$ = new yieldStatementNode($2);
+                $$->name = nname;
+        }
 ;
 
 global_stmt
-        : GLOBAL ID { }
+        : GLOBAL ID {
+                std::string nname = "global" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $$ = new globalStatementNode($2);
+                $$->name = nname;
+        }
 ;
 
 nonlocal_stmt
-        : NONLOCAL ID { }
+        : NONLOCAL ID {
+                std::string nname = "nonlocal" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $$ = new nonLocalStatementNode($2);
+                $$->name = nname;
+        }
+;
+
+pass
+        : PASS {
+                std::string nname = "pass" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new PassStatementNode();
+                $$->name = nname;
+        }
 ;
 
 relation_stmt
-        : ID GT NUMBER    {}
-        | ID LT NUMBER    {}
-        | ID GTE NUMBER   {}
-        | ID LTE NUMBER   {}
-        | ID EQUAL NUMBER {}
-        | ID EQUAL STRING {}
+        : ID GT NUMBER    {
+                std::string nname = "gt" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=name;
+                $$ = new BinaryExpressionNode(">", $1, $3);
+                $$->name=nname;
+        }
+
+        | ID LT NUMBER    {
+                std::string nname = "lt" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=name;
+                $$ = new BinaryExpressionNode("<", $1, $3);
+                $$->name=nname;
+        }
+
+        | ID GTE NUMBER   {
+                std::string nname = "gte" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=name;
+                $$ = new BinaryExpressionNode(">=", $1, $3);
+                $$->name=nname;
+        }
+
+        | ID LTE NUMBER   {
+                std::string nname = "lte" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=name;
+                $$ = new BinaryExpressionNode("<=", $1, $3);
+                $$->name=nname;
+        }
+
+        | ID EQUAL NUMBER {
+                std::string nname = "equal" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=name;
+                $$ = new BinaryExpressionNode("==", $1, $3);
+                $$->name=nname;
+        }
+
+        | ID EQUAL STRING {
+                std::string nname = "lte" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                $3->name=name;
+                std::string nnname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nnname;
+                $$ = new BinaryExpressionNode("==", $1, $3);
+                $$->name=nname;
+        }
 ;
 
 expression
-        : expression '+' expression     { }
-        | expression '-' expression     { }
-        | expression '*' expression     { }
-        | expression '/' expression     { }
+        : expression '+' expression     {
+                std::string nname = "add" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new AdditionExpressionNode($1, $3);
+                $$->name=nname;
+        }
+
+        | expression '-' expression     {
+                std::string nname = "sub" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new SubtractionExpressionNode($1, $3);
+                $$->name=nname;
+        }
+
+        | expression '*' expression     {
+                std::string nname = "multi" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new MultiplicationExpressionNode($1, $3);
+                $$->name=nname;
+        }
+
+        | expression '/' expression     {
+                std::string nname = "divide" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new DivisionExpressionNode($1, $3);
+                $$->name=nname;
+        }
+
         | '|' expression  %prec UMINUS  { }
         //| '(' expression ')'           { }
         | '-' expression %prec UMINUS   { }
-        | NUMBER                        { }
-        | STRING                        { }
-        | ID
+
+        | NUMBER                        { $$ = $1; }
+
+        | STRING                        {
+                                                std::string nname = "string" + std::to_string(n_nodes);
+                                                ++n_nodes;
+                                                $1->name=nname;
+                                                $$ = $1; 
+                                        }
+
+        | ID                            { 
+                                                std::string nname = "iden" + std::to_string(n_nodes);
+                                                ++n_nodes;
+                                                $1->name=nname;
+                                                $$ = $1;
+                                        }
 ;
 
 data_type   
