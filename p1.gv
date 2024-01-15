@@ -542,4 +542,44 @@ digraph G {
 	iden265 [shape=box,label="Identifier: k"]
 	assignment264 -> iden263;
 	iden263 [shape=box,label="Identifier: z"]
+	root -> with288;
+	with288 [label="with"]
+	with288 -> block278;
+	block278 [label="With Head"]
+	block278 -> block277;
+	block277 [label="With Item"]
+	block277 -> iden277;
+	iden277 [shape=box,label="Identifier: open"]
+	block277 -> block272;
+	block272 [label="Parameters"]
+	block272 -> string271;
+	string271 [shape=box,label="string: file-path"]
+	block272 -> string273;
+	string273 [shape=box,label="string: w"]
+	block277 -> block275;
+	block275 [label="Targets"]
+	block275 -> iden274;
+	iden274 [shape=box,label="Identifier: file"]
+	block275 -> iden276;
+	iden276 [shape=box,label="Identifier: majd"]
+	block278 -> block283;
+	block283 [label="With Item"]
+	block283 -> iden283;
+	iden283 [shape=box,label="Identifier: open"]
+	block283 -> block280;
+	block280 [label="Parameters"]
+	block280 -> string279;
+	string279 [shape=box,label="string: file-path"]
+	block280 -> string281;
+	string281 [shape=box,label="string: w"]
+	block283 -> iden282;
+	iden282 [shape=box,label="Identifier: file"]
+	with288 -> stmt287;
+	stmt287 [label="Statements"]
+	stmt287 -> assignment285;
+	assignment285 [label="assignment"]
+	assignment285 -> iden286;
+	iden286 [shape=box,label="Identifier: x"]
+	assignment285 -> int284;
+	int284 [shape=box,label="int: 5"]
 }

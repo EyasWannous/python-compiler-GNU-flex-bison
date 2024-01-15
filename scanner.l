@@ -176,6 +176,8 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 \\$                     {}
 
+@.*                     {}
+
 {sp}                    {yylval.strval = strdup(yytext); return yytext[0];}
 
 {array}                 {return ARRAY;}

@@ -861,11 +861,17 @@ with_statement
 ;
 
 with_statement_body
-                : with_body ',' with_statement_body {
+                :  with_statement_body ',' with_body {
                     $1->add($3);
                     $$=$1;  
                 }
-                | with_body { $$=$1; }
+                | with_body {
+                        std::string nname = "block" + std::to_string(n_nodes);
+                        ++n_nodes; 
+                        $$=new BlockNode(nname);
+                        $$->label = "With Head"; 
+                        $$->add($1); 
+                }
 ;
 
 with_body
@@ -884,6 +890,10 @@ with_item
             std::string nname = "iden" + std::to_string(n_nodes);
             n_nodes;
             $1->name = nname;
+            std::string name = "block" + std::to_string(n_nodes);
+            ++n_nodes; 
+            $$=new BlockNode(name);
+            $$->label = "With Item"; 
             $$->add($1);
             $$->add($3);
             $$->add($6);
@@ -897,8 +907,14 @@ with_item
 //////////////////////////////
 
 inside_brackets
-            : expression { $$=$1; }
-            | expression ',' inside_brackets {
+            : expression {
+                std::string nname = "block" + std::to_string(n_nodes);
+                ++n_nodes; 
+                $$=new BlockNode(nname);
+                $$->label = "Parameters"; 
+                $$->add($1); 
+            }
+            | inside_brackets ',' expression {
                 $1->add($3);
                 $$ = $1;
             }
@@ -916,7 +932,13 @@ target
 ;
 
 targets
-    : target { $$=$1; }
+    : target {
+        std::string nname = "block" + std::to_string(n_nodes);
+        ++n_nodes; 
+        $$=new BlockNode(nname);
+        $$->label = "Targets"; 
+        $$->add($1); 
+    }
     | targets ',' target { $1->add($3); $$=$1; }
 ;
 

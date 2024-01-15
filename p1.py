@@ -91,3 +91,6 @@ if q :
     else:
         d = 56
         k = z
+
+with open('file-path','w') as (file, majd) , open('file-path','w') as file :
+    x = 5
