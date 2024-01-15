@@ -44,7 +44,7 @@ int n_nodes = 0;
 %type<astNode> prog statements statement function assignment expression NUMBER function_block function_stmts function_stmt_ function_sp_stmt function_compound_stmt args args_ arg simple_stmt ARRAY start function_call argsp args_p argp argsc args_c argc return_stmt global_stmt nonlocal_stmt yield_stmt
 %type<astNode> func_while_stmt func_for_stmt func_for_block func_for_stmts func_for_stmt_ relation_stmt for_sp_stmt range_args for_compound_stmt
 %type<astNode> func_if_stmt func_if_header func_elif_else_ func_elif_else func_else_stmt func_elif_stmts func_elif_stmt func_elif_header
-%type<astNode> if_stmt if_header elif_else_ elif_else else_stmt elif_stmts elif_stmt elif_header
+%type<astNode> if_stmt if_header elif_else_ elif_else else_stmt elif_stmts elif_stmt elif_header with_statement with_statement_body with_body with_stmt_contents with_item inside_brackets target targets
 %type<astNode> block stmts stmt compound_stmt pass class class_block class_stmts class_stmt_ class_sp_stmt
 %type<astNode> while_stmt for_stmt for_block for_stmts for_stmt_ for_if_stmt for_if_header for_elif_else_ for_elif_else for_else_stmt for_elif_stmts for_elif_stmt for_elif_header
 %type<astNode> try_except_stmt except_clauses except_clause match_stmt case_statements case_statement final_case match_block
@@ -90,7 +90,7 @@ statement
         | class { $$ = $1; }
         | try_except_stmt { $$ = $1; }
         | match_stmt { $$ = $1; }
-        | with_statement { }
+        | with_statement { $$ = $1; }
         | pass NEWLINE { $$ = $1; }
 ;
 
@@ -121,7 +121,8 @@ if_stmt
                 $$->name = nname;
                 $$->add($1);
                 $$->add($2);
-                $$->add($3);
+                if ($3 != NULL)
+                    $$->add($3);
         }                     
 ;
 
@@ -193,7 +194,8 @@ function
                 ++n_nodes;
                 IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
                 $$ = new FunctionNode(idFunc->value);
-                $$->add($4);
+                if ($4 != NULL)
+                    $$->add($4);
                 $$->add($6);
         }
         | DEF ID '(' args ')' '-' GT data_type function_block {
@@ -202,7 +204,8 @@ function
                 ++n_nodes;
                 IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
                 $$ = new FunctionNode(idFunc->value + "_Generic");
-                $$->add($4);
+                if ($4 != NULL)
+                    $$->add($4);
                 $$->add($9);
         }
 ;
@@ -248,7 +251,7 @@ function_compound_stmt
         | func_while_stmt{ $$ = $1; }
         | func_for_stmt{ $$ = $1; }
         | try_except_stmt { $$ = $1; }
-        | with_statement {}
+        | with_statement { $$ = $1; }
         | match_stmt { $$ = $1; }
         | function{ $$ = $1; }
 ;
@@ -316,7 +319,8 @@ func_if_stmt
                 $$->name = nname;
                 $$->add($1);
                 $$->add($2);
-                $$->add($3);
+                if ($3 != NULL)
+                    $$->add($3);
             }                     
 ;
 
@@ -593,7 +597,7 @@ for_compound_stmt
         | while_stmt {  $$ = $1; }
         | for_stmt {  $$ = $1; }
         | try_except_stmt {  $$ = $1; }
-        | with_statement {  /*$$ = $1;*/ }
+        | with_statement { $$ = $1; }
         | match_stmt { $$ = $1; }
 ;
 
@@ -607,7 +611,8 @@ for_if_stmt
                 $$->name = nname;
                 $$->add($1);
                 $$->add($2);
-                $$->add($3);
+                if ($3 != NULL)
+                    $$->add($3);
             }                     
 ;
 
@@ -680,14 +685,16 @@ function_call
                 ++n_nodes;
                 IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($1);
                 $$ = new FunctionCallNode(idFunc->value + name);
-                $$->add($3);
+                if ($3 != NULL)
+                    $$->add($3);
             }
 
             | PRINT '(' argsp ')' {
                 std::string name = "print" + std::to_string(n_nodes);
                 ++n_nodes;
                 $$ = new FunctionCallNode(name);
-                $$->add($3);
+                if ($3 != NULL)
+                    $$->add($3);
             }
 
             | INPUT '(' STRING ')' {
@@ -839,51 +846,78 @@ match_block
 // MATCH statement END
 
 
-// WITH statement START
+//! WITH statement START (AST)
 
-with_statement
-            : WITH with_statement_body block { 
-                printf("with statement successfully parsed:\n"); 
-            }
+with_statement 
+                : WITH with_statement_body block { 
+                    //printf("with statement successfully parsed:\n");
+                    std::string nname = "with" + std::to_string(n_nodes);
+                    n_nodes;  
+                    $$ = new withStatementNode();
+                    $$->name = nname;
+                    $$->add($2);
+                    $$->add($3);
+                }
 ;
 
 with_statement_body
-                : with_body ',' with_statement_body
-                | with_body
+                : with_body ',' with_statement_body {
+                    $1->add($3);
+                    $$=$1;  
+                }
+                | with_body { $$=$1; }
 ;
 
 with_body
-        : with_stmt_contents
-        |'(' with_stmt_contents ')'
+        : with_stmt_contents { $$=$1; }
+        |'(' with_stmt_contents ')' { $$=$2; }
 ;
 
 /////////////////////////////
 with_stmt_contents
-                : with_item 
+                : with_item { $$=$1; }
                 //|with_item ',' with_stmt_contents
 ;
 
 with_item
-        : ID '(' inside_brackets ')' AS target
-        | expression
-        | expression AS target
+        : ID '(' inside_brackets ')' AS target {
+            std::string nname = "iden" + std::to_string(n_nodes);
+            n_nodes;
+            $1->name = nname;
+            $$->add($1);
+            $$->add($3);
+            $$->add($6);
+        }
+        | expression { $$=$1; }
+        | expression AS target {
+            $1->add($3);
+            $$ = $1;
+        }
 ;
 //////////////////////////////
 
 inside_brackets
-            : expression
-            | expression ',' inside_brackets
+            : expression { $$=$1; }
+            | expression ',' inside_brackets {
+                $1->add($3);
+                $$ = $1;
+            }
 ;
 
 target
-    : '(' targets ')' 
-    | target '.' ID 
-    | ID
+    : '(' targets ')' { $$=$2; } 
+    | target '.' ID { $1->add($3); $$=$1; }
+    | ID {
+        std::string nname = "iden" + std::to_string(n_nodes);
+        ++n_nodes;
+        $1->name=nname;
+        $$ = $1;
+    }
 ;
 
 targets
-    : target
-    | targets ',' target
+    : target { $$=$1; }
+    | targets ',' target { $1->add($3); $$=$1; }
 ;
 
 // WITH statement END
@@ -926,7 +960,7 @@ compound_stmt
         | for_stmt   { $$ = $1; }
         //| function   {}
         | try_except_stmt { $$ = $1; }
-        | with_statement {}
+        | with_statement { $$ = $1; }
         | match_stmt { $$ = $1; }
 ;
 
@@ -1135,6 +1169,12 @@ relation_stmt
                 $$ = new BinaryExpressionNode("==", $1, $3);
                 $$->name=nname;
         }
+        | ID { 
+                std::string nname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $1->name=nname;
+                $$ = $1;
+            }
 ;
 
 expression
