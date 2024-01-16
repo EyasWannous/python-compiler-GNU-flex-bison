@@ -96,7 +96,11 @@ extern int yydebug;
     WITH = 298,
     AS = 299,
     PASS = 300,
-    UMINUS = 301
+    AND = 301,
+    OR = 302,
+    TRUE_TOK = 303,
+    FALSE_TOK = 304,
+    UMINUS = 305
   };
 #endif
 
@@ -112,7 +116,7 @@ union YYSTYPE
         float flval;
         AstNode* astNode;
 
-#line 116 "parser.hpp" /* yacc.c:1909  */
+#line 120 "parser.hpp" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

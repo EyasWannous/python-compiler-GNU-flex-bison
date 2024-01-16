@@ -36,10 +36,10 @@ int n_nodes = 0;
 %token INDENT DEDENT INDENTERROR NEWLINE GT LT GTE LTE EQUAL 
 %token INT FLOAT STR BOOL LIST INT_NUMBER FLOAT_NUMBER
 
-%token<astNode> IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS PASS
+%token<astNode> IF ELSE ELIF DEF WHILE FOR IN RANGE PRINT INPUT CLASS TRY EXCEPT MATCH CASE WITH AS PASS AND OR TRUE_TOK FALSE_TOK 
 
 %type<astNode> ID STRING RETURN BREAK CONTINUE GLOBAL NONLOCAL YIELD GT LT GTE LTE EQUAL INT FLOAT STR BOOL LIST
-%type<astNode> INT_NUMBER FLOAT_NUMBER 
+%type<astNode> INT_NUMBER FLOAT_NUMBER boolean
 
 %type<astNode> prog statements statement function assignment expression NUMBER function_block function_stmts function_stmt_ function_sp_stmt function_compound_stmt args args_ arg simple_stmt ARRAY start function_call argsp args_p argp argsc args_c argc return_stmt global_stmt nonlocal_stmt yield_stmt
 %type<astNode> func_while_stmt func_for_stmt func_for_block func_for_stmts func_for_stmt_ relation_stmt for_sp_stmt range_args for_compound_stmt
@@ -50,9 +50,10 @@ int n_nodes = 0;
 %type<astNode> try_except_stmt except_clauses except_clause match_stmt case_statements case_statement final_case match_block
 
 %nonassoc '='
+%left '|' '&' AND OR
 %left '+' '-'
 %left '*' '/'
-%nonassoc '|' UMINUS
+%nonassoc UMINUS
 
 %%
 
@@ -109,6 +110,24 @@ NUMBER
                                 $$ = $1;
                         }
 ;
+
+boolean : TRUE_TOK      {
+                                std::string nname = "bool" + std::to_string(n_nodes);
+                                ++n_nodes;
+                                $1 = new BoolNode();
+                                $1->name=nname;
+                                $1->label = "True";
+                                $$ = $1;
+                        }
+        | FALSE_TOK     {
+                                std::string nname = "bool" + std::to_string(n_nodes);
+                                ++n_nodes;
+                                $1 = new BoolNode();
+                                $1->name=nname;
+                                $1->label = "False";
+                                $$ = $1;
+                        }
+
 
 //! IF statment START (AST)
 
@@ -898,11 +917,11 @@ with_item
             $$->add($3);
             $$->add($6);
         }
-        | expression { $$=$1; }
-        | expression AS target {
-            $1->add($3);
-            $$ = $1;
-        }
+        //| expression { $$=$1; }
+        // | expression AS target {
+        //     $1->add($3);
+        //     $$ = $1;
+        // }
 ;
 //////////////////////////////
 
@@ -1059,7 +1078,15 @@ return_stmt
                 std::string nname = "return" + std::to_string(n_nodes);
                 ++n_nodes;
                 $$ = new ReturnStatementNode($2);
-                $1->name = nname;
+                $$->name = nname;
+        }
+
+        | RETURN NUMBER ',' NUMBER {
+                std::string nname = "return" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new ReturnStatementNode($2);
+                $$->add($4);
+                $$->name = nname;
         }
 
         | RETURN ID { 
@@ -1072,6 +1099,20 @@ return_stmt
                 $$->name = nname;
         }
 
+        | RETURN ID ',' ID { 
+                std::string nname = "return" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string nnname = "iden" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $4->name=nnname;
+                $$ = new ReturnStatementNode($2);
+                $$->add($4);
+                $$->name = nname;
+        }
+
         | RETURN STRING { 
                 std::string nname = "return" + std::to_string(n_nodes);
                 ++n_nodes;
@@ -1079,6 +1120,20 @@ return_stmt
                 ++n_nodes;
                 $2->name=name;
                 $$ = new ReturnStatementNode($2);
+                $$->name = nname;
+        }
+
+        | RETURN STRING ',' STRING { 
+                std::string nname = "return" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string name = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                std::string nnname = "string" + std::to_string(n_nodes);
+                ++n_nodes;
+                $2->name=name;
+                $4->name=nnname;
+                $$ = new ReturnStatementNode($2);
+                $$->add($4);
                 $$->name = nname;
         }
 ;
@@ -1228,11 +1283,41 @@ expression
                 $$->name=nname;
         }
 
+        | expression AND expression     {
+                std::string nname = "and" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new BinaryExpressionNode("AND", $1, $3);
+                $$->name=nname;
+        }
+
+        | expression '&' expression     {
+                std::string nname = "and" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new BinaryExpressionNode("AND", $1, $3);
+                $$->name=nname;
+        }
+
+        | expression OR expression     {
+                std::string nname = "or" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new BinaryExpressionNode("OR", $1, $3);
+                $$->name=nname;
+        }
+
+        | expression '|' expression     {
+                std::string nname = "or" + std::to_string(n_nodes);
+                ++n_nodes;
+                $$ = new BinaryExpressionNode("OR", $1, $3);
+                $$->name=nname;
+        }
+
         | '|' expression  %prec UMINUS  { }
-        //| '(' expression ')'           { }
+        | '(' expression ')'           { $$ = $2; }
         | '-' expression %prec UMINUS   { }
 
         | NUMBER                        { $$ = $1; }
+
+        | boolean                       { $$ = $1; }
 
         | STRING                        {
                                                 std::string nname = "string" + std::to_string(n_nodes);

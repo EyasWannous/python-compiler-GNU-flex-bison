@@ -90,6 +90,8 @@ array       "["(({literal}|{num}|{id})","" "*)*?({literal}|{num}|{id})"]"
 
 ws          [ \t]
 
+bool        "True"|"False"
+
 comment_1   #.*
 
 comment_2   \'{3}[^\'{3}]*\'{3}
@@ -186,7 +188,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 "="                     {yylval.strval = strdup(yytext); return yytext[0];}
 
-"+"|"-"|"*"|"/"|"_"     {yylval.strval = strdup(yytext); return yytext[0];}
+"+"|"-"|"*"|"/"|"_"|"|"|"&"     {yylval.strval = strdup(yytext); return yytext[0];}
 
 "["|"]"|"{"|"}"|"("|")" {yylval.strval = strdup(yytext); return yytext[0];} 
 
@@ -358,6 +360,26 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 "pass"                  {
                             yylval.strval = strdup(yytext);
                             return PASS;
+                        }
+
+"or"                    {
+                            yylval.strval = strdup(yytext);
+                            return OR;
+                        }
+
+"and"                   {
+                            yylval.strval = strdup(yytext);
+                            return AND;
+                        }
+
+"True"                  {
+                            yylval.strval = strdup(yytext);
+                            return TRUE_TOK;
+                        }
+
+"False"                 {
+                            yylval.strval = strdup(yytext);
+                            return FALSE_TOK;
                         }
 
 

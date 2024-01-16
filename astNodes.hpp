@@ -451,6 +451,36 @@ public:
     }
 };
 
+class BoolNode : public AstNode
+{
+private:
+    vector<AstNode *> next;
+
+public:
+    BoolNode()
+    {
+        this->name = "bool Statement";
+        this->label = "Bool";
+    }
+
+    void add(AstNode * /*node*/) override
+    {
+        cerr << "Cannot add a child to a leaf node." << endl;
+    }
+
+    void print() const override
+    {
+        cout << "\t" << name << " [shape=box,label=\"" << label << "\"]" << endl;
+    }
+    ~BoolNode()
+    {
+        for (const auto &stmt : next)
+        {
+            delete stmt;
+        }
+    }
+};
+
 class WhileStatementNode : public AstNode
 {
 private:
@@ -925,18 +955,18 @@ public:
 class ReturnStatementNode : public AstNode
 {
 private:
-    AstNode *returnValue;
+    vector<AstNode *> next;
 
 public:
     ReturnStatementNode(AstNode *value)
-        : returnValue(value)
     {
         this->name = "ReturnStatement";
+        add(value);
     }
 
-    void add(AstNode * /*node*/) override
+    void add(AstNode *node) override
     {
-        cerr << "Cannot add a child to a leaf node." << endl;
+        next.push_back(node);
     }
 
     void print() const override
@@ -944,13 +974,33 @@ public:
         cout << "\t" << name << " [label=\""
              << "ReturnStatement"
              << "\"]" << endl;
-        cout << "\t" << name << " -> " << returnValue->name << ";" << endl;
-        returnValue->print();
+        for (const auto &stmt : next)
+        {
+            cout << "\t" << name << " -> " << stmt->name << ";" << endl;
+            stmt->print();
+        }
     }
+    // void add(AstNode * /*node*/) override
+    // {
+    //     cerr << "Cannot add a child to a leaf node." << endl;
+    // }
+
+    // void print() const override
+    // {
+    //     cout << "\t" << name << " [label=\""
+    //          << "ReturnStatement"
+    //          << "\"]" << endl;
+    //     cout << "\t" << name << " -> " << returnValue->name << ";" << endl;
+    //     returnValue->print();
+    // }
 
     ~ReturnStatementNode()
     {
-        delete returnValue;
+        // delete returnValue;
+        for (const auto &arg : next)
+        {
+            delete arg;
+        }
     }
 };
 

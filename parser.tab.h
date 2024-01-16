@@ -95,7 +95,11 @@
      WITH = 298,
      AS = 299,
      PASS = 300,
-     UMINUS = 301
+     AND = 301,
+     OR = 302,
+     TRUE_TOK = 303,
+     FALSE_TOK = 304,
+     UMINUS = 305
    };
 #endif
 
@@ -116,7 +120,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 120 "parser.tab.h"
+#line 124 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

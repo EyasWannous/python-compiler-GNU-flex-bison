@@ -1,556 +1,614 @@
-Terminals which are not used
+Terminals unused in grammar
 
    INDENTERROR
-   PASS
+
+
+State 111 conflicts: 1 shift/reduce
 
 
 Grammar
 
-    0 $accept: prog $end
+    0 $accept: start $end
 
-    1 prog: /* empty */
-    2     | statements
+    1 start: prog
 
-    3 statements: statement
-    4           | statements NEWLINE statement
-    5           | statements NEWLINE
+    2 prog: /* empty */
+    3     | statements
 
-    6 statement: if_stmt
-    7          | while_stmt
-    8          | for_stmt
-    9          | function
-   10          | function_call
-   11          | assignment
-   12          | class
-   13          | try_except_stmt
-   14          | match_stmt
-   15          | with_statement
+    4 statements: statement
+    5           | statements NEWLINE statement
+    6           | statements NEWLINE
 
-   16 NUMBER: INT_NUMBER
-   17       | FLOAT_NUMBER
+    7 statement: if_stmt
+    8          | while_stmt
+    9          | for_stmt
+   10          | function
+   11          | function_call
+   12          | assignment NEWLINE
+   13          | class
+   14          | try_except_stmt
+   15          | match_stmt
+   16          | with_statement
+   17          | pass NEWLINE
 
-   18 if_stmt: if_header block elif_else_
+   18 NUMBER: INT_NUMBER
+   19       | FLOAT_NUMBER
 
-   19 if_header: IF relation_stmt
-   20          | IF '(' relation_stmt ')'
+   20 boolean: TRUE_TOK
+   21        | FALSE_TOK
 
-   21 elif_else_: /* empty */
-   22           | elif_else
+   22 if_stmt: if_header block elif_else_
 
-   23 elif_else: elif_stmts else_stmt
-   24          | elif_stmts
-   25          | else_stmt
+   23 if_header: IF relation_stmt
+   24          | IF '(' relation_stmt ')'
 
-   26 else_stmt: ELSE block
+   25 elif_else_: /* empty */
+   26           | elif_else
 
-   27 elif_stmts: elif_stmt
-   28           | elif_stmts elif_stmt
+   27 elif_else: elif_stmts else_stmt
+   28          | elif_stmts
+   29          | else_stmt
 
-   29 elif_stmt: elif_header block
+   30 else_stmt: ELSE block
 
-   30 elif_header: ELIF relation_stmt
-   31            | ELIF '(' relation_stmt ')'
+   31 elif_stmts: elif_stmt
+   32           | elif_stmts elif_stmt
 
-   32 function: DEF ID '(' args ')' function_block
-   33         | DEF ID '(' args ')' '-' GT data_type function_block
+   33 elif_stmt: elif_header block
 
-   34 function_block: NEWLINE INDENT function_stmts DEDENT
+   34 elif_header: ELIF relation_stmt
+   35            | ELIF '(' relation_stmt ')'
 
-   35 function_stmts: function_stmt_
-   36               | function_stmts function_stmt_
+   36 function: DEF ID '(' args ')' function_block
+   37         | DEF ID '(' args ')' '-' GT data_type function_block
 
-   37 function_stmt_: simple_stmt NEWLINE
-   38               | function_compound_stmt
-   39               | function_sp_stmt NEWLINE
+   38 function_block: NEWLINE INDENT function_stmts DEDENT
 
-   40 function_sp_stmt: return_stmt
-   41                 | global_stmt
-   42                 | nonlocal_stmt
-   43                 | yield_stmt
+   39 function_stmts: function_stmt_
+   40               | function_stmts function_stmt_
 
-   44 function_compound_stmt: func_if_stmt
-   45                       | func_while_stmt
-   46                       | func_for_stmt
-   47                       | try_except_stmt
-   48                       | with_statement
-   49                       | match_stmt
-   50                       | function
+   41 function_stmt_: simple_stmt NEWLINE
+   42               | function_compound_stmt
+   43               | function_sp_stmt NEWLINE
 
-   51 func_while_stmt: WHILE relation_stmt func_for_block
+   44 function_sp_stmt: return_stmt
+   45                 | global_stmt
+   46                 | nonlocal_stmt
+   47                 | yield_stmt
 
-   52 func_for_stmt: FOR ID IN RANGE range_args func_for_block
-   53              | FOR ID IN ARRAY func_for_block
+   48 function_compound_stmt: func_if_stmt
+   49                       | func_while_stmt
+   50                       | func_for_stmt
+   51                       | try_except_stmt
+   52                       | with_statement
+   53                       | match_stmt
+   54                       | function
 
-   54 func_for_block: NEWLINE INDENT func_for_stmts DEDENT
+   55 func_while_stmt: WHILE relation_stmt func_for_block
 
-   55 func_for_stmts: func_for_stmt_
-   56               | func_for_stmts func_for_stmt_
+   56 func_for_stmt: FOR ID IN RANGE range_args func_for_block
+   57              | FOR ID IN ARRAY func_for_block
 
-   57 func_for_stmt_: simple_stmt NEWLINE
-   58               | for_compound_stmt
-   59               | for_sp_stmt NEWLINE
-   60               | function_sp_stmt
+   58 func_for_block: NEWLINE INDENT func_for_stmts DEDENT
 
-   61 func_if_stmt: func_if_header function_block func_elif_else_
+   59 func_for_stmts: func_for_stmt_
+   60               | func_for_stmts func_for_stmt_
 
-   62 func_if_header: IF relation_stmt
-   63               | IF '(' relation_stmt ')'
+   61 func_for_stmt_: simple_stmt NEWLINE
+   62               | for_compound_stmt
+   63               | for_sp_stmt NEWLINE
+   64               | function_sp_stmt NEWLINE
 
-   64 func_elif_else_: /* empty */
-   65                | func_elif_else
+   65 func_if_stmt: func_if_header function_block func_elif_else_
 
-   66 func_elif_else: func_elif_stmts func_else_stmt
-   67               | func_elif_stmts
-   68               | func_else_stmt
+   66 func_if_header: IF relation_stmt
+   67               | IF '(' relation_stmt ')'
 
-   69 func_else_stmt: ELSE function_block
+   68 func_elif_else_: /* empty */
+   69                | func_elif_else
 
-   70 func_elif_stmts: func_elif_stmt
-   71                | func_elif_stmts func_elif_stmt
+   70 func_elif_else: func_elif_stmts func_else_stmt
+   71               | func_elif_stmts
+   72               | func_else_stmt
 
-   72 func_elif_stmt: func_elif_header function_block
+   73 func_else_stmt: ELSE function_block
 
-   73 func_elif_header: ELIF relation_stmt
-   74                 | ELIF '(' relation_stmt ')'
+   74 func_elif_stmts: func_elif_stmt
+   75                | func_elif_stmts func_elif_stmt
 
-   75 args: /* empty */
-   76     | args_
+   76 func_elif_stmt: func_elif_header function_block
 
-   77 args_: arg
-   78      | args_ ',' arg
+   77 func_elif_header: ELIF relation_stmt
+   78                 | ELIF '(' relation_stmt ')'
 
-   79 arg: ID
-   80    | ID ':' data_type
+   79 args: /* empty */
+   80     | args_
 
-   81 argsp: /* empty */
-   82      | args_p
+   81 args_: arg
+   82      | args_ ',' arg
 
-   83 args_p: argp
-   84       | args_p argp
+   83 arg: ID
+   84    | ID ':' data_type
 
-   85 argp: ID
-   86     | NUMBER
-   87     | STRING
+   85 argsp: /* empty */
+   86      | args_p
 
-   88 while_stmt: WHILE relation_stmt for_block
+   87 args_p: argp
+   88       | args_p argp
 
-   89 range_args: '(' NUMBER ')'
-   90           | '(' NUMBER ',' NUMBER ')'
-   91           | '(' NUMBER ',' NUMBER ',' NUMBER ')'
+   89 argp: ID
+   90     | NUMBER
+   91     | STRING
 
-   92 for_stmt: FOR ID IN RANGE range_args for_block
-   93         | FOR ID IN ARRAY for_block
+   92 argsc: /* empty */
+   93      | args_c
 
-   94 for_block: NEWLINE INDENT for_stmts DEDENT
+   94 args_c: argc
+   95       | args_c ',' argc
 
-   95 for_stmts: for_stmt_
-   96          | for_stmts for_stmt_
+   96 argc: ID
+   97     | NUMBER
+   98     | STRING
 
-   97 for_stmt_: simple_stmt NEWLINE
-   98          | for_compound_stmt
-   99          | for_sp_stmt NEWLINE
+   99 while_stmt: WHILE relation_stmt for_block
 
-  100 for_sp_stmt: BREAK
-  101            | CONTINUE
+  100 range_args: '(' NUMBER ')'
+  101           | '(' NUMBER ',' NUMBER ')'
+  102           | '(' NUMBER ',' NUMBER ',' NUMBER ')'
 
-  102 for_compound_stmt: for_if_stmt
-  103                  | while_stmt
-  104                  | for_stmt
-  105                  | try_except_stmt
-  106                  | with_statement
-  107                  | match_stmt
+  103 for_stmt: FOR ID IN RANGE range_args for_block
+  104         | FOR ID IN ARRAY for_block
 
-  108 for_if_stmt: for_if_header for_block for_elif_else_
+  105 for_block: NEWLINE INDENT for_stmts DEDENT
 
-  109 for_if_header: IF relation_stmt
-  110              | IF '(' relation_stmt ')'
+  106 for_stmts: for_stmt_
+  107          | for_stmts for_stmt_
 
-  111 for_elif_else_: /* empty */
-  112               | for_elif_else
+  108 for_stmt_: simple_stmt NEWLINE
+  109          | for_compound_stmt
+  110          | for_sp_stmt NEWLINE
 
-  113 for_elif_else: for_elif_stmts for_else_stmt
-  114              | for_elif_stmts
-  115              | for_else_stmt
+  111 for_sp_stmt: BREAK
+  112            | CONTINUE
 
-  116 for_else_stmt: ELSE for_block
+  113 for_compound_stmt: for_if_stmt
+  114                  | while_stmt
+  115                  | for_stmt
+  116                  | try_except_stmt
+  117                  | with_statement
+  118                  | match_stmt
 
-  117 for_elif_stmts: for_elif_stmt
-  118               | for_elif_stmts for_elif_stmt
+  119 for_if_stmt: for_if_header for_block for_elif_else_
 
-  119 for_elif_stmt: for_elif_header for_block
+  120 for_if_header: IF relation_stmt
+  121              | IF '(' relation_stmt ')'
 
-  120 for_elif_header: ELIF relation_stmt
-  121                | ELIF '(' relation_stmt ')'
+  122 for_elif_else_: /* empty */
+  123               | for_elif_else
 
-  122 function_call: ID '(' args ')'
-  123              | PRINT '(' argsp ')'
-  124              | INPUT '(' STRING ')'
+  124 for_elif_else: for_elif_stmts for_else_stmt
+  125              | for_elif_stmts
+  126              | for_else_stmt
 
-  125 class: CLASS ID class_block
+  127 for_else_stmt: ELSE for_block
 
-  126 class_block: NEWLINE INDENT class_stmts DEDENT
+  128 for_elif_stmts: for_elif_stmt
+  129               | for_elif_stmts for_elif_stmt
 
-  127 class_stmts: class_stmt_
-  128            | class_stmts class_stmt_
+  130 for_elif_stmt: for_elif_header for_block
 
-  129 class_stmt_: simple_stmt NEWLINE
-  130            | compound_stmt
-  131            | class_sp_stmt NEWLINE
-  132            | function
+  131 for_elif_header: ELIF relation_stmt
+  132                | ELIF '(' relation_stmt ')'
 
-  133 class_sp_stmt: global_stmt
+  133 function_call: ID '(' argsc ')'
+  134              | PRINT '(' argsp ')'
+  135              | INPUT '(' STRING ')'
 
-  134 try_except_stmt: TRY block except_clauses
+  136 class: CLASS ID class_block
 
-  135 except_clauses: except_clause
-  136               | except_clauses except_clause
+  137 class_block: NEWLINE INDENT class_stmts DEDENT
 
-  137 except_clause: EXCEPT block
+  138 class_stmts: class_stmt_
+  139            | class_stmts class_stmt_
 
-  138 match_stmt: MATCH ID match_block
+  140 class_stmt_: simple_stmt NEWLINE
+  141            | compound_stmt
+  142            | class_sp_stmt NEWLINE
+  143            | function
 
-  139 case_statements: case_statement
-  140                | case_statements case_statement
+  144 class_sp_stmt: global_stmt
 
-  141 case_statement: CASE argp block
+  145 try_except_stmt: TRY block except_clauses
 
-  142 final_case: CASE '_' block
+  146 except_clauses: except_clause
+  147               | except_clauses except_clause
 
-  143 match_block: NEWLINE INDENT case_statements final_case DEDENT
+  148 except_clause: EXCEPT block
 
-  144 with_statement: WITH with_statement_body block
+  149 match_stmt: MATCH ID match_block
 
-  145 with_statement_body: with_body ',' with_statement_body
-  146                    | with_body
+  150 case_statements: case_statement
+  151                | case_statements case_statement
 
-  147 with_body: with_stmt_contents
-  148          | '(' with_stmt_contents ')'
+  152 case_statement: CASE argp block
 
-  149 with_stmt_contents: with_item
+  153 final_case: CASE '_' block
 
-  150 with_item: ID '(' inside_brackets ')' AS target
-  151          | expression
-  152          | expression AS target
+  154 match_block: NEWLINE INDENT case_statements final_case DEDENT
 
-  153 inside_brackets: expression
-  154                | expression ',' inside_brackets
+  155 with_statement: WITH with_statement_body block
 
-  155 target: '(' targets ')'
-  156       | target '.' ID
-  157       | ID
+  156 with_statement_body: with_statement_body ',' with_body
+  157                    | with_body
 
-  158 targets: target
-  159        | targets ',' target
+  158 with_body: with_stmt_contents
+  159          | '(' with_stmt_contents ')'
 
-  160 block: NEWLINE INDENT stmts DEDENT
+  160 with_stmt_contents: with_item
 
-  161 stmts: stmt
-  162      | stmts stmt
+  161 with_item: ID '(' inside_brackets ')' AS target
+  162          | expression
+  163          | expression AS target
 
-  163 stmt: simple_stmt NEWLINE
-  164     | compound_stmt
+  164 inside_brackets: expression
+  165                | inside_brackets ',' expression
 
-  165 simple_stmt: assignment
-  166            | function_call
+  166 target: '(' targets ')'
+  167       | target '.' ID
+  168       | ID
 
-  167 compound_stmt: if_stmt
-  168              | while_stmt
-  169              | for_stmt
-  170              | try_except_stmt
-  171              | with_statement
-  172              | match_stmt
+  169 targets: target
+  170        | targets ',' target
 
-  173 assignment: ID '=' expression
-  174           | ID '=' ARRAY
+  171 block: NEWLINE INDENT stmts DEDENT
 
-  175 return_stmt: RETURN NUMBER
-  176            | RETURN ID
-  177            | RETURN STRING
+  172 stmts: stmt
+  173      | stmts stmt
 
-  178 yield_stmt: YIELD ID
+  174 stmt: simple_stmt NEWLINE
+  175     | compound_stmt
 
-  179 global_stmt: GLOBAL ID
+  176 simple_stmt: assignment
+  177            | pass
+  178            | function_call
 
-  180 nonlocal_stmt: NONLOCAL ID
+  179 compound_stmt: if_stmt
+  180              | while_stmt
+  181              | for_stmt
+  182              | try_except_stmt
+  183              | with_statement
+  184              | match_stmt
 
-  181 relation_stmt: ID GT NUMBER
-  182              | ID LT NUMBER
-  183              | ID GTE NUMBER
-  184              | ID LTE NUMBER
-  185              | ID EQUAL NUMBER
-  186              | ID EQUAL STRING
+  185 assignment: ID '=' expression
+  186           | ID '+' '=' expression
+  187           | ID '-' '=' expression
+  188           | ID '*' '=' expression
+  189           | ID '/' '=' expression
+  190           | ID '=' ARRAY
 
-  187 expression: expression '+' expression
-  188           | expression '-' expression
-  189           | expression '*' expression
-  190           | expression '/' expression
-  191           | '|' expression
-  192           | '-' expression
-  193           | NUMBER
-  194           | STRING
-  195           | ID
+  191 return_stmt: RETURN NUMBER
+  192            | RETURN NUMBER ',' NUMBER
+  193            | RETURN ID
+  194            | RETURN ID ',' ID
+  195            | RETURN STRING
+  196            | RETURN STRING ',' STRING
 
-  196 data_type: INT
-  197          | FLOAT
-  198          | BOOL
-  199          | STR
-  200          | LIST '[' INT ']'
-  201          | LIST '[' FLOAT ']'
-  202          | LIST '[' STR ']'
+  197 yield_stmt: YIELD ID
+
+  198 global_stmt: GLOBAL ID
+
+  199 nonlocal_stmt: NONLOCAL ID
+
+  200 pass: PASS
+
+  201 relation_stmt: ID GT NUMBER
+  202              | ID LT NUMBER
+  203              | ID GTE NUMBER
+  204              | ID LTE NUMBER
+  205              | ID EQUAL NUMBER
+  206              | ID EQUAL STRING
+  207              | ID
+
+  208 expression: expression '+' expression
+  209           | expression '-' expression
+  210           | expression '*' expression
+  211           | expression '/' expression
+  212           | expression AND expression
+  213           | expression '&' expression
+  214           | expression OR expression
+  215           | expression '|' expression
+  216           | '|' expression
+  217           | '(' expression ')'
+  218           | '-' expression
+  219           | NUMBER
+  220           | boolean
+  221           | STRING
+  222           | ID
+
+  223 data_type: INT
+  224          | FLOAT
+  225          | BOOL
+  226          | STR
+  227          | LIST '[' INT ']'
+  228          | LIST '[' FLOAT ']'
+  229          | LIST '[' STR ']'
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'(' (40) 20 31 32 33 63 74 89 90 91 110 121 122 123 124 148 150 155
-')' (41) 20 31 32 33 63 74 89 90 91 110 121 122 123 124 148 150 155
-'*' (42) 189
-'+' (43) 187
-',' (44) 78 90 91 145 154 159
-'-' (45) 33 188 192
-'.' (46) 156
-'/' (47) 190
-':' (58) 80
-'=' (61) 173 174
-'[' (91) 200 201 202
-']' (93) 200 201 202
-'_' (95) 142
-'|' (124) 191
+'&' (38) 213
+'(' (40) 24 35 36 37 67 78 100 101 102 121 132 133 134 135 159 161
+    166 217
+')' (41) 24 35 36 37 67 78 100 101 102 121 132 133 134 135 159 161
+    166 217
+'*' (42) 188 210
+'+' (43) 186 208
+',' (44) 82 95 101 102 156 165 170 192 194 196
+'-' (45) 37 187 209 218
+'.' (46) 167
+'/' (47) 189 211
+':' (58) 84
+'=' (61) 185 186 187 188 189 190
+'[' (91) 227 228 229
+']' (93) 227 228 229
+'_' (95) 153
+'|' (124) 215 216
 error (256)
-ID (258) 32 33 52 53 79 80 85 92 93 122 125 138 150 156 157 173 174
-    176 178 179 180 181 182 183 184 185 186 195
-STRING (259) 87 124 177 186 194
-ARRAY (260) 53 93 174
-RETURN (261) 175 176 177
-BREAK (262) 100
-CONTINUE (263) 101
-GLOBAL (264) 179
-NONLOCAL (265) 180
-YIELD (266) 178
-INDENT (267) 34 54 94 126 143 160
-DEDENT (268) 34 54 94 126 143 160
+ID (258) 36 37 56 57 83 84 89 96 103 104 133 136 149 161 167 168 185
+    186 187 188 189 190 193 194 197 198 199 201 202 203 204 205 206
+    207 222
+STRING (259) 91 98 135 195 196 206 221
+ARRAY (260) 57 104 190
+RETURN (261) 191 192 193 194 195 196
+BREAK (262) 111
+CONTINUE (263) 112
+GLOBAL (264) 198
+NONLOCAL (265) 199
+YIELD (266) 197
+INDENT (267) 38 58 105 137 154 171
+DEDENT (268) 38 58 105 137 154 171
 INDENTERROR (269)
-NEWLINE (270) 4 5 34 37 39 54 57 59 94 97 99 126 129 131 143 160 163
-GT (271) 33 181
-LT (272) 182
-GTE (273) 183
-LTE (274) 184
-EQUAL (275) 185 186
-INT (276) 196 200
-FLOAT (277) 197 201
-STR (278) 199 202
-BOOL (279) 198
-LIST (280) 200 201 202
-INT_NUMBER (281) 16
-FLOAT_NUMBER (282) 17
-IF (283) 19 20 62 63 109 110
-ELSE (284) 26 69 116
-ELIF (285) 30 31 73 74 120 121
-DEF (286) 32 33
-WHILE (287) 51 88
-FOR (288) 52 53 92 93
-IN (289) 52 53 92 93
-RANGE (290) 52 92
-PRINT (291) 123
-INPUT (292) 124
-CLASS (293) 125
-TRY (294) 134
-EXCEPT (295) 137
-MATCH (296) 138
-CASE (297) 141 142
-WITH (298) 144
-AS (299) 150 152
-PASS (300)
-UMINUS (301)
+NEWLINE (270) 5 6 12 17 38 41 43 58 61 63 64 105 108 110 137 140 142
+    154 171 174
+GT (271) 37 201
+LT (272) 202
+GTE (273) 203
+LTE (274) 204
+EQUAL (275) 205 206
+INT (276) 223 227
+FLOAT (277) 224 228
+STR (278) 226 229
+BOOL (279) 225
+LIST (280) 227 228 229
+INT_NUMBER (281) 18
+FLOAT_NUMBER (282) 19
+IF (283) 23 24 66 67 120 121
+ELSE (284) 30 73 127
+ELIF (285) 34 35 77 78 131 132
+DEF (286) 36 37
+WHILE (287) 55 99
+FOR (288) 56 57 103 104
+IN (289) 56 57 103 104
+RANGE (290) 56 103
+PRINT (291) 134
+INPUT (292) 135
+CLASS (293) 136
+TRY (294) 145
+EXCEPT (295) 148
+MATCH (296) 149
+CASE (297) 152 153
+WITH (298) 155
+AS (299) 161 163
+PASS (300) 200
+AND (301) 212
+OR (302) 214
+TRUE_TOK (303) 20
+FALSE_TOK (304) 21
+UMINUS (305)
 
 
 Nonterminals, with rules where they appear
 
-$accept (61)
+$accept (66)
     on left: 0
-prog (62)
-    on left: 1 2, on right: 0
-statements (63)
-    on left: 3 4 5, on right: 2 4 5
-statement (64)
-    on left: 6 7 8 9 10 11 12 13 14 15, on right: 3 4
-NUMBER (65)
-    on left: 16 17, on right: 86 89 90 91 175 181 182 183 184 185 193
-if_stmt (66)
-    on left: 18, on right: 6 167
-if_header (67)
-    on left: 19 20, on right: 18
-elif_else_ (68)
-    on left: 21 22, on right: 18
-elif_else (69)
-    on left: 23 24 25, on right: 22
-else_stmt (70)
-    on left: 26, on right: 23 25
-elif_stmts (71)
-    on left: 27 28, on right: 23 24 28
-elif_stmt (72)
-    on left: 29, on right: 27 28
-elif_header (73)
-    on left: 30 31, on right: 29
-function (74)
-    on left: 32 33, on right: 9 50 132
-function_block (75)
-    on left: 34, on right: 32 33 61 69 72
-function_stmts (76)
-    on left: 35 36, on right: 34 36
-function_stmt_ (77)
-    on left: 37 38 39, on right: 35 36
-function_sp_stmt (78)
-    on left: 40 41 42 43, on right: 39 60
-function_compound_stmt (79)
-    on left: 44 45 46 47 48 49 50, on right: 38
-func_while_stmt (80)
-    on left: 51, on right: 45
-func_for_stmt (81)
-    on left: 52 53, on right: 46
-func_for_block (82)
-    on left: 54, on right: 51 52 53
-func_for_stmts (83)
-    on left: 55 56, on right: 54 56
-func_for_stmt_ (84)
-    on left: 57 58 59 60, on right: 55 56
-func_if_stmt (85)
-    on left: 61, on right: 44
-func_if_header (86)
-    on left: 62 63, on right: 61
-func_elif_else_ (87)
-    on left: 64 65, on right: 61
-func_elif_else (88)
-    on left: 66 67 68, on right: 65
-func_else_stmt (89)
-    on left: 69, on right: 66 68
-func_elif_stmts (90)
-    on left: 70 71, on right: 66 67 71
-func_elif_stmt (91)
-    on left: 72, on right: 70 71
-func_elif_header (92)
-    on left: 73 74, on right: 72
-args (93)
-    on left: 75 76, on right: 32 33 122
-args_ (94)
-    on left: 77 78, on right: 76 78
-arg (95)
-    on left: 79 80, on right: 77 78
-argsp (96)
-    on left: 81 82, on right: 123
-args_p (97)
-    on left: 83 84, on right: 82 84
-argp (98)
-    on left: 85 86 87, on right: 83 84 141
-while_stmt (99)
-    on left: 88, on right: 7 103 168
-range_args (100)
-    on left: 89 90 91, on right: 52 92
-for_stmt (101)
-    on left: 92 93, on right: 8 104 169
-for_block (102)
-    on left: 94, on right: 88 92 93 108 116 119
-for_stmts (103)
-    on left: 95 96, on right: 94 96
-for_stmt_ (104)
-    on left: 97 98 99, on right: 95 96
-for_sp_stmt (105)
-    on left: 100 101, on right: 59 99
-for_compound_stmt (106)
-    on left: 102 103 104 105 106 107, on right: 58 98
-for_if_stmt (107)
-    on left: 108, on right: 102
-for_if_header (108)
-    on left: 109 110, on right: 108
-for_elif_else_ (109)
-    on left: 111 112, on right: 108
-for_elif_else (110)
-    on left: 113 114 115, on right: 112
-for_else_stmt (111)
-    on left: 116, on right: 113 115
-for_elif_stmts (112)
-    on left: 117 118, on right: 113 114 118
-for_elif_stmt (113)
-    on left: 119, on right: 117 118
-for_elif_header (114)
+start (67)
+    on left: 1, on right: 0
+prog (68)
+    on left: 2 3, on right: 1
+statements (69)
+    on left: 4 5 6, on right: 3 5 6
+statement (70)
+    on left: 7 8 9 10 11 12 13 14 15 16 17, on right: 4 5
+NUMBER (71)
+    on left: 18 19, on right: 90 97 100 101 102 191 192 201 202 203
+    204 205 219
+boolean (72)
+    on left: 20 21, on right: 220
+if_stmt (73)
+    on left: 22, on right: 7 179
+if_header (74)
+    on left: 23 24, on right: 22
+elif_else_ (75)
+    on left: 25 26, on right: 22
+elif_else (76)
+    on left: 27 28 29, on right: 26
+else_stmt (77)
+    on left: 30, on right: 27 29
+elif_stmts (78)
+    on left: 31 32, on right: 27 28 32
+elif_stmt (79)
+    on left: 33, on right: 31 32
+elif_header (80)
+    on left: 34 35, on right: 33
+function (81)
+    on left: 36 37, on right: 10 54 143
+function_block (82)
+    on left: 38, on right: 36 37 65 73 76
+function_stmts (83)
+    on left: 39 40, on right: 38 40
+function_stmt_ (84)
+    on left: 41 42 43, on right: 39 40
+function_sp_stmt (85)
+    on left: 44 45 46 47, on right: 43 64
+function_compound_stmt (86)
+    on left: 48 49 50 51 52 53 54, on right: 42
+func_while_stmt (87)
+    on left: 55, on right: 49
+func_for_stmt (88)
+    on left: 56 57, on right: 50
+func_for_block (89)
+    on left: 58, on right: 55 56 57
+func_for_stmts (90)
+    on left: 59 60, on right: 58 60
+func_for_stmt_ (91)
+    on left: 61 62 63 64, on right: 59 60
+func_if_stmt (92)
+    on left: 65, on right: 48
+func_if_header (93)
+    on left: 66 67, on right: 65
+func_elif_else_ (94)
+    on left: 68 69, on right: 65
+func_elif_else (95)
+    on left: 70 71 72, on right: 69
+func_else_stmt (96)
+    on left: 73, on right: 70 72
+func_elif_stmts (97)
+    on left: 74 75, on right: 70 71 75
+func_elif_stmt (98)
+    on left: 76, on right: 74 75
+func_elif_header (99)
+    on left: 77 78, on right: 76
+args (100)
+    on left: 79 80, on right: 36 37
+args_ (101)
+    on left: 81 82, on right: 80 82
+arg (102)
+    on left: 83 84, on right: 81 82
+argsp (103)
+    on left: 85 86, on right: 134
+args_p (104)
+    on left: 87 88, on right: 86 88
+argp (105)
+    on left: 89 90 91, on right: 87 88 152
+argsc (106)
+    on left: 92 93, on right: 133
+args_c (107)
+    on left: 94 95, on right: 93 95
+argc (108)
+    on left: 96 97 98, on right: 94 95
+while_stmt (109)
+    on left: 99, on right: 8 114 180
+range_args (110)
+    on left: 100 101 102, on right: 56 103
+for_stmt (111)
+    on left: 103 104, on right: 9 115 181
+for_block (112)
+    on left: 105, on right: 99 103 104 119 127 130
+for_stmts (113)
+    on left: 106 107, on right: 105 107
+for_stmt_ (114)
+    on left: 108 109 110, on right: 106 107
+for_sp_stmt (115)
+    on left: 111 112, on right: 63 110
+for_compound_stmt (116)
+    on left: 113 114 115 116 117 118, on right: 62 109
+for_if_stmt (117)
+    on left: 119, on right: 113
+for_if_header (118)
     on left: 120 121, on right: 119
-function_call (115)
-    on left: 122 123 124, on right: 10 166
-class (116)
-    on left: 125, on right: 12
-class_block (117)
-    on left: 126, on right: 125
-class_stmts (118)
-    on left: 127 128, on right: 126 128
-class_stmt_ (119)
-    on left: 129 130 131 132, on right: 127 128
-class_sp_stmt (120)
-    on left: 133, on right: 131
-try_except_stmt (121)
-    on left: 134, on right: 13 47 105 170
-except_clauses (122)
-    on left: 135 136, on right: 134 136
-except_clause (123)
-    on left: 137, on right: 135 136
-match_stmt (124)
-    on left: 138, on right: 14 49 107 172
-case_statements (125)
-    on left: 139 140, on right: 140 143
-case_statement (126)
-    on left: 141, on right: 139 140
-final_case (127)
-    on left: 142, on right: 143
-match_block (128)
-    on left: 143, on right: 138
-with_statement (129)
-    on left: 144, on right: 15 48 106 171
-with_statement_body (130)
-    on left: 145 146, on right: 144 145
-with_body (131)
-    on left: 147 148, on right: 145 146
-with_stmt_contents (132)
-    on left: 149, on right: 147 148
-with_item (133)
-    on left: 150 151 152, on right: 149
-inside_brackets (134)
-    on left: 153 154, on right: 150 154
-target (135)
-    on left: 155 156 157, on right: 150 152 156 158 159
-targets (136)
-    on left: 158 159, on right: 155 159
-block (137)
-    on left: 160, on right: 18 26 29 134 137 141 142 144
-stmts (138)
-    on left: 161 162, on right: 160 162
-stmt (139)
-    on left: 163 164, on right: 161 162
-simple_stmt (140)
-    on left: 165 166, on right: 37 57 97 129 163
-compound_stmt (141)
-    on left: 167 168 169 170 171 172, on right: 130 164
-assignment (142)
-    on left: 173 174, on right: 11 165
-return_stmt (143)
-    on left: 175 176 177, on right: 40
-yield_stmt (144)
-    on left: 178, on right: 43
-global_stmt (145)
-    on left: 179, on right: 41 133
-nonlocal_stmt (146)
-    on left: 180, on right: 42
-relation_stmt (147)
-    on left: 181 182 183 184 185 186, on right: 19 20 30 31 51 62 63
-    73 74 88 109 110 120 121
-expression (148)
-    on left: 187 188 189 190 191 192 193 194 195, on right: 151 152
-    153 154 173 187 188 189 190 191 192
-data_type (149)
-    on left: 196 197 198 199 200 201 202, on right: 33 80
+for_elif_else_ (119)
+    on left: 122 123, on right: 119
+for_elif_else (120)
+    on left: 124 125 126, on right: 123
+for_else_stmt (121)
+    on left: 127, on right: 124 126
+for_elif_stmts (122)
+    on left: 128 129, on right: 124 125 129
+for_elif_stmt (123)
+    on left: 130, on right: 128 129
+for_elif_header (124)
+    on left: 131 132, on right: 130
+function_call (125)
+    on left: 133 134 135, on right: 11 178
+class (126)
+    on left: 136, on right: 13
+class_block (127)
+    on left: 137, on right: 136
+class_stmts (128)
+    on left: 138 139, on right: 137 139
+class_stmt_ (129)
+    on left: 140 141 142 143, on right: 138 139
+class_sp_stmt (130)
+    on left: 144, on right: 142
+try_except_stmt (131)
+    on left: 145, on right: 14 51 116 182
+except_clauses (132)
+    on left: 146 147, on right: 145 147
+except_clause (133)
+    on left: 148, on right: 146 147
+match_stmt (134)
+    on left: 149, on right: 15 53 118 184
+case_statements (135)
+    on left: 150 151, on right: 151 154
+case_statement (136)
+    on left: 152, on right: 150 151
+final_case (137)
+    on left: 153, on right: 154
+match_block (138)
+    on left: 154, on right: 149
+with_statement (139)
+    on left: 155, on right: 16 52 117 183
+with_statement_body (140)
+    on left: 156 157, on right: 155 156
+with_body (141)
+    on left: 158 159, on right: 156 157
+with_stmt_contents (142)
+    on left: 160, on right: 158 159
+with_item (143)
+    on left: 161 162 163, on right: 160
+inside_brackets (144)
+    on left: 164 165, on right: 161 165
+target (145)
+    on left: 166 167 168, on right: 161 163 167 169 170
+targets (146)
+    on left: 169 170, on right: 166 170
+block (147)
+    on left: 171, on right: 22 30 33 145 148 152 153 155
+stmts (148)
+    on left: 172 173, on right: 171 173
+stmt (149)
+    on left: 174 175, on right: 172 173
+simple_stmt (150)
+    on left: 176 177 178, on right: 41 61 108 140 174
+compound_stmt (151)
+    on left: 179 180 181 182 183 184, on right: 141 175
+assignment (152)
+    on left: 185 186 187 188 189 190, on right: 12 176
+return_stmt (153)
+    on left: 191 192 193 194 195 196, on right: 44
+yield_stmt (154)
+    on left: 197, on right: 47
+global_stmt (155)
+    on left: 198, on right: 45 144
+nonlocal_stmt (156)
+    on left: 199, on right: 46
+pass (157)
+    on left: 200, on right: 17 177
+relation_stmt (158)
+    on left: 201 202 203 204 205 206 207, on right: 23 24 34 35 55
+    66 67 77 78 99 120 121 131 132
+expression (159)
+    on left: 208 209 210 211 212 213 214 215 216 217 218 219 220 221
+    222, on right: 162 163 164 165 185 186 187 188 189 208 209 210
+    211 212 213 214 215 216 217 218
+data_type (160)
+    on left: 223 224 225 226 227 228 229, on right: 37 84
 
 
 state 0
 
-    0 $accept: . prog $end
+    0 $accept: . start $end
 
     ID     shift, and go to state 1
     IF     shift, and go to state 2
@@ -563,525 +621,640 @@ state 0
     TRY    shift, and go to state 9
     MATCH  shift, and go to state 10
     WITH   shift, and go to state 11
+    PASS   shift, and go to state 12
 
-    $default  reduce using rule 1 (prog)
+    $default  reduce using rule 2 (prog)
 
-    prog             go to state 12
-    statements       go to state 13
-    statement        go to state 14
-    if_stmt          go to state 15
-    if_header        go to state 16
-    function         go to state 17
-    while_stmt       go to state 18
-    for_stmt         go to state 19
-    function_call    go to state 20
-    class            go to state 21
-    try_except_stmt  go to state 22
-    match_stmt       go to state 23
-    with_statement   go to state 24
-    assignment       go to state 25
+    start            go to state 13
+    prog             go to state 14
+    statements       go to state 15
+    statement        go to state 16
+    if_stmt          go to state 17
+    if_header        go to state 18
+    function         go to state 19
+    while_stmt       go to state 20
+    for_stmt         go to state 21
+    function_call    go to state 22
+    class            go to state 23
+    try_except_stmt  go to state 24
+    match_stmt       go to state 25
+    with_statement   go to state 26
+    assignment       go to state 27
+    pass             go to state 28
 
 
 state 1
 
-  122 function_call: ID . '(' args ')'
-  173 assignment: ID . '=' expression
-  174           | ID . '=' ARRAY
+  133 function_call: ID . '(' argsc ')'
+  185 assignment: ID . '=' expression
+  186           | ID . '+' '=' expression
+  187           | ID . '-' '=' expression
+  188           | ID . '*' '=' expression
+  189           | ID . '/' '=' expression
+  190           | ID . '=' ARRAY
 
-    '='  shift, and go to state 26
-    '('  shift, and go to state 27
+    '='  shift, and go to state 29
+    '+'  shift, and go to state 30
+    '-'  shift, and go to state 31
+    '*'  shift, and go to state 32
+    '/'  shift, and go to state 33
+    '('  shift, and go to state 34
 
 
 state 2
 
-   19 if_header: IF . relation_stmt
-   20          | IF . '(' relation_stmt ')'
+   23 if_header: IF . relation_stmt
+   24          | IF . '(' relation_stmt ')'
 
-    ID   shift, and go to state 28
-    '('  shift, and go to state 29
+    ID   shift, and go to state 35
+    '('  shift, and go to state 36
 
-    relation_stmt  go to state 30
+    relation_stmt  go to state 37
 
 
 state 3
 
-   32 function: DEF . ID '(' args ')' function_block
-   33         | DEF . ID '(' args ')' '-' GT data_type function_block
+   36 function: DEF . ID '(' args ')' function_block
+   37         | DEF . ID '(' args ')' '-' GT data_type function_block
 
-    ID  shift, and go to state 31
+    ID  shift, and go to state 38
 
 
 state 4
 
-   88 while_stmt: WHILE . relation_stmt for_block
+   99 while_stmt: WHILE . relation_stmt for_block
 
-    ID  shift, and go to state 28
+    ID  shift, and go to state 35
 
-    relation_stmt  go to state 32
+    relation_stmt  go to state 39
 
 
 state 5
 
-   92 for_stmt: FOR . ID IN RANGE range_args for_block
-   93         | FOR . ID IN ARRAY for_block
+  103 for_stmt: FOR . ID IN RANGE range_args for_block
+  104         | FOR . ID IN ARRAY for_block
 
-    ID  shift, and go to state 33
+    ID  shift, and go to state 40
 
 
 state 6
 
-  123 function_call: PRINT . '(' argsp ')'
+  134 function_call: PRINT . '(' argsp ')'
 
-    '('  shift, and go to state 34
+    '('  shift, and go to state 41
 
 
 state 7
 
-  124 function_call: INPUT . '(' STRING ')'
+  135 function_call: INPUT . '(' STRING ')'
 
-    '('  shift, and go to state 35
+    '('  shift, and go to state 42
 
 
 state 8
 
-  125 class: CLASS . ID class_block
+  136 class: CLASS . ID class_block
 
-    ID  shift, and go to state 36
+    ID  shift, and go to state 43
 
 
 state 9
 
-  134 try_except_stmt: TRY . block except_clauses
+  145 try_except_stmt: TRY . block except_clauses
 
-    NEWLINE  shift, and go to state 37
+    NEWLINE  shift, and go to state 44
 
-    block  go to state 38
+    block  go to state 45
 
 
 state 10
 
-  138 match_stmt: MATCH . ID match_block
+  149 match_stmt: MATCH . ID match_block
 
-    ID  shift, and go to state 39
+    ID  shift, and go to state 46
 
 
 state 11
 
-  144 with_statement: WITH . with_statement_body block
+  155 with_statement: WITH . with_statement_body block
 
-    ID            shift, and go to state 40
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-    '('           shift, and go to state 46
+    ID            shift, and go to state 47
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 55
 
-    NUMBER               go to state 47
-    with_statement_body  go to state 48
-    with_body            go to state 49
-    with_stmt_contents   go to state 50
-    with_item            go to state 51
-    expression           go to state 52
+    NUMBER               go to state 56
+    boolean              go to state 57
+    with_statement_body  go to state 58
+    with_body            go to state 59
+    with_stmt_contents   go to state 60
+    with_item            go to state 61
+    expression           go to state 62
 
 
 state 12
 
-    0 $accept: prog . $end
+  200 pass: PASS .
 
-    $end  shift, and go to state 53
+    $default  reduce using rule 200 (pass)
 
 
 state 13
 
-    2 prog: statements .
-    4 statements: statements . NEWLINE statement
-    5           | statements . NEWLINE
+    0 $accept: start . $end
 
-    NEWLINE  shift, and go to state 54
-
-    $default  reduce using rule 2 (prog)
+    $end  shift, and go to state 63
 
 
 state 14
 
-    3 statements: statement .
+    1 start: prog .
 
-    $default  reduce using rule 3 (statements)
+    $default  reduce using rule 1 (start)
 
 
 state 15
 
-    6 statement: if_stmt .
+    3 prog: statements .
+    5 statements: statements . NEWLINE statement
+    6           | statements . NEWLINE
 
-    $default  reduce using rule 6 (statement)
+    NEWLINE  shift, and go to state 64
+
+    $default  reduce using rule 3 (prog)
 
 
 state 16
 
-   18 if_stmt: if_header . block elif_else_
+    4 statements: statement .
 
-    NEWLINE  shift, and go to state 37
-
-    block  go to state 55
+    $default  reduce using rule 4 (statements)
 
 
 state 17
 
-    9 statement: function .
-
-    $default  reduce using rule 9 (statement)
-
-
-state 18
-
-    7 statement: while_stmt .
+    7 statement: if_stmt .
 
     $default  reduce using rule 7 (statement)
 
 
+state 18
+
+   22 if_stmt: if_header . block elif_else_
+
+    NEWLINE  shift, and go to state 44
+
+    block  go to state 65
+
+
 state 19
 
-    8 statement: for_stmt .
-
-    $default  reduce using rule 8 (statement)
-
-
-state 20
-
-   10 statement: function_call .
+   10 statement: function .
 
     $default  reduce using rule 10 (statement)
 
 
+state 20
+
+    8 statement: while_stmt .
+
+    $default  reduce using rule 8 (statement)
+
+
 state 21
 
-   12 statement: class .
+    9 statement: for_stmt .
 
-    $default  reduce using rule 12 (statement)
+    $default  reduce using rule 9 (statement)
 
 
 state 22
 
-   13 statement: try_except_stmt .
-
-    $default  reduce using rule 13 (statement)
-
-
-state 23
-
-   14 statement: match_stmt .
-
-    $default  reduce using rule 14 (statement)
-
-
-state 24
-
-   15 statement: with_statement .
-
-    $default  reduce using rule 15 (statement)
-
-
-state 25
-
-   11 statement: assignment .
+   11 statement: function_call .
 
     $default  reduce using rule 11 (statement)
 
 
+state 23
+
+   13 statement: class .
+
+    $default  reduce using rule 13 (statement)
+
+
+state 24
+
+   14 statement: try_except_stmt .
+
+    $default  reduce using rule 14 (statement)
+
+
+state 25
+
+   15 statement: match_stmt .
+
+    $default  reduce using rule 15 (statement)
+
+
 state 26
 
-  173 assignment: ID '=' . expression
-  174           | ID '=' . ARRAY
+   16 statement: with_statement .
 
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    ARRAY         shift, and go to state 57
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER      go to state 47
-    expression  go to state 58
+    $default  reduce using rule 16 (statement)
 
 
 state 27
 
-  122 function_call: ID '(' . args ')'
+   12 statement: assignment . NEWLINE
 
-    ID  shift, and go to state 59
-
-    $default  reduce using rule 75 (args)
-
-    args   go to state 60
-    args_  go to state 61
-    arg    go to state 62
+    NEWLINE  shift, and go to state 66
 
 
 state 28
 
-  181 relation_stmt: ID . GT NUMBER
-  182              | ID . LT NUMBER
-  183              | ID . GTE NUMBER
-  184              | ID . LTE NUMBER
-  185              | ID . EQUAL NUMBER
-  186              | ID . EQUAL STRING
+   17 statement: pass . NEWLINE
 
-    GT     shift, and go to state 63
-    LT     shift, and go to state 64
-    GTE    shift, and go to state 65
-    LTE    shift, and go to state 66
-    EQUAL  shift, and go to state 67
+    NEWLINE  shift, and go to state 67
 
 
 state 29
 
-   20 if_header: IF '(' . relation_stmt ')'
+  185 assignment: ID '=' . expression
+  190           | ID '=' . ARRAY
 
-    ID  shift, and go to state 28
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    ARRAY         shift, and go to state 69
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
 
-    relation_stmt  go to state 68
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 71
 
 
 state 30
 
-   19 if_header: IF relation_stmt .
+  186 assignment: ID '+' . '=' expression
 
-    $default  reduce using rule 19 (if_header)
+    '='  shift, and go to state 72
 
 
 state 31
 
-   32 function: DEF ID . '(' args ')' function_block
-   33         | DEF ID . '(' args ')' '-' GT data_type function_block
+  187 assignment: ID '-' . '=' expression
 
-    '('  shift, and go to state 69
+    '='  shift, and go to state 73
 
 
 state 32
 
-   88 while_stmt: WHILE relation_stmt . for_block
+  188 assignment: ID '*' . '=' expression
 
-    NEWLINE  shift, and go to state 70
-
-    for_block  go to state 71
+    '='  shift, and go to state 74
 
 
 state 33
 
-   92 for_stmt: FOR ID . IN RANGE range_args for_block
-   93         | FOR ID . IN ARRAY for_block
+  189 assignment: ID '/' . '=' expression
 
-    IN  shift, and go to state 72
+    '='  shift, and go to state 75
 
 
 state 34
 
-  123 function_call: PRINT '(' . argsp ')'
+  133 function_call: ID '(' . argsc ')'
 
-    ID            shift, and go to state 73
-    STRING        shift, and go to state 74
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
+    ID            shift, and go to state 76
+    STRING        shift, and go to state 77
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
 
-    $default  reduce using rule 81 (argsp)
+    $default  reduce using rule 92 (argsc)
 
-    NUMBER  go to state 75
-    argsp   go to state 76
-    args_p  go to state 77
-    argp    go to state 78
+    NUMBER  go to state 78
+    argsc   go to state 79
+    args_c  go to state 80
+    argc    go to state 81
 
 
 state 35
 
-  124 function_call: INPUT '(' . STRING ')'
+  201 relation_stmt: ID . GT NUMBER
+  202              | ID . LT NUMBER
+  203              | ID . GTE NUMBER
+  204              | ID . LTE NUMBER
+  205              | ID . EQUAL NUMBER
+  206              | ID . EQUAL STRING
+  207              | ID .
 
-    STRING  shift, and go to state 79
+    GT     shift, and go to state 82
+    LT     shift, and go to state 83
+    GTE    shift, and go to state 84
+    LTE    shift, and go to state 85
+    EQUAL  shift, and go to state 86
+
+    $default  reduce using rule 207 (relation_stmt)
 
 
 state 36
 
-  125 class: CLASS ID . class_block
+   24 if_header: IF '(' . relation_stmt ')'
 
-    NEWLINE  shift, and go to state 80
+    ID  shift, and go to state 35
 
-    class_block  go to state 81
+    relation_stmt  go to state 87
 
 
 state 37
 
-  160 block: NEWLINE . INDENT stmts DEDENT
+   23 if_header: IF relation_stmt .
 
-    INDENT  shift, and go to state 82
+    $default  reduce using rule 23 (if_header)
 
 
 state 38
 
-  134 try_except_stmt: TRY block . except_clauses
+   36 function: DEF ID . '(' args ')' function_block
+   37         | DEF ID . '(' args ')' '-' GT data_type function_block
 
-    EXCEPT  shift, and go to state 83
-
-    except_clauses  go to state 84
-    except_clause   go to state 85
+    '('  shift, and go to state 88
 
 
 state 39
 
-  138 match_stmt: MATCH ID . match_block
+   99 while_stmt: WHILE relation_stmt . for_block
 
-    NEWLINE  shift, and go to state 86
+    NEWLINE  shift, and go to state 89
 
-    match_block  go to state 87
+    for_block  go to state 90
 
 
 state 40
 
-  150 with_item: ID . '(' inside_brackets ')' AS target
-  195 expression: ID .
+  103 for_stmt: FOR ID . IN RANGE range_args for_block
+  104         | FOR ID . IN ARRAY for_block
 
-    '('  shift, and go to state 88
-
-    $default  reduce using rule 195 (expression)
+    IN  shift, and go to state 91
 
 
 state 41
 
-  194 expression: STRING .
+  134 function_call: PRINT '(' . argsp ')'
 
-    $default  reduce using rule 194 (expression)
+    ID            shift, and go to state 92
+    STRING        shift, and go to state 93
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    $default  reduce using rule 85 (argsp)
+
+    NUMBER  go to state 94
+    argsp   go to state 95
+    args_p  go to state 96
+    argp    go to state 97
 
 
 state 42
 
-   16 NUMBER: INT_NUMBER .
+  135 function_call: INPUT '(' . STRING ')'
 
-    $default  reduce using rule 16 (NUMBER)
+    STRING  shift, and go to state 98
 
 
 state 43
 
-   17 NUMBER: FLOAT_NUMBER .
+  136 class: CLASS ID . class_block
 
-    $default  reduce using rule 17 (NUMBER)
+    NEWLINE  shift, and go to state 99
+
+    class_block  go to state 100
 
 
 state 44
 
-  192 expression: '-' . expression
+  171 block: NEWLINE . INDENT stmts DEDENT
 
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER      go to state 47
-    expression  go to state 89
+    INDENT  shift, and go to state 101
 
 
 state 45
 
-  191 expression: '|' . expression
+  145 try_except_stmt: TRY block . except_clauses
 
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
+    EXCEPT  shift, and go to state 102
 
-    NUMBER      go to state 47
-    expression  go to state 90
+    except_clauses  go to state 103
+    except_clause   go to state 104
 
 
 state 46
 
-  148 with_body: '(' . with_stmt_contents ')'
+  149 match_stmt: MATCH ID . match_block
 
-    ID            shift, and go to state 40
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
+    NEWLINE  shift, and go to state 105
 
-    NUMBER              go to state 47
-    with_stmt_contents  go to state 91
-    with_item           go to state 51
-    expression          go to state 52
+    match_block  go to state 106
 
 
 state 47
 
-  193 expression: NUMBER .
+  161 with_item: ID . '(' inside_brackets ')' AS target
+  222 expression: ID .
 
-    $default  reduce using rule 193 (expression)
+    '('  shift, and go to state 107
+
+    $default  reduce using rule 222 (expression)
 
 
 state 48
 
-  144 with_statement: WITH with_statement_body . block
+  221 expression: STRING .
 
-    NEWLINE  shift, and go to state 37
-
-    block  go to state 92
+    $default  reduce using rule 221 (expression)
 
 
 state 49
 
-  145 with_statement_body: with_body . ',' with_statement_body
-  146                    | with_body .
+   18 NUMBER: INT_NUMBER .
 
-    ','  shift, and go to state 93
-
-    $default  reduce using rule 146 (with_statement_body)
+    $default  reduce using rule 18 (NUMBER)
 
 
 state 50
 
-  147 with_body: with_stmt_contents .
+   19 NUMBER: FLOAT_NUMBER .
 
-    $default  reduce using rule 147 (with_body)
+    $default  reduce using rule 19 (NUMBER)
 
 
 state 51
 
-  149 with_stmt_contents: with_item .
+   20 boolean: TRUE_TOK .
 
-    $default  reduce using rule 149 (with_stmt_contents)
+    $default  reduce using rule 20 (boolean)
 
 
 state 52
 
-  151 with_item: expression .
-  152          | expression . AS target
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
+   21 boolean: FALSE_TOK .
 
-    AS   shift, and go to state 94
-    '+'  shift, and go to state 95
-    '-'  shift, and go to state 96
-    '*'  shift, and go to state 97
-    '/'  shift, and go to state 98
-
-    $default  reduce using rule 151 (with_item)
+    $default  reduce using rule 21 (boolean)
 
 
 state 53
 
-    0 $accept: prog $end .
+  216 expression: '|' . expression
 
-    $default  accept
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 108
 
 
 state 54
 
-    4 statements: statements NEWLINE . statement
-    5           | statements NEWLINE .
+  218 expression: '-' . expression
+
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 109
+
+
+state 55
+
+  159 with_body: '(' . with_stmt_contents ')'
+  217 expression: '(' . expression ')'
+
+    ID            shift, and go to state 47
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER              go to state 56
+    boolean             go to state 57
+    with_stmt_contents  go to state 110
+    with_item           go to state 61
+    expression          go to state 111
+
+
+state 56
+
+  219 expression: NUMBER .
+
+    $default  reduce using rule 219 (expression)
+
+
+state 57
+
+  220 expression: boolean .
+
+    $default  reduce using rule 220 (expression)
+
+
+state 58
+
+  155 with_statement: WITH with_statement_body . block
+  156 with_statement_body: with_statement_body . ',' with_body
+
+    NEWLINE  shift, and go to state 44
+    ','      shift, and go to state 112
+
+    block  go to state 113
+
+
+state 59
+
+  157 with_statement_body: with_body .
+
+    $default  reduce using rule 157 (with_statement_body)
+
+
+state 60
+
+  158 with_body: with_stmt_contents .
+
+    $default  reduce using rule 158 (with_body)
+
+
+state 61
+
+  160 with_stmt_contents: with_item .
+
+    $default  reduce using rule 160 (with_stmt_contents)
+
+
+state 62
+
+  162 with_item: expression .
+  163          | expression . AS target
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+
+    AS   shift, and go to state 114
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 162 (with_item)
+
+
+state 63
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+state 64
+
+    5 statements: statements NEWLINE . statement
+    6           | statements NEWLINE .
 
     ID     shift, and go to state 1
     IF     shift, and go to state 2
@@ -1094,275 +1267,405 @@ state 54
     TRY    shift, and go to state 9
     MATCH  shift, and go to state 10
     WITH   shift, and go to state 11
+    PASS   shift, and go to state 12
 
-    $default  reduce using rule 5 (statements)
+    $default  reduce using rule 6 (statements)
 
-    statement        go to state 99
-    if_stmt          go to state 15
-    if_header        go to state 16
-    function         go to state 17
-    while_stmt       go to state 18
-    for_stmt         go to state 19
-    function_call    go to state 20
-    class            go to state 21
-    try_except_stmt  go to state 22
-    match_stmt       go to state 23
-    with_statement   go to state 24
-    assignment       go to state 25
-
-
-state 55
-
-   18 if_stmt: if_header block . elif_else_
-
-    ELSE  shift, and go to state 100
-    ELIF  shift, and go to state 101
-
-    $default  reduce using rule 21 (elif_else_)
-
-    elif_else_   go to state 102
-    elif_else    go to state 103
-    else_stmt    go to state 104
-    elif_stmts   go to state 105
-    elif_stmt    go to state 106
-    elif_header  go to state 107
-
-
-state 56
-
-  195 expression: ID .
-
-    $default  reduce using rule 195 (expression)
-
-
-state 57
-
-  174 assignment: ID '=' ARRAY .
-
-    $default  reduce using rule 174 (assignment)
-
-
-state 58
-
-  173 assignment: ID '=' expression .
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
-
-    '+'  shift, and go to state 95
-    '-'  shift, and go to state 96
-    '*'  shift, and go to state 97
-    '/'  shift, and go to state 98
-
-    $default  reduce using rule 173 (assignment)
-
-
-state 59
-
-   79 arg: ID .
-   80    | ID . ':' data_type
-
-    ':'  shift, and go to state 108
-
-    $default  reduce using rule 79 (arg)
-
-
-state 60
-
-  122 function_call: ID '(' args . ')'
-
-    ')'  shift, and go to state 109
-
-
-state 61
-
-   76 args: args_ .
-   78 args_: args_ . ',' arg
-
-    ','  shift, and go to state 110
-
-    $default  reduce using rule 76 (args)
-
-
-state 62
-
-   77 args_: arg .
-
-    $default  reduce using rule 77 (args_)
-
-
-state 63
-
-  181 relation_stmt: ID GT . NUMBER
-
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 111
-
-
-state 64
-
-  182 relation_stmt: ID LT . NUMBER
-
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 112
+    statement        go to state 123
+    if_stmt          go to state 17
+    if_header        go to state 18
+    function         go to state 19
+    while_stmt       go to state 20
+    for_stmt         go to state 21
+    function_call    go to state 22
+    class            go to state 23
+    try_except_stmt  go to state 24
+    match_stmt       go to state 25
+    with_statement   go to state 26
+    assignment       go to state 27
+    pass             go to state 28
 
 
 state 65
 
-  183 relation_stmt: ID GTE . NUMBER
+   22 if_stmt: if_header block . elif_else_
 
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
+    ELSE  shift, and go to state 124
+    ELIF  shift, and go to state 125
 
-    NUMBER  go to state 113
+    $default  reduce using rule 25 (elif_else_)
+
+    elif_else_   go to state 126
+    elif_else    go to state 127
+    else_stmt    go to state 128
+    elif_stmts   go to state 129
+    elif_stmt    go to state 130
+    elif_header  go to state 131
 
 
 state 66
 
-  184 relation_stmt: ID LTE . NUMBER
+   12 statement: assignment NEWLINE .
 
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 114
+    $default  reduce using rule 12 (statement)
 
 
 state 67
 
-  185 relation_stmt: ID EQUAL . NUMBER
-  186              | ID EQUAL . STRING
+   17 statement: pass NEWLINE .
 
-    STRING        shift, and go to state 115
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 116
+    $default  reduce using rule 17 (statement)
 
 
 state 68
 
-   20 if_header: IF '(' relation_stmt . ')'
+  222 expression: ID .
 
-    ')'  shift, and go to state 117
+    $default  reduce using rule 222 (expression)
 
 
 state 69
 
-   32 function: DEF ID '(' . args ')' function_block
-   33         | DEF ID '(' . args ')' '-' GT data_type function_block
+  190 assignment: ID '=' ARRAY .
 
-    ID  shift, and go to state 59
-
-    $default  reduce using rule 75 (args)
-
-    args   go to state 118
-    args_  go to state 61
-    arg    go to state 62
+    $default  reduce using rule 190 (assignment)
 
 
 state 70
 
-   94 for_block: NEWLINE . INDENT for_stmts DEDENT
+  217 expression: '(' . expression ')'
 
-    INDENT  shift, and go to state 119
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 132
 
 
 state 71
 
-   88 while_stmt: WHILE relation_stmt for_block .
+  185 assignment: ID '=' expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    $default  reduce using rule 88 (while_stmt)
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 185 (assignment)
 
 
 state 72
 
-   92 for_stmt: FOR ID IN . RANGE range_args for_block
-   93         | FOR ID IN . ARRAY for_block
+  186 assignment: ID '+' '=' . expression
 
-    ARRAY  shift, and go to state 120
-    RANGE  shift, and go to state 121
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 133
 
 
 state 73
 
-   85 argp: ID .
+  187 assignment: ID '-' '=' . expression
 
-    $default  reduce using rule 85 (argp)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 134
 
 
 state 74
 
-   87 argp: STRING .
+  188 assignment: ID '*' '=' . expression
 
-    $default  reduce using rule 87 (argp)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 135
 
 
 state 75
 
-   86 argp: NUMBER .
+  189 assignment: ID '/' '=' . expression
 
-    $default  reduce using rule 86 (argp)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 136
 
 
 state 76
 
-  123 function_call: PRINT '(' argsp . ')'
+   96 argc: ID .
 
-    ')'  shift, and go to state 122
+    $default  reduce using rule 96 (argc)
 
 
 state 77
 
-   82 argsp: args_p .
-   84 args_p: args_p . argp
+   98 argc: STRING .
 
-    ID            shift, and go to state 73
-    STRING        shift, and go to state 74
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    $default  reduce using rule 82 (argsp)
-
-    NUMBER  go to state 75
-    argp    go to state 123
+    $default  reduce using rule 98 (argc)
 
 
 state 78
 
-   83 args_p: argp .
+   97 argc: NUMBER .
 
-    $default  reduce using rule 83 (args_p)
+    $default  reduce using rule 97 (argc)
 
 
 state 79
 
-  124 function_call: INPUT '(' STRING . ')'
+  133 function_call: ID '(' argsc . ')'
 
-    ')'  shift, and go to state 124
+    ')'  shift, and go to state 137
 
 
 state 80
 
-  126 class_block: NEWLINE . INDENT class_stmts DEDENT
+   93 argsc: args_c .
+   95 args_c: args_c . ',' argc
 
-    INDENT  shift, and go to state 125
+    ','  shift, and go to state 138
+
+    $default  reduce using rule 93 (argsc)
 
 
 state 81
 
-  125 class: CLASS ID class_block .
+   94 args_c: argc .
 
-    $default  reduce using rule 125 (class)
+    $default  reduce using rule 94 (args_c)
 
 
 state 82
 
-  160 block: NEWLINE INDENT . stmts DEDENT
+  201 relation_stmt: ID GT . NUMBER
+
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 139
+
+
+state 83
+
+  202 relation_stmt: ID LT . NUMBER
+
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 140
+
+
+state 84
+
+  203 relation_stmt: ID GTE . NUMBER
+
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 141
+
+
+state 85
+
+  204 relation_stmt: ID LTE . NUMBER
+
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 142
+
+
+state 86
+
+  205 relation_stmt: ID EQUAL . NUMBER
+  206              | ID EQUAL . STRING
+
+    STRING        shift, and go to state 143
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 144
+
+
+state 87
+
+   24 if_header: IF '(' relation_stmt . ')'
+
+    ')'  shift, and go to state 145
+
+
+state 88
+
+   36 function: DEF ID '(' . args ')' function_block
+   37         | DEF ID '(' . args ')' '-' GT data_type function_block
+
+    ID  shift, and go to state 146
+
+    $default  reduce using rule 79 (args)
+
+    args   go to state 147
+    args_  go to state 148
+    arg    go to state 149
+
+
+state 89
+
+  105 for_block: NEWLINE . INDENT for_stmts DEDENT
+
+    INDENT  shift, and go to state 150
+
+
+state 90
+
+   99 while_stmt: WHILE relation_stmt for_block .
+
+    $default  reduce using rule 99 (while_stmt)
+
+
+state 91
+
+  103 for_stmt: FOR ID IN . RANGE range_args for_block
+  104         | FOR ID IN . ARRAY for_block
+
+    ARRAY  shift, and go to state 151
+    RANGE  shift, and go to state 152
+
+
+state 92
+
+   89 argp: ID .
+
+    $default  reduce using rule 89 (argp)
+
+
+state 93
+
+   91 argp: STRING .
+
+    $default  reduce using rule 91 (argp)
+
+
+state 94
+
+   90 argp: NUMBER .
+
+    $default  reduce using rule 90 (argp)
+
+
+state 95
+
+  134 function_call: PRINT '(' argsp . ')'
+
+    ')'  shift, and go to state 153
+
+
+state 96
+
+   86 argsp: args_p .
+   88 args_p: args_p . argp
+
+    ID            shift, and go to state 92
+    STRING        shift, and go to state 93
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    $default  reduce using rule 86 (argsp)
+
+    NUMBER  go to state 94
+    argp    go to state 154
+
+
+state 97
+
+   87 args_p: argp .
+
+    $default  reduce using rule 87 (args_p)
+
+
+state 98
+
+  135 function_call: INPUT '(' STRING . ')'
+
+    ')'  shift, and go to state 155
+
+
+state 99
+
+  137 class_block: NEWLINE . INDENT class_stmts DEDENT
+
+    INDENT  shift, and go to state 156
+
+
+state 100
+
+  136 class: CLASS ID class_block .
+
+    $default  reduce using rule 136 (class)
+
+
+state 101
+
+  171 block: NEWLINE INDENT . stmts DEDENT
 
     ID     shift, and go to state 1
     IF     shift, and go to state 2
@@ -1373,880 +1676,653 @@ state 82
     TRY    shift, and go to state 9
     MATCH  shift, and go to state 10
     WITH   shift, and go to state 11
-
-    if_stmt          go to state 126
-    if_header        go to state 16
-    while_stmt       go to state 127
-    for_stmt         go to state 128
-    function_call    go to state 129
-    try_except_stmt  go to state 130
-    match_stmt       go to state 131
-    with_statement   go to state 132
-    stmts            go to state 133
-    stmt             go to state 134
-    simple_stmt      go to state 135
-    compound_stmt    go to state 136
-    assignment       go to state 137
-
-
-state 83
-
-  137 except_clause: EXCEPT . block
-
-    NEWLINE  shift, and go to state 37
-
-    block  go to state 138
-
-
-state 84
-
-  134 try_except_stmt: TRY block except_clauses .
-  136 except_clauses: except_clauses . except_clause
-
-    EXCEPT  shift, and go to state 83
-
-    $default  reduce using rule 134 (try_except_stmt)
-
-    except_clause  go to state 139
-
-
-state 85
-
-  135 except_clauses: except_clause .
-
-    $default  reduce using rule 135 (except_clauses)
-
-
-state 86
-
-  143 match_block: NEWLINE . INDENT case_statements final_case DEDENT
-
-    INDENT  shift, and go to state 140
-
-
-state 87
-
-  138 match_stmt: MATCH ID match_block .
-
-    $default  reduce using rule 138 (match_stmt)
-
-
-state 88
-
-  150 with_item: ID '(' . inside_brackets ')' AS target
-
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER           go to state 47
-    inside_brackets  go to state 141
-    expression       go to state 142
-
-
-state 89
-
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
-  192           | '-' expression .
-
-    $default  reduce using rule 192 (expression)
-
-
-state 90
-
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
-  191           | '|' expression .
-
-    $default  reduce using rule 191 (expression)
-
-
-state 91
-
-  148 with_body: '(' with_stmt_contents . ')'
-
-    ')'  shift, and go to state 143
-
-
-state 92
-
-  144 with_statement: WITH with_statement_body block .
-
-    $default  reduce using rule 144 (with_statement)
-
-
-state 93
-
-  145 with_statement_body: with_body ',' . with_statement_body
-
-    ID            shift, and go to state 40
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-    '('           shift, and go to state 46
-
-    NUMBER               go to state 47
-    with_statement_body  go to state 144
-    with_body            go to state 49
-    with_stmt_contents   go to state 50
-    with_item            go to state 51
-    expression           go to state 52
-
-
-state 94
-
-  152 with_item: expression AS . target
-
-    ID   shift, and go to state 145
-    '('  shift, and go to state 146
-
-    target  go to state 147
-
-
-state 95
-
-  187 expression: expression '+' . expression
-
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER      go to state 47
-    expression  go to state 148
-
-
-state 96
-
-  188 expression: expression '-' . expression
-
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER      go to state 47
-    expression  go to state 149
-
-
-state 97
-
-  189 expression: expression '*' . expression
-
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER      go to state 47
-    expression  go to state 150
-
-
-state 98
-
-  190 expression: expression '/' . expression
-
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER      go to state 47
-    expression  go to state 151
-
-
-state 99
-
-    4 statements: statements NEWLINE statement .
-
-    $default  reduce using rule 4 (statements)
-
-
-state 100
-
-   26 else_stmt: ELSE . block
-
-    NEWLINE  shift, and go to state 37
-
-    block  go to state 152
-
-
-state 101
-
-   30 elif_header: ELIF . relation_stmt
-   31            | ELIF . '(' relation_stmt ')'
-
-    ID   shift, and go to state 28
-    '('  shift, and go to state 153
-
-    relation_stmt  go to state 154
+    PASS   shift, and go to state 12
+
+    if_stmt          go to state 157
+    if_header        go to state 18
+    while_stmt       go to state 158
+    for_stmt         go to state 159
+    function_call    go to state 160
+    try_except_stmt  go to state 161
+    match_stmt       go to state 162
+    with_statement   go to state 163
+    stmts            go to state 164
+    stmt             go to state 165
+    simple_stmt      go to state 166
+    compound_stmt    go to state 167
+    assignment       go to state 168
+    pass             go to state 169
 
 
 state 102
 
-   18 if_stmt: if_header block elif_else_ .
+  148 except_clause: EXCEPT . block
 
-    $default  reduce using rule 18 (if_stmt)
+    NEWLINE  shift, and go to state 44
+
+    block  go to state 170
 
 
 state 103
 
-   22 elif_else_: elif_else .
+  145 try_except_stmt: TRY block except_clauses .
+  147 except_clauses: except_clauses . except_clause
 
-    $default  reduce using rule 22 (elif_else_)
+    EXCEPT  shift, and go to state 102
+
+    $default  reduce using rule 145 (try_except_stmt)
+
+    except_clause  go to state 171
 
 
 state 104
 
-   25 elif_else: else_stmt .
+  146 except_clauses: except_clause .
 
-    $default  reduce using rule 25 (elif_else)
+    $default  reduce using rule 146 (except_clauses)
 
 
 state 105
 
-   23 elif_else: elif_stmts . else_stmt
-   24          | elif_stmts .
-   28 elif_stmts: elif_stmts . elif_stmt
+  154 match_block: NEWLINE . INDENT case_statements final_case DEDENT
 
-    ELSE  shift, and go to state 100
-    ELIF  shift, and go to state 101
-
-    $default  reduce using rule 24 (elif_else)
-
-    else_stmt    go to state 155
-    elif_stmt    go to state 156
-    elif_header  go to state 107
+    INDENT  shift, and go to state 172
 
 
 state 106
 
-   27 elif_stmts: elif_stmt .
+  149 match_stmt: MATCH ID match_block .
 
-    $default  reduce using rule 27 (elif_stmts)
+    $default  reduce using rule 149 (match_stmt)
 
 
 state 107
 
-   29 elif_stmt: elif_header . block
+  161 with_item: ID '(' . inside_brackets ')' AS target
 
-    NEWLINE  shift, and go to state 37
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
 
-    block  go to state 157
+    NUMBER           go to state 56
+    boolean          go to state 57
+    inside_brackets  go to state 173
+    expression       go to state 174
 
 
 state 108
 
-   80 arg: ID ':' . data_type
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+  216           | '|' expression .
 
-    INT    shift, and go to state 158
-    FLOAT  shift, and go to state 159
-    STR    shift, and go to state 160
-    BOOL   shift, and go to state 161
-    LIST   shift, and go to state 162
-
-    data_type  go to state 163
+    $default  reduce using rule 216 (expression)
 
 
 state 109
 
-  122 function_call: ID '(' args ')' .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+  218           | '-' expression .
 
-    $default  reduce using rule 122 (function_call)
+    $default  reduce using rule 218 (expression)
 
 
 state 110
 
-   78 args_: args_ ',' . arg
+  159 with_body: '(' with_stmt_contents . ')'
 
-    ID  shift, and go to state 59
-
-    arg  go to state 164
+    ')'  shift, and go to state 175
 
 
 state 111
 
-  181 relation_stmt: ID GT NUMBER .
+  162 with_item: expression .
+  163          | expression . AS target
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+  217           | '(' expression . ')'
 
-    $default  reduce using rule 181 (relation_stmt)
+    AS   shift, and go to state 114
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+    ')'  shift, and go to state 176
+
+    ')'  [reduce using rule 162 (with_item)]
 
 
 state 112
 
-  182 relation_stmt: ID LT NUMBER .
+  156 with_statement_body: with_statement_body ',' . with_body
 
-    $default  reduce using rule 182 (relation_stmt)
+    ID            shift, and go to state 47
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 55
+
+    NUMBER              go to state 56
+    boolean             go to state 57
+    with_body           go to state 177
+    with_stmt_contents  go to state 60
+    with_item           go to state 61
+    expression          go to state 62
 
 
 state 113
 
-  183 relation_stmt: ID GTE NUMBER .
+  155 with_statement: WITH with_statement_body block .
 
-    $default  reduce using rule 183 (relation_stmt)
+    $default  reduce using rule 155 (with_statement)
 
 
 state 114
 
-  184 relation_stmt: ID LTE NUMBER .
+  163 with_item: expression AS . target
 
-    $default  reduce using rule 184 (relation_stmt)
+    ID   shift, and go to state 178
+    '('  shift, and go to state 179
+
+    target  go to state 180
 
 
 state 115
 
-  186 relation_stmt: ID EQUAL STRING .
+  212 expression: expression AND . expression
 
-    $default  reduce using rule 186 (relation_stmt)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 181
 
 
 state 116
 
-  185 relation_stmt: ID EQUAL NUMBER .
+  214 expression: expression OR . expression
 
-    $default  reduce using rule 185 (relation_stmt)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 182
 
 
 state 117
 
-   20 if_header: IF '(' relation_stmt ')' .
+  215 expression: expression '|' . expression
 
-    $default  reduce using rule 20 (if_header)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 183
 
 
 state 118
 
-   32 function: DEF ID '(' args . ')' function_block
-   33         | DEF ID '(' args . ')' '-' GT data_type function_block
+  213 expression: expression '&' . expression
 
-    ')'  shift, and go to state 165
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 184
 
 
 state 119
 
-   94 for_block: NEWLINE INDENT . for_stmts DEDENT
+  208 expression: expression '+' . expression
 
-    ID        shift, and go to state 1
-    BREAK     shift, and go to state 166
-    CONTINUE  shift, and go to state 167
-    IF        shift, and go to state 168
-    WHILE     shift, and go to state 4
-    FOR       shift, and go to state 5
-    PRINT     shift, and go to state 6
-    INPUT     shift, and go to state 7
-    TRY       shift, and go to state 9
-    MATCH     shift, and go to state 10
-    WITH      shift, and go to state 11
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
 
-    while_stmt         go to state 169
-    for_stmt           go to state 170
-    for_stmts          go to state 171
-    for_stmt_          go to state 172
-    for_sp_stmt        go to state 173
-    for_compound_stmt  go to state 174
-    for_if_stmt        go to state 175
-    for_if_header      go to state 176
-    function_call      go to state 129
-    try_except_stmt    go to state 177
-    match_stmt         go to state 178
-    with_statement     go to state 179
-    simple_stmt        go to state 180
-    assignment         go to state 137
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 185
 
 
 state 120
 
-   93 for_stmt: FOR ID IN ARRAY . for_block
+  209 expression: expression '-' . expression
 
-    NEWLINE  shift, and go to state 70
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
 
-    for_block  go to state 181
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 186
 
 
 state 121
 
-   92 for_stmt: FOR ID IN RANGE . range_args for_block
+  210 expression: expression '*' . expression
 
-    '('  shift, and go to state 182
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
 
-    range_args  go to state 183
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 187
 
 
 state 122
 
-  123 function_call: PRINT '(' argsp ')' .
+  211 expression: expression '/' . expression
 
-    $default  reduce using rule 123 (function_call)
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 188
 
 
 state 123
 
-   84 args_p: args_p argp .
+    5 statements: statements NEWLINE statement .
 
-    $default  reduce using rule 84 (args_p)
+    $default  reduce using rule 5 (statements)
 
 
 state 124
 
-  124 function_call: INPUT '(' STRING ')' .
+   30 else_stmt: ELSE . block
 
-    $default  reduce using rule 124 (function_call)
+    NEWLINE  shift, and go to state 44
+
+    block  go to state 189
 
 
 state 125
 
-  126 class_block: NEWLINE INDENT . class_stmts DEDENT
+   34 elif_header: ELIF . relation_stmt
+   35            | ELIF . '(' relation_stmt ')'
 
-    ID      shift, and go to state 1
-    GLOBAL  shift, and go to state 184
-    IF      shift, and go to state 2
-    DEF     shift, and go to state 3
-    WHILE   shift, and go to state 4
-    FOR     shift, and go to state 5
-    PRINT   shift, and go to state 6
-    INPUT   shift, and go to state 7
-    TRY     shift, and go to state 9
-    MATCH   shift, and go to state 10
-    WITH    shift, and go to state 11
+    ID   shift, and go to state 35
+    '('  shift, and go to state 190
 
-    if_stmt          go to state 126
-    if_header        go to state 16
-    function         go to state 185
-    while_stmt       go to state 127
-    for_stmt         go to state 128
-    function_call    go to state 129
-    class_stmts      go to state 186
-    class_stmt_      go to state 187
-    class_sp_stmt    go to state 188
-    try_except_stmt  go to state 130
-    match_stmt       go to state 131
-    with_statement   go to state 132
-    simple_stmt      go to state 189
-    compound_stmt    go to state 190
-    assignment       go to state 137
-    global_stmt      go to state 191
+    relation_stmt  go to state 191
 
 
 state 126
 
-  167 compound_stmt: if_stmt .
+   22 if_stmt: if_header block elif_else_ .
 
-    $default  reduce using rule 167 (compound_stmt)
+    $default  reduce using rule 22 (if_stmt)
 
 
 state 127
 
-  168 compound_stmt: while_stmt .
+   26 elif_else_: elif_else .
 
-    $default  reduce using rule 168 (compound_stmt)
+    $default  reduce using rule 26 (elif_else_)
 
 
 state 128
 
-  169 compound_stmt: for_stmt .
+   29 elif_else: else_stmt .
 
-    $default  reduce using rule 169 (compound_stmt)
+    $default  reduce using rule 29 (elif_else)
 
 
 state 129
 
-  166 simple_stmt: function_call .
+   27 elif_else: elif_stmts . else_stmt
+   28          | elif_stmts .
+   32 elif_stmts: elif_stmts . elif_stmt
 
-    $default  reduce using rule 166 (simple_stmt)
+    ELSE  shift, and go to state 124
+    ELIF  shift, and go to state 125
+
+    $default  reduce using rule 28 (elif_else)
+
+    else_stmt    go to state 192
+    elif_stmt    go to state 193
+    elif_header  go to state 131
 
 
 state 130
 
-  170 compound_stmt: try_except_stmt .
+   31 elif_stmts: elif_stmt .
 
-    $default  reduce using rule 170 (compound_stmt)
+    $default  reduce using rule 31 (elif_stmts)
 
 
 state 131
 
-  172 compound_stmt: match_stmt .
+   33 elif_stmt: elif_header . block
 
-    $default  reduce using rule 172 (compound_stmt)
+    NEWLINE  shift, and go to state 44
+
+    block  go to state 194
 
 
 state 132
 
-  171 compound_stmt: with_statement .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+  217           | '(' expression . ')'
 
-    $default  reduce using rule 171 (compound_stmt)
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+    ')'  shift, and go to state 176
 
 
 state 133
 
-  160 block: NEWLINE INDENT stmts . DEDENT
-  162 stmts: stmts . stmt
+  186 assignment: ID '+' '=' expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    ID      shift, and go to state 1
-    DEDENT  shift, and go to state 192
-    IF      shift, and go to state 2
-    WHILE   shift, and go to state 4
-    FOR     shift, and go to state 5
-    PRINT   shift, and go to state 6
-    INPUT   shift, and go to state 7
-    TRY     shift, and go to state 9
-    MATCH   shift, and go to state 10
-    WITH    shift, and go to state 11
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
 
-    if_stmt          go to state 126
-    if_header        go to state 16
-    while_stmt       go to state 127
-    for_stmt         go to state 128
-    function_call    go to state 129
-    try_except_stmt  go to state 130
-    match_stmt       go to state 131
-    with_statement   go to state 132
-    stmt             go to state 193
-    simple_stmt      go to state 135
-    compound_stmt    go to state 136
-    assignment       go to state 137
+    $default  reduce using rule 186 (assignment)
 
 
 state 134
 
-  161 stmts: stmt .
+  187 assignment: ID '-' '=' expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    $default  reduce using rule 161 (stmts)
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 187 (assignment)
 
 
 state 135
 
-  163 stmt: simple_stmt . NEWLINE
+  188 assignment: ID '*' '=' expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    NEWLINE  shift, and go to state 194
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 188 (assignment)
 
 
 state 136
 
-  164 stmt: compound_stmt .
+  189 assignment: ID '/' '=' expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    $default  reduce using rule 164 (stmt)
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 189 (assignment)
 
 
 state 137
 
-  165 simple_stmt: assignment .
+  133 function_call: ID '(' argsc ')' .
 
-    $default  reduce using rule 165 (simple_stmt)
+    $default  reduce using rule 133 (function_call)
 
 
 state 138
 
-  137 except_clause: EXCEPT block .
+   95 args_c: args_c ',' . argc
 
-    $default  reduce using rule 137 (except_clause)
+    ID            shift, and go to state 76
+    STRING        shift, and go to state 77
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 78
+    argc    go to state 195
 
 
 state 139
 
-  136 except_clauses: except_clauses except_clause .
+  201 relation_stmt: ID GT NUMBER .
 
-    $default  reduce using rule 136 (except_clauses)
+    $default  reduce using rule 201 (relation_stmt)
 
 
 state 140
 
-  143 match_block: NEWLINE INDENT . case_statements final_case DEDENT
+  202 relation_stmt: ID LT NUMBER .
 
-    CASE  shift, and go to state 195
-
-    case_statements  go to state 196
-    case_statement   go to state 197
+    $default  reduce using rule 202 (relation_stmt)
 
 
 state 141
 
-  150 with_item: ID '(' inside_brackets . ')' AS target
+  203 relation_stmt: ID GTE NUMBER .
 
-    ')'  shift, and go to state 198
+    $default  reduce using rule 203 (relation_stmt)
 
 
 state 142
 
-  153 inside_brackets: expression .
-  154                | expression . ',' inside_brackets
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
+  204 relation_stmt: ID LTE NUMBER .
 
-    '+'  shift, and go to state 95
-    '-'  shift, and go to state 96
-    '*'  shift, and go to state 97
-    '/'  shift, and go to state 98
-    ','  shift, and go to state 199
-
-    $default  reduce using rule 153 (inside_brackets)
+    $default  reduce using rule 204 (relation_stmt)
 
 
 state 143
 
-  148 with_body: '(' with_stmt_contents ')' .
+  206 relation_stmt: ID EQUAL STRING .
 
-    $default  reduce using rule 148 (with_body)
+    $default  reduce using rule 206 (relation_stmt)
 
 
 state 144
 
-  145 with_statement_body: with_body ',' with_statement_body .
+  205 relation_stmt: ID EQUAL NUMBER .
 
-    $default  reduce using rule 145 (with_statement_body)
+    $default  reduce using rule 205 (relation_stmt)
 
 
 state 145
 
-  157 target: ID .
+   24 if_header: IF '(' relation_stmt ')' .
 
-    $default  reduce using rule 157 (target)
+    $default  reduce using rule 24 (if_header)
 
 
 state 146
 
-  155 target: '(' . targets ')'
+   83 arg: ID .
+   84    | ID . ':' data_type
 
-    ID   shift, and go to state 145
-    '('  shift, and go to state 146
+    ':'  shift, and go to state 196
 
-    target   go to state 200
-    targets  go to state 201
+    $default  reduce using rule 83 (arg)
 
 
 state 147
 
-  152 with_item: expression AS target .
-  156 target: target . '.' ID
+   36 function: DEF ID '(' args . ')' function_block
+   37         | DEF ID '(' args . ')' '-' GT data_type function_block
 
-    '.'  shift, and go to state 202
-
-    $default  reduce using rule 152 (with_item)
+    ')'  shift, and go to state 197
 
 
 state 148
 
-  187 expression: expression . '+' expression
-  187           | expression '+' expression .
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
+   80 args: args_ .
+   82 args_: args_ . ',' arg
 
-    '*'  shift, and go to state 97
-    '/'  shift, and go to state 98
+    ','  shift, and go to state 198
 
-    $default  reduce using rule 187 (expression)
+    $default  reduce using rule 80 (args)
 
 
 state 149
 
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  188           | expression '-' expression .
-  189           | expression . '*' expression
-  190           | expression . '/' expression
+   81 args_: arg .
 
-    '*'  shift, and go to state 97
-    '/'  shift, and go to state 98
-
-    $default  reduce using rule 188 (expression)
+    $default  reduce using rule 81 (args_)
 
 
 state 150
 
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  189           | expression '*' expression .
-  190           | expression . '/' expression
-
-    $default  reduce using rule 189 (expression)
-
-
-state 151
-
-  187 expression: expression . '+' expression
-  188           | expression . '-' expression
-  189           | expression . '*' expression
-  190           | expression . '/' expression
-  190           | expression '/' expression .
-
-    $default  reduce using rule 190 (expression)
-
-
-state 152
-
-   26 else_stmt: ELSE block .
-
-    $default  reduce using rule 26 (else_stmt)
-
-
-state 153
-
-   31 elif_header: ELIF '(' . relation_stmt ')'
-
-    ID  shift, and go to state 28
-
-    relation_stmt  go to state 203
-
-
-state 154
-
-   30 elif_header: ELIF relation_stmt .
-
-    $default  reduce using rule 30 (elif_header)
-
-
-state 155
-
-   23 elif_else: elif_stmts else_stmt .
-
-    $default  reduce using rule 23 (elif_else)
-
-
-state 156
-
-   28 elif_stmts: elif_stmts elif_stmt .
-
-    $default  reduce using rule 28 (elif_stmts)
-
-
-state 157
-
-   29 elif_stmt: elif_header block .
-
-    $default  reduce using rule 29 (elif_stmt)
-
-
-state 158
-
-  196 data_type: INT .
-
-    $default  reduce using rule 196 (data_type)
-
-
-state 159
-
-  197 data_type: FLOAT .
-
-    $default  reduce using rule 197 (data_type)
-
-
-state 160
-
-  199 data_type: STR .
-
-    $default  reduce using rule 199 (data_type)
-
-
-state 161
-
-  198 data_type: BOOL .
-
-    $default  reduce using rule 198 (data_type)
-
-
-state 162
-
-  200 data_type: LIST . '[' INT ']'
-  201          | LIST . '[' FLOAT ']'
-  202          | LIST . '[' STR ']'
-
-    '['  shift, and go to state 204
-
-
-state 163
-
-   80 arg: ID ':' data_type .
-
-    $default  reduce using rule 80 (arg)
-
-
-state 164
-
-   78 args_: args_ ',' arg .
-
-    $default  reduce using rule 78 (args_)
-
-
-state 165
-
-   32 function: DEF ID '(' args ')' . function_block
-   33         | DEF ID '(' args ')' . '-' GT data_type function_block
-
-    NEWLINE  shift, and go to state 205
-    '-'      shift, and go to state 206
-
-    function_block  go to state 207
-
-
-state 166
-
-  100 for_sp_stmt: BREAK .
-
-    $default  reduce using rule 100 (for_sp_stmt)
-
-
-state 167
-
-  101 for_sp_stmt: CONTINUE .
-
-    $default  reduce using rule 101 (for_sp_stmt)
-
-
-state 168
-
-  109 for_if_header: IF . relation_stmt
-  110              | IF . '(' relation_stmt ')'
-
-    ID   shift, and go to state 28
-    '('  shift, and go to state 208
-
-    relation_stmt  go to state 209
-
-
-state 169
-
-  103 for_compound_stmt: while_stmt .
-
-    $default  reduce using rule 103 (for_compound_stmt)
-
-
-state 170
-
-  104 for_compound_stmt: for_stmt .
-
-    $default  reduce using rule 104 (for_compound_stmt)
-
-
-state 171
-
-   94 for_block: NEWLINE INDENT for_stmts . DEDENT
-   96 for_stmts: for_stmts . for_stmt_
+  105 for_block: NEWLINE INDENT . for_stmts DEDENT
 
     ID        shift, and go to state 1
-    BREAK     shift, and go to state 166
-    CONTINUE  shift, and go to state 167
-    DEDENT    shift, and go to state 210
-    IF        shift, and go to state 168
+    BREAK     shift, and go to state 199
+    CONTINUE  shift, and go to state 200
+    IF        shift, and go to state 201
     WHILE     shift, and go to state 4
     FOR       shift, and go to state 5
     PRINT     shift, and go to state 6
@@ -2254,137 +2330,70 @@ state 171
     TRY       shift, and go to state 9
     MATCH     shift, and go to state 10
     WITH      shift, and go to state 11
+    PASS      shift, and go to state 12
 
-    while_stmt         go to state 169
-    for_stmt           go to state 170
-    for_stmt_          go to state 211
-    for_sp_stmt        go to state 173
-    for_compound_stmt  go to state 174
-    for_if_stmt        go to state 175
-    for_if_header      go to state 176
-    function_call      go to state 129
-    try_except_stmt    go to state 177
-    match_stmt         go to state 178
-    with_statement     go to state 179
-    simple_stmt        go to state 180
-    assignment         go to state 137
-
-
-state 172
-
-   95 for_stmts: for_stmt_ .
-
-    $default  reduce using rule 95 (for_stmts)
+    while_stmt         go to state 202
+    for_stmt           go to state 203
+    for_stmts          go to state 204
+    for_stmt_          go to state 205
+    for_sp_stmt        go to state 206
+    for_compound_stmt  go to state 207
+    for_if_stmt        go to state 208
+    for_if_header      go to state 209
+    function_call      go to state 160
+    try_except_stmt    go to state 210
+    match_stmt         go to state 211
+    with_statement     go to state 212
+    simple_stmt        go to state 213
+    assignment         go to state 168
+    pass               go to state 169
 
 
-state 173
+state 151
 
-   99 for_stmt_: for_sp_stmt . NEWLINE
+  104 for_stmt: FOR ID IN ARRAY . for_block
 
-    NEWLINE  shift, and go to state 212
+    NEWLINE  shift, and go to state 89
 
-
-state 174
-
-   98 for_stmt_: for_compound_stmt .
-
-    $default  reduce using rule 98 (for_stmt_)
+    for_block  go to state 214
 
 
-state 175
+state 152
 
-  102 for_compound_stmt: for_if_stmt .
+  103 for_stmt: FOR ID IN RANGE . range_args for_block
 
-    $default  reduce using rule 102 (for_compound_stmt)
+    '('  shift, and go to state 215
 
-
-state 176
-
-  108 for_if_stmt: for_if_header . for_block for_elif_else_
-
-    NEWLINE  shift, and go to state 70
-
-    for_block  go to state 213
+    range_args  go to state 216
 
 
-state 177
+state 153
 
-  105 for_compound_stmt: try_except_stmt .
+  134 function_call: PRINT '(' argsp ')' .
 
-    $default  reduce using rule 105 (for_compound_stmt)
-
-
-state 178
-
-  107 for_compound_stmt: match_stmt .
-
-    $default  reduce using rule 107 (for_compound_stmt)
+    $default  reduce using rule 134 (function_call)
 
 
-state 179
+state 154
 
-  106 for_compound_stmt: with_statement .
+   88 args_p: args_p argp .
 
-    $default  reduce using rule 106 (for_compound_stmt)
-
-
-state 180
-
-   97 for_stmt_: simple_stmt . NEWLINE
-
-    NEWLINE  shift, and go to state 214
+    $default  reduce using rule 88 (args_p)
 
 
-state 181
+state 155
 
-   93 for_stmt: FOR ID IN ARRAY for_block .
+  135 function_call: INPUT '(' STRING ')' .
 
-    $default  reduce using rule 93 (for_stmt)
-
-
-state 182
-
-   89 range_args: '(' . NUMBER ')'
-   90           | '(' . NUMBER ',' NUMBER ')'
-   91           | '(' . NUMBER ',' NUMBER ',' NUMBER ')'
-
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 215
+    $default  reduce using rule 135 (function_call)
 
 
-state 183
+state 156
 
-   92 for_stmt: FOR ID IN RANGE range_args . for_block
-
-    NEWLINE  shift, and go to state 70
-
-    for_block  go to state 216
-
-
-state 184
-
-  179 global_stmt: GLOBAL . ID
-
-    ID  shift, and go to state 217
-
-
-state 185
-
-  132 class_stmt_: function .
-
-    $default  reduce using rule 132 (class_stmt_)
-
-
-state 186
-
-  126 class_block: NEWLINE INDENT class_stmts . DEDENT
-  128 class_stmts: class_stmts . class_stmt_
+  137 class_block: NEWLINE INDENT . class_stmts DEDENT
 
     ID      shift, and go to state 1
-    GLOBAL  shift, and go to state 184
-    DEDENT  shift, and go to state 218
+    GLOBAL  shift, and go to state 217
     IF      shift, and go to state 2
     DEF     shift, and go to state 3
     WHILE   shift, and go to state 4
@@ -2394,1320 +2403,2006 @@ state 186
     TRY     shift, and go to state 9
     MATCH   shift, and go to state 10
     WITH    shift, and go to state 11
+    PASS    shift, and go to state 12
 
-    if_stmt          go to state 126
-    if_header        go to state 16
-    function         go to state 185
-    while_stmt       go to state 127
-    for_stmt         go to state 128
-    function_call    go to state 129
-    class_stmt_      go to state 219
-    class_sp_stmt    go to state 188
-    try_except_stmt  go to state 130
-    match_stmt       go to state 131
-    with_statement   go to state 132
-    simple_stmt      go to state 189
-    compound_stmt    go to state 190
-    assignment       go to state 137
-    global_stmt      go to state 191
+    if_stmt          go to state 157
+    if_header        go to state 18
+    function         go to state 218
+    while_stmt       go to state 158
+    for_stmt         go to state 159
+    function_call    go to state 160
+    class_stmts      go to state 219
+    class_stmt_      go to state 220
+    class_sp_stmt    go to state 221
+    try_except_stmt  go to state 161
+    match_stmt       go to state 162
+    with_statement   go to state 163
+    simple_stmt      go to state 222
+    compound_stmt    go to state 223
+    assignment       go to state 168
+    global_stmt      go to state 224
+    pass             go to state 169
+
+
+state 157
+
+  179 compound_stmt: if_stmt .
+
+    $default  reduce using rule 179 (compound_stmt)
+
+
+state 158
+
+  180 compound_stmt: while_stmt .
+
+    $default  reduce using rule 180 (compound_stmt)
+
+
+state 159
+
+  181 compound_stmt: for_stmt .
+
+    $default  reduce using rule 181 (compound_stmt)
+
+
+state 160
+
+  178 simple_stmt: function_call .
+
+    $default  reduce using rule 178 (simple_stmt)
+
+
+state 161
+
+  182 compound_stmt: try_except_stmt .
+
+    $default  reduce using rule 182 (compound_stmt)
+
+
+state 162
+
+  184 compound_stmt: match_stmt .
+
+    $default  reduce using rule 184 (compound_stmt)
+
+
+state 163
+
+  183 compound_stmt: with_statement .
+
+    $default  reduce using rule 183 (compound_stmt)
+
+
+state 164
+
+  171 block: NEWLINE INDENT stmts . DEDENT
+  173 stmts: stmts . stmt
+
+    ID      shift, and go to state 1
+    DEDENT  shift, and go to state 225
+    IF      shift, and go to state 2
+    WHILE   shift, and go to state 4
+    FOR     shift, and go to state 5
+    PRINT   shift, and go to state 6
+    INPUT   shift, and go to state 7
+    TRY     shift, and go to state 9
+    MATCH   shift, and go to state 10
+    WITH    shift, and go to state 11
+    PASS    shift, and go to state 12
+
+    if_stmt          go to state 157
+    if_header        go to state 18
+    while_stmt       go to state 158
+    for_stmt         go to state 159
+    function_call    go to state 160
+    try_except_stmt  go to state 161
+    match_stmt       go to state 162
+    with_statement   go to state 163
+    stmt             go to state 226
+    simple_stmt      go to state 166
+    compound_stmt    go to state 167
+    assignment       go to state 168
+    pass             go to state 169
+
+
+state 165
+
+  172 stmts: stmt .
+
+    $default  reduce using rule 172 (stmts)
+
+
+state 166
+
+  174 stmt: simple_stmt . NEWLINE
+
+    NEWLINE  shift, and go to state 227
+
+
+state 167
+
+  175 stmt: compound_stmt .
+
+    $default  reduce using rule 175 (stmt)
+
+
+state 168
+
+  176 simple_stmt: assignment .
+
+    $default  reduce using rule 176 (simple_stmt)
+
+
+state 169
+
+  177 simple_stmt: pass .
+
+    $default  reduce using rule 177 (simple_stmt)
+
+
+state 170
+
+  148 except_clause: EXCEPT block .
+
+    $default  reduce using rule 148 (except_clause)
+
+
+state 171
+
+  147 except_clauses: except_clauses except_clause .
+
+    $default  reduce using rule 147 (except_clauses)
+
+
+state 172
+
+  154 match_block: NEWLINE INDENT . case_statements final_case DEDENT
+
+    CASE  shift, and go to state 228
+
+    case_statements  go to state 229
+    case_statement   go to state 230
+
+
+state 173
+
+  161 with_item: ID '(' inside_brackets . ')' AS target
+  165 inside_brackets: inside_brackets . ',' expression
+
+    ')'  shift, and go to state 231
+    ','  shift, and go to state 232
+
+
+state 174
+
+  164 inside_brackets: expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 164 (inside_brackets)
+
+
+state 175
+
+  159 with_body: '(' with_stmt_contents ')' .
+
+    $default  reduce using rule 159 (with_body)
+
+
+state 176
+
+  217 expression: '(' expression ')' .
+
+    $default  reduce using rule 217 (expression)
+
+
+state 177
+
+  156 with_statement_body: with_statement_body ',' with_body .
+
+    $default  reduce using rule 156 (with_statement_body)
+
+
+state 178
+
+  168 target: ID .
+
+    $default  reduce using rule 168 (target)
+
+
+state 179
+
+  166 target: '(' . targets ')'
+
+    ID   shift, and go to state 178
+    '('  shift, and go to state 179
+
+    target   go to state 233
+    targets  go to state 234
+
+
+state 180
+
+  163 with_item: expression AS target .
+  167 target: target . '.' ID
+
+    '.'  shift, and go to state 235
+
+    $default  reduce using rule 163 (with_item)
+
+
+state 181
+
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  212           | expression AND expression .
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 212 (expression)
+
+
+state 182
+
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  214           | expression OR expression .
+  215           | expression . '|' expression
+
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 214 (expression)
+
+
+state 183
+
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+  215           | expression '|' expression .
+
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 215 (expression)
+
+
+state 184
+
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  213           | expression '&' expression .
+  214           | expression . OR expression
+  215           | expression . '|' expression
+
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 213 (expression)
+
+
+state 185
+
+  208 expression: expression . '+' expression
+  208           | expression '+' expression .
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 208 (expression)
+
+
+state 186
+
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  209           | expression '-' expression .
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
+
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 209 (expression)
 
 
 state 187
 
-  127 class_stmts: class_stmt_ .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  210           | expression '*' expression .
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    $default  reduce using rule 127 (class_stmts)
+    $default  reduce using rule 210 (expression)
 
 
 state 188
 
-  131 class_stmt_: class_sp_stmt . NEWLINE
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  211           | expression '/' expression .
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    NEWLINE  shift, and go to state 220
+    $default  reduce using rule 211 (expression)
 
 
 state 189
 
-  129 class_stmt_: simple_stmt . NEWLINE
+   30 else_stmt: ELSE block .
 
-    NEWLINE  shift, and go to state 221
+    $default  reduce using rule 30 (else_stmt)
 
 
 state 190
 
-  130 class_stmt_: compound_stmt .
+   35 elif_header: ELIF '(' . relation_stmt ')'
 
-    $default  reduce using rule 130 (class_stmt_)
+    ID  shift, and go to state 35
+
+    relation_stmt  go to state 236
 
 
 state 191
 
-  133 class_sp_stmt: global_stmt .
+   34 elif_header: ELIF relation_stmt .
 
-    $default  reduce using rule 133 (class_sp_stmt)
+    $default  reduce using rule 34 (elif_header)
 
 
 state 192
 
-  160 block: NEWLINE INDENT stmts DEDENT .
+   27 elif_else: elif_stmts else_stmt .
 
-    $default  reduce using rule 160 (block)
+    $default  reduce using rule 27 (elif_else)
 
 
 state 193
 
-  162 stmts: stmts stmt .
+   32 elif_stmts: elif_stmts elif_stmt .
 
-    $default  reduce using rule 162 (stmts)
+    $default  reduce using rule 32 (elif_stmts)
 
 
 state 194
 
-  163 stmt: simple_stmt NEWLINE .
+   33 elif_stmt: elif_header block .
 
-    $default  reduce using rule 163 (stmt)
+    $default  reduce using rule 33 (elif_stmt)
 
 
 state 195
 
-  141 case_statement: CASE . argp block
+   95 args_c: args_c ',' argc .
 
-    ID            shift, and go to state 73
-    STRING        shift, and go to state 74
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 75
-    argp    go to state 222
+    $default  reduce using rule 95 (args_c)
 
 
 state 196
 
-  140 case_statements: case_statements . case_statement
-  143 match_block: NEWLINE INDENT case_statements . final_case DEDENT
+   84 arg: ID ':' . data_type
 
-    CASE  shift, and go to state 223
+    INT    shift, and go to state 237
+    FLOAT  shift, and go to state 238
+    STR    shift, and go to state 239
+    BOOL   shift, and go to state 240
+    LIST   shift, and go to state 241
 
-    case_statement  go to state 224
-    final_case      go to state 225
+    data_type  go to state 242
 
 
 state 197
 
-  139 case_statements: case_statement .
+   36 function: DEF ID '(' args ')' . function_block
+   37         | DEF ID '(' args ')' . '-' GT data_type function_block
 
-    $default  reduce using rule 139 (case_statements)
+    NEWLINE  shift, and go to state 243
+    '-'      shift, and go to state 244
+
+    function_block  go to state 245
 
 
 state 198
 
-  150 with_item: ID '(' inside_brackets ')' . AS target
+   82 args_: args_ ',' . arg
 
-    AS  shift, and go to state 226
+    ID  shift, and go to state 146
+
+    arg  go to state 246
 
 
 state 199
 
-  154 inside_brackets: expression ',' . inside_brackets
+  111 for_sp_stmt: BREAK .
 
-    ID            shift, and go to state 56
-    STRING        shift, and go to state 41
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '-'           shift, and go to state 44
-    '|'           shift, and go to state 45
-
-    NUMBER           go to state 47
-    inside_brackets  go to state 227
-    expression       go to state 142
+    $default  reduce using rule 111 (for_sp_stmt)
 
 
 state 200
 
-  156 target: target . '.' ID
-  158 targets: target .
+  112 for_sp_stmt: CONTINUE .
 
-    '.'  shift, and go to state 202
-
-    $default  reduce using rule 158 (targets)
+    $default  reduce using rule 112 (for_sp_stmt)
 
 
 state 201
 
-  155 target: '(' targets . ')'
-  159 targets: targets . ',' target
+  120 for_if_header: IF . relation_stmt
+  121              | IF . '(' relation_stmt ')'
 
-    ')'  shift, and go to state 228
-    ','  shift, and go to state 229
+    ID   shift, and go to state 35
+    '('  shift, and go to state 247
+
+    relation_stmt  go to state 248
 
 
 state 202
 
-  156 target: target '.' . ID
+  114 for_compound_stmt: while_stmt .
 
-    ID  shift, and go to state 230
+    $default  reduce using rule 114 (for_compound_stmt)
 
 
 state 203
 
-   31 elif_header: ELIF '(' relation_stmt . ')'
+  115 for_compound_stmt: for_stmt .
 
-    ')'  shift, and go to state 231
+    $default  reduce using rule 115 (for_compound_stmt)
 
 
 state 204
 
-  200 data_type: LIST '[' . INT ']'
-  201          | LIST '[' . FLOAT ']'
-  202          | LIST '[' . STR ']'
+  105 for_block: NEWLINE INDENT for_stmts . DEDENT
+  107 for_stmts: for_stmts . for_stmt_
 
-    INT    shift, and go to state 232
-    FLOAT  shift, and go to state 233
-    STR    shift, and go to state 234
+    ID        shift, and go to state 1
+    BREAK     shift, and go to state 199
+    CONTINUE  shift, and go to state 200
+    DEDENT    shift, and go to state 249
+    IF        shift, and go to state 201
+    WHILE     shift, and go to state 4
+    FOR       shift, and go to state 5
+    PRINT     shift, and go to state 6
+    INPUT     shift, and go to state 7
+    TRY       shift, and go to state 9
+    MATCH     shift, and go to state 10
+    WITH      shift, and go to state 11
+    PASS      shift, and go to state 12
+
+    while_stmt         go to state 202
+    for_stmt           go to state 203
+    for_stmt_          go to state 250
+    for_sp_stmt        go to state 206
+    for_compound_stmt  go to state 207
+    for_if_stmt        go to state 208
+    for_if_header      go to state 209
+    function_call      go to state 160
+    try_except_stmt    go to state 210
+    match_stmt         go to state 211
+    with_statement     go to state 212
+    simple_stmt        go to state 213
+    assignment         go to state 168
+    pass               go to state 169
 
 
 state 205
 
-   34 function_block: NEWLINE . INDENT function_stmts DEDENT
+  106 for_stmts: for_stmt_ .
 
-    INDENT  shift, and go to state 235
+    $default  reduce using rule 106 (for_stmts)
 
 
 state 206
 
-   33 function: DEF ID '(' args ')' '-' . GT data_type function_block
+  110 for_stmt_: for_sp_stmt . NEWLINE
 
-    GT  shift, and go to state 236
+    NEWLINE  shift, and go to state 251
 
 
 state 207
 
-   32 function: DEF ID '(' args ')' function_block .
+  109 for_stmt_: for_compound_stmt .
 
-    $default  reduce using rule 32 (function)
+    $default  reduce using rule 109 (for_stmt_)
 
 
 state 208
 
-  110 for_if_header: IF '(' . relation_stmt ')'
+  113 for_compound_stmt: for_if_stmt .
 
-    ID  shift, and go to state 28
-
-    relation_stmt  go to state 237
+    $default  reduce using rule 113 (for_compound_stmt)
 
 
 state 209
 
-  109 for_if_header: IF relation_stmt .
+  119 for_if_stmt: for_if_header . for_block for_elif_else_
 
-    $default  reduce using rule 109 (for_if_header)
+    NEWLINE  shift, and go to state 89
+
+    for_block  go to state 252
 
 
 state 210
 
-   94 for_block: NEWLINE INDENT for_stmts DEDENT .
+  116 for_compound_stmt: try_except_stmt .
 
-    $default  reduce using rule 94 (for_block)
+    $default  reduce using rule 116 (for_compound_stmt)
 
 
 state 211
 
-   96 for_stmts: for_stmts for_stmt_ .
+  118 for_compound_stmt: match_stmt .
 
-    $default  reduce using rule 96 (for_stmts)
+    $default  reduce using rule 118 (for_compound_stmt)
 
 
 state 212
 
-   99 for_stmt_: for_sp_stmt NEWLINE .
+  117 for_compound_stmt: with_statement .
 
-    $default  reduce using rule 99 (for_stmt_)
+    $default  reduce using rule 117 (for_compound_stmt)
 
 
 state 213
 
-  108 for_if_stmt: for_if_header for_block . for_elif_else_
+  108 for_stmt_: simple_stmt . NEWLINE
 
-    ELSE  shift, and go to state 238
-    ELIF  shift, and go to state 239
-
-    $default  reduce using rule 111 (for_elif_else_)
-
-    for_elif_else_   go to state 240
-    for_elif_else    go to state 241
-    for_else_stmt    go to state 242
-    for_elif_stmts   go to state 243
-    for_elif_stmt    go to state 244
-    for_elif_header  go to state 245
+    NEWLINE  shift, and go to state 253
 
 
 state 214
 
-   97 for_stmt_: simple_stmt NEWLINE .
+  104 for_stmt: FOR ID IN ARRAY for_block .
 
-    $default  reduce using rule 97 (for_stmt_)
+    $default  reduce using rule 104 (for_stmt)
 
 
 state 215
 
-   89 range_args: '(' NUMBER . ')'
-   90           | '(' NUMBER . ',' NUMBER ')'
-   91           | '(' NUMBER . ',' NUMBER ',' NUMBER ')'
+  100 range_args: '(' . NUMBER ')'
+  101           | '(' . NUMBER ',' NUMBER ')'
+  102           | '(' . NUMBER ',' NUMBER ',' NUMBER ')'
 
-    ')'  shift, and go to state 246
-    ','  shift, and go to state 247
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 254
 
 
 state 216
 
-   92 for_stmt: FOR ID IN RANGE range_args for_block .
+  103 for_stmt: FOR ID IN RANGE range_args . for_block
 
-    $default  reduce using rule 92 (for_stmt)
+    NEWLINE  shift, and go to state 89
+
+    for_block  go to state 255
 
 
 state 217
 
-  179 global_stmt: GLOBAL ID .
+  198 global_stmt: GLOBAL . ID
 
-    $default  reduce using rule 179 (global_stmt)
+    ID  shift, and go to state 256
 
 
 state 218
 
-  126 class_block: NEWLINE INDENT class_stmts DEDENT .
+  143 class_stmt_: function .
 
-    $default  reduce using rule 126 (class_block)
+    $default  reduce using rule 143 (class_stmt_)
 
 
 state 219
 
-  128 class_stmts: class_stmts class_stmt_ .
+  137 class_block: NEWLINE INDENT class_stmts . DEDENT
+  139 class_stmts: class_stmts . class_stmt_
 
-    $default  reduce using rule 128 (class_stmts)
+    ID      shift, and go to state 1
+    GLOBAL  shift, and go to state 217
+    DEDENT  shift, and go to state 257
+    IF      shift, and go to state 2
+    DEF     shift, and go to state 3
+    WHILE   shift, and go to state 4
+    FOR     shift, and go to state 5
+    PRINT   shift, and go to state 6
+    INPUT   shift, and go to state 7
+    TRY     shift, and go to state 9
+    MATCH   shift, and go to state 10
+    WITH    shift, and go to state 11
+    PASS    shift, and go to state 12
+
+    if_stmt          go to state 157
+    if_header        go to state 18
+    function         go to state 218
+    while_stmt       go to state 158
+    for_stmt         go to state 159
+    function_call    go to state 160
+    class_stmt_      go to state 258
+    class_sp_stmt    go to state 221
+    try_except_stmt  go to state 161
+    match_stmt       go to state 162
+    with_statement   go to state 163
+    simple_stmt      go to state 222
+    compound_stmt    go to state 223
+    assignment       go to state 168
+    global_stmt      go to state 224
+    pass             go to state 169
 
 
 state 220
 
-  131 class_stmt_: class_sp_stmt NEWLINE .
+  138 class_stmts: class_stmt_ .
 
-    $default  reduce using rule 131 (class_stmt_)
+    $default  reduce using rule 138 (class_stmts)
 
 
 state 221
 
-  129 class_stmt_: simple_stmt NEWLINE .
+  142 class_stmt_: class_sp_stmt . NEWLINE
 
-    $default  reduce using rule 129 (class_stmt_)
+    NEWLINE  shift, and go to state 259
 
 
 state 222
 
-  141 case_statement: CASE argp . block
+  140 class_stmt_: simple_stmt . NEWLINE
 
-    NEWLINE  shift, and go to state 37
-
-    block  go to state 248
+    NEWLINE  shift, and go to state 260
 
 
 state 223
 
-  141 case_statement: CASE . argp block
-  142 final_case: CASE . '_' block
+  141 class_stmt_: compound_stmt .
 
-    ID            shift, and go to state 73
-    STRING        shift, and go to state 74
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-    '_'           shift, and go to state 249
-
-    NUMBER  go to state 75
-    argp    go to state 222
+    $default  reduce using rule 141 (class_stmt_)
 
 
 state 224
 
-  140 case_statements: case_statements case_statement .
+  144 class_sp_stmt: global_stmt .
 
-    $default  reduce using rule 140 (case_statements)
+    $default  reduce using rule 144 (class_sp_stmt)
 
 
 state 225
 
-  143 match_block: NEWLINE INDENT case_statements final_case . DEDENT
+  171 block: NEWLINE INDENT stmts DEDENT .
 
-    DEDENT  shift, and go to state 250
+    $default  reduce using rule 171 (block)
 
 
 state 226
 
-  150 with_item: ID '(' inside_brackets ')' AS . target
+  173 stmts: stmts stmt .
 
-    ID   shift, and go to state 145
-    '('  shift, and go to state 146
-
-    target  go to state 251
+    $default  reduce using rule 173 (stmts)
 
 
 state 227
 
-  154 inside_brackets: expression ',' inside_brackets .
+  174 stmt: simple_stmt NEWLINE .
 
-    $default  reduce using rule 154 (inside_brackets)
+    $default  reduce using rule 174 (stmt)
 
 
 state 228
 
-  155 target: '(' targets ')' .
+  152 case_statement: CASE . argp block
 
-    $default  reduce using rule 155 (target)
+    ID            shift, and go to state 92
+    STRING        shift, and go to state 93
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 94
+    argp    go to state 261
 
 
 state 229
 
-  159 targets: targets ',' . target
+  151 case_statements: case_statements . case_statement
+  154 match_block: NEWLINE INDENT case_statements . final_case DEDENT
 
-    ID   shift, and go to state 145
-    '('  shift, and go to state 146
+    CASE  shift, and go to state 262
 
-    target  go to state 252
+    case_statement  go to state 263
+    final_case      go to state 264
 
 
 state 230
 
-  156 target: target '.' ID .
+  150 case_statements: case_statement .
 
-    $default  reduce using rule 156 (target)
+    $default  reduce using rule 150 (case_statements)
 
 
 state 231
 
-   31 elif_header: ELIF '(' relation_stmt ')' .
+  161 with_item: ID '(' inside_brackets ')' . AS target
 
-    $default  reduce using rule 31 (elif_header)
+    AS  shift, and go to state 265
 
 
 state 232
 
-  200 data_type: LIST '[' INT . ']'
+  165 inside_brackets: inside_brackets ',' . expression
 
-    ']'  shift, and go to state 253
+    ID            shift, and go to state 68
+    STRING        shift, and go to state 48
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    TRUE_TOK      shift, and go to state 51
+    FALSE_TOK     shift, and go to state 52
+    '|'           shift, and go to state 53
+    '-'           shift, and go to state 54
+    '('           shift, and go to state 70
+
+    NUMBER      go to state 56
+    boolean     go to state 57
+    expression  go to state 266
 
 
 state 233
 
-  201 data_type: LIST '[' FLOAT . ']'
+  167 target: target . '.' ID
+  169 targets: target .
 
-    ']'  shift, and go to state 254
+    '.'  shift, and go to state 235
+
+    $default  reduce using rule 169 (targets)
 
 
 state 234
 
-  202 data_type: LIST '[' STR . ']'
+  166 target: '(' targets . ')'
+  170 targets: targets . ',' target
 
-    ']'  shift, and go to state 255
+    ')'  shift, and go to state 267
+    ','  shift, and go to state 268
 
 
 state 235
 
-   34 function_block: NEWLINE INDENT . function_stmts DEDENT
+  167 target: target '.' . ID
 
-    ID        shift, and go to state 1
-    RETURN    shift, and go to state 256
-    GLOBAL    shift, and go to state 184
-    NONLOCAL  shift, and go to state 257
-    YIELD     shift, and go to state 258
-    IF        shift, and go to state 259
-    DEF       shift, and go to state 3
-    WHILE     shift, and go to state 260
-    FOR       shift, and go to state 261
-    PRINT     shift, and go to state 6
-    INPUT     shift, and go to state 7
-    TRY       shift, and go to state 9
-    MATCH     shift, and go to state 10
-    WITH      shift, and go to state 11
-
-    function                go to state 262
-    function_stmts          go to state 263
-    function_stmt_          go to state 264
-    function_sp_stmt        go to state 265
-    function_compound_stmt  go to state 266
-    func_while_stmt         go to state 267
-    func_for_stmt           go to state 268
-    func_if_stmt            go to state 269
-    func_if_header          go to state 270
-    function_call           go to state 129
-    try_except_stmt         go to state 271
-    match_stmt              go to state 272
-    with_statement          go to state 273
-    simple_stmt             go to state 274
-    assignment              go to state 137
-    return_stmt             go to state 275
-    yield_stmt              go to state 276
-    global_stmt             go to state 277
-    nonlocal_stmt           go to state 278
+    ID  shift, and go to state 269
 
 
 state 236
 
-   33 function: DEF ID '(' args ')' '-' GT . data_type function_block
+   35 elif_header: ELIF '(' relation_stmt . ')'
 
-    INT    shift, and go to state 158
-    FLOAT  shift, and go to state 159
-    STR    shift, and go to state 160
-    BOOL   shift, and go to state 161
-    LIST   shift, and go to state 162
-
-    data_type  go to state 279
+    ')'  shift, and go to state 270
 
 
 state 237
 
-  110 for_if_header: IF '(' relation_stmt . ')'
+  223 data_type: INT .
 
-    ')'  shift, and go to state 280
+    $default  reduce using rule 223 (data_type)
 
 
 state 238
 
-  116 for_else_stmt: ELSE . for_block
+  224 data_type: FLOAT .
 
-    NEWLINE  shift, and go to state 70
-
-    for_block  go to state 281
+    $default  reduce using rule 224 (data_type)
 
 
 state 239
 
-  120 for_elif_header: ELIF . relation_stmt
-  121                | ELIF . '(' relation_stmt ')'
+  226 data_type: STR .
 
-    ID   shift, and go to state 28
-    '('  shift, and go to state 282
-
-    relation_stmt  go to state 283
+    $default  reduce using rule 226 (data_type)
 
 
 state 240
 
-  108 for_if_stmt: for_if_header for_block for_elif_else_ .
+  225 data_type: BOOL .
 
-    $default  reduce using rule 108 (for_if_stmt)
+    $default  reduce using rule 225 (data_type)
 
 
 state 241
 
-  112 for_elif_else_: for_elif_else .
+  227 data_type: LIST . '[' INT ']'
+  228          | LIST . '[' FLOAT ']'
+  229          | LIST . '[' STR ']'
 
-    $default  reduce using rule 112 (for_elif_else_)
+    '['  shift, and go to state 271
 
 
 state 242
 
-  115 for_elif_else: for_else_stmt .
+   84 arg: ID ':' data_type .
 
-    $default  reduce using rule 115 (for_elif_else)
+    $default  reduce using rule 84 (arg)
 
 
 state 243
 
-  113 for_elif_else: for_elif_stmts . for_else_stmt
-  114              | for_elif_stmts .
-  118 for_elif_stmts: for_elif_stmts . for_elif_stmt
+   38 function_block: NEWLINE . INDENT function_stmts DEDENT
 
-    ELSE  shift, and go to state 238
-    ELIF  shift, and go to state 239
-
-    $default  reduce using rule 114 (for_elif_else)
-
-    for_else_stmt    go to state 284
-    for_elif_stmt    go to state 285
-    for_elif_header  go to state 245
+    INDENT  shift, and go to state 272
 
 
 state 244
 
-  117 for_elif_stmts: for_elif_stmt .
+   37 function: DEF ID '(' args ')' '-' . GT data_type function_block
 
-    $default  reduce using rule 117 (for_elif_stmts)
+    GT  shift, and go to state 273
 
 
 state 245
 
-  119 for_elif_stmt: for_elif_header . for_block
+   36 function: DEF ID '(' args ')' function_block .
 
-    NEWLINE  shift, and go to state 70
-
-    for_block  go to state 286
+    $default  reduce using rule 36 (function)
 
 
 state 246
 
-   89 range_args: '(' NUMBER ')' .
+   82 args_: args_ ',' arg .
 
-    $default  reduce using rule 89 (range_args)
+    $default  reduce using rule 82 (args_)
 
 
 state 247
 
-   90 range_args: '(' NUMBER ',' . NUMBER ')'
-   91           | '(' NUMBER ',' . NUMBER ',' NUMBER ')'
+  121 for_if_header: IF '(' . relation_stmt ')'
 
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
+    ID  shift, and go to state 35
 
-    NUMBER  go to state 287
+    relation_stmt  go to state 274
 
 
 state 248
 
-  141 case_statement: CASE argp block .
+  120 for_if_header: IF relation_stmt .
 
-    $default  reduce using rule 141 (case_statement)
+    $default  reduce using rule 120 (for_if_header)
 
 
 state 249
 
-  142 final_case: CASE '_' . block
+  105 for_block: NEWLINE INDENT for_stmts DEDENT .
 
-    NEWLINE  shift, and go to state 37
-
-    block  go to state 288
+    $default  reduce using rule 105 (for_block)
 
 
 state 250
 
-  143 match_block: NEWLINE INDENT case_statements final_case DEDENT .
+  107 for_stmts: for_stmts for_stmt_ .
 
-    $default  reduce using rule 143 (match_block)
+    $default  reduce using rule 107 (for_stmts)
 
 
 state 251
 
-  150 with_item: ID '(' inside_brackets ')' AS target .
-  156 target: target . '.' ID
+  110 for_stmt_: for_sp_stmt NEWLINE .
 
-    '.'  shift, and go to state 202
-
-    $default  reduce using rule 150 (with_item)
+    $default  reduce using rule 110 (for_stmt_)
 
 
 state 252
 
-  156 target: target . '.' ID
-  159 targets: targets ',' target .
+  119 for_if_stmt: for_if_header for_block . for_elif_else_
 
-    '.'  shift, and go to state 202
+    ELSE  shift, and go to state 275
+    ELIF  shift, and go to state 276
 
-    $default  reduce using rule 159 (targets)
+    $default  reduce using rule 122 (for_elif_else_)
+
+    for_elif_else_   go to state 277
+    for_elif_else    go to state 278
+    for_else_stmt    go to state 279
+    for_elif_stmts   go to state 280
+    for_elif_stmt    go to state 281
+    for_elif_header  go to state 282
 
 
 state 253
 
-  200 data_type: LIST '[' INT ']' .
+  108 for_stmt_: simple_stmt NEWLINE .
 
-    $default  reduce using rule 200 (data_type)
+    $default  reduce using rule 108 (for_stmt_)
 
 
 state 254
 
-  201 data_type: LIST '[' FLOAT ']' .
+  100 range_args: '(' NUMBER . ')'
+  101           | '(' NUMBER . ',' NUMBER ')'
+  102           | '(' NUMBER . ',' NUMBER ',' NUMBER ')'
 
-    $default  reduce using rule 201 (data_type)
+    ')'  shift, and go to state 283
+    ','  shift, and go to state 284
 
 
 state 255
 
-  202 data_type: LIST '[' STR ']' .
+  103 for_stmt: FOR ID IN RANGE range_args for_block .
 
-    $default  reduce using rule 202 (data_type)
+    $default  reduce using rule 103 (for_stmt)
 
 
 state 256
 
-  175 return_stmt: RETURN . NUMBER
-  176            | RETURN . ID
-  177            | RETURN . STRING
+  198 global_stmt: GLOBAL ID .
 
-    ID            shift, and go to state 289
-    STRING        shift, and go to state 290
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 291
+    $default  reduce using rule 198 (global_stmt)
 
 
 state 257
 
-  180 nonlocal_stmt: NONLOCAL . ID
+  137 class_block: NEWLINE INDENT class_stmts DEDENT .
 
-    ID  shift, and go to state 292
+    $default  reduce using rule 137 (class_block)
 
 
 state 258
 
-  178 yield_stmt: YIELD . ID
+  139 class_stmts: class_stmts class_stmt_ .
 
-    ID  shift, and go to state 293
+    $default  reduce using rule 139 (class_stmts)
 
 
 state 259
 
-   62 func_if_header: IF . relation_stmt
-   63               | IF . '(' relation_stmt ')'
+  142 class_stmt_: class_sp_stmt NEWLINE .
 
-    ID   shift, and go to state 28
-    '('  shift, and go to state 294
-
-    relation_stmt  go to state 295
+    $default  reduce using rule 142 (class_stmt_)
 
 
 state 260
 
-   51 func_while_stmt: WHILE . relation_stmt func_for_block
+  140 class_stmt_: simple_stmt NEWLINE .
 
-    ID  shift, and go to state 28
-
-    relation_stmt  go to state 296
+    $default  reduce using rule 140 (class_stmt_)
 
 
 state 261
 
-   52 func_for_stmt: FOR . ID IN RANGE range_args func_for_block
-   53              | FOR . ID IN ARRAY func_for_block
+  152 case_statement: CASE argp . block
 
-    ID  shift, and go to state 297
+    NEWLINE  shift, and go to state 44
+
+    block  go to state 285
 
 
 state 262
 
-   50 function_compound_stmt: function .
+  152 case_statement: CASE . argp block
+  153 final_case: CASE . '_' block
 
-    $default  reduce using rule 50 (function_compound_stmt)
+    ID            shift, and go to state 92
+    STRING        shift, and go to state 93
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+    '_'           shift, and go to state 286
+
+    NUMBER  go to state 94
+    argp    go to state 261
 
 
 state 263
 
-   34 function_block: NEWLINE INDENT function_stmts . DEDENT
-   36 function_stmts: function_stmts . function_stmt_
+  151 case_statements: case_statements case_statement .
 
-    ID        shift, and go to state 1
-    RETURN    shift, and go to state 256
-    GLOBAL    shift, and go to state 184
-    NONLOCAL  shift, and go to state 257
-    YIELD     shift, and go to state 258
-    DEDENT    shift, and go to state 298
-    IF        shift, and go to state 259
-    DEF       shift, and go to state 3
-    WHILE     shift, and go to state 260
-    FOR       shift, and go to state 261
-    PRINT     shift, and go to state 6
-    INPUT     shift, and go to state 7
-    TRY       shift, and go to state 9
-    MATCH     shift, and go to state 10
-    WITH      shift, and go to state 11
-
-    function                go to state 262
-    function_stmt_          go to state 299
-    function_sp_stmt        go to state 265
-    function_compound_stmt  go to state 266
-    func_while_stmt         go to state 267
-    func_for_stmt           go to state 268
-    func_if_stmt            go to state 269
-    func_if_header          go to state 270
-    function_call           go to state 129
-    try_except_stmt         go to state 271
-    match_stmt              go to state 272
-    with_statement          go to state 273
-    simple_stmt             go to state 274
-    assignment              go to state 137
-    return_stmt             go to state 275
-    yield_stmt              go to state 276
-    global_stmt             go to state 277
-    nonlocal_stmt           go to state 278
+    $default  reduce using rule 151 (case_statements)
 
 
 state 264
 
-   35 function_stmts: function_stmt_ .
+  154 match_block: NEWLINE INDENT case_statements final_case . DEDENT
 
-    $default  reduce using rule 35 (function_stmts)
+    DEDENT  shift, and go to state 287
 
 
 state 265
 
-   39 function_stmt_: function_sp_stmt . NEWLINE
+  161 with_item: ID '(' inside_brackets ')' AS . target
 
-    NEWLINE  shift, and go to state 300
+    ID   shift, and go to state 178
+    '('  shift, and go to state 179
+
+    target  go to state 288
 
 
 state 266
 
-   38 function_stmt_: function_compound_stmt .
+  165 inside_brackets: inside_brackets ',' expression .
+  208 expression: expression . '+' expression
+  209           | expression . '-' expression
+  210           | expression . '*' expression
+  211           | expression . '/' expression
+  212           | expression . AND expression
+  213           | expression . '&' expression
+  214           | expression . OR expression
+  215           | expression . '|' expression
 
-    $default  reduce using rule 38 (function_stmt_)
+    AND  shift, and go to state 115
+    OR   shift, and go to state 116
+    '|'  shift, and go to state 117
+    '&'  shift, and go to state 118
+    '+'  shift, and go to state 119
+    '-'  shift, and go to state 120
+    '*'  shift, and go to state 121
+    '/'  shift, and go to state 122
+
+    $default  reduce using rule 165 (inside_brackets)
 
 
 state 267
 
-   45 function_compound_stmt: func_while_stmt .
+  166 target: '(' targets ')' .
 
-    $default  reduce using rule 45 (function_compound_stmt)
+    $default  reduce using rule 166 (target)
 
 
 state 268
 
-   46 function_compound_stmt: func_for_stmt .
+  170 targets: targets ',' . target
 
-    $default  reduce using rule 46 (function_compound_stmt)
+    ID   shift, and go to state 178
+    '('  shift, and go to state 179
+
+    target  go to state 289
 
 
 state 269
 
-   44 function_compound_stmt: func_if_stmt .
+  167 target: target '.' ID .
 
-    $default  reduce using rule 44 (function_compound_stmt)
+    $default  reduce using rule 167 (target)
 
 
 state 270
 
-   61 func_if_stmt: func_if_header . function_block func_elif_else_
+   35 elif_header: ELIF '(' relation_stmt ')' .
 
-    NEWLINE  shift, and go to state 205
-
-    function_block  go to state 301
+    $default  reduce using rule 35 (elif_header)
 
 
 state 271
 
-   47 function_compound_stmt: try_except_stmt .
+  227 data_type: LIST '[' . INT ']'
+  228          | LIST '[' . FLOAT ']'
+  229          | LIST '[' . STR ']'
 
-    $default  reduce using rule 47 (function_compound_stmt)
+    INT    shift, and go to state 290
+    FLOAT  shift, and go to state 291
+    STR    shift, and go to state 292
 
 
 state 272
 
-   49 function_compound_stmt: match_stmt .
+   38 function_block: NEWLINE INDENT . function_stmts DEDENT
 
-    $default  reduce using rule 49 (function_compound_stmt)
+    ID        shift, and go to state 1
+    RETURN    shift, and go to state 293
+    GLOBAL    shift, and go to state 217
+    NONLOCAL  shift, and go to state 294
+    YIELD     shift, and go to state 295
+    IF        shift, and go to state 296
+    DEF       shift, and go to state 3
+    WHILE     shift, and go to state 297
+    FOR       shift, and go to state 298
+    PRINT     shift, and go to state 6
+    INPUT     shift, and go to state 7
+    TRY       shift, and go to state 9
+    MATCH     shift, and go to state 10
+    WITH      shift, and go to state 11
+    PASS      shift, and go to state 12
+
+    function                go to state 299
+    function_stmts          go to state 300
+    function_stmt_          go to state 301
+    function_sp_stmt        go to state 302
+    function_compound_stmt  go to state 303
+    func_while_stmt         go to state 304
+    func_for_stmt           go to state 305
+    func_if_stmt            go to state 306
+    func_if_header          go to state 307
+    function_call           go to state 160
+    try_except_stmt         go to state 308
+    match_stmt              go to state 309
+    with_statement          go to state 310
+    simple_stmt             go to state 311
+    assignment              go to state 168
+    return_stmt             go to state 312
+    yield_stmt              go to state 313
+    global_stmt             go to state 314
+    nonlocal_stmt           go to state 315
+    pass                    go to state 169
 
 
 state 273
 
-   48 function_compound_stmt: with_statement .
+   37 function: DEF ID '(' args ')' '-' GT . data_type function_block
 
-    $default  reduce using rule 48 (function_compound_stmt)
+    INT    shift, and go to state 237
+    FLOAT  shift, and go to state 238
+    STR    shift, and go to state 239
+    BOOL   shift, and go to state 240
+    LIST   shift, and go to state 241
+
+    data_type  go to state 316
 
 
 state 274
 
-   37 function_stmt_: simple_stmt . NEWLINE
+  121 for_if_header: IF '(' relation_stmt . ')'
 
-    NEWLINE  shift, and go to state 302
+    ')'  shift, and go to state 317
 
 
 state 275
 
-   40 function_sp_stmt: return_stmt .
+  127 for_else_stmt: ELSE . for_block
 
-    $default  reduce using rule 40 (function_sp_stmt)
+    NEWLINE  shift, and go to state 89
+
+    for_block  go to state 318
 
 
 state 276
 
-   43 function_sp_stmt: yield_stmt .
+  131 for_elif_header: ELIF . relation_stmt
+  132                | ELIF . '(' relation_stmt ')'
 
-    $default  reduce using rule 43 (function_sp_stmt)
+    ID   shift, and go to state 35
+    '('  shift, and go to state 319
+
+    relation_stmt  go to state 320
 
 
 state 277
 
-   41 function_sp_stmt: global_stmt .
+  119 for_if_stmt: for_if_header for_block for_elif_else_ .
 
-    $default  reduce using rule 41 (function_sp_stmt)
+    $default  reduce using rule 119 (for_if_stmt)
 
 
 state 278
 
-   42 function_sp_stmt: nonlocal_stmt .
+  123 for_elif_else_: for_elif_else .
 
-    $default  reduce using rule 42 (function_sp_stmt)
+    $default  reduce using rule 123 (for_elif_else_)
 
 
 state 279
 
-   33 function: DEF ID '(' args ')' '-' GT data_type . function_block
+  126 for_elif_else: for_else_stmt .
 
-    NEWLINE  shift, and go to state 205
-
-    function_block  go to state 303
+    $default  reduce using rule 126 (for_elif_else)
 
 
 state 280
 
-  110 for_if_header: IF '(' relation_stmt ')' .
+  124 for_elif_else: for_elif_stmts . for_else_stmt
+  125              | for_elif_stmts .
+  129 for_elif_stmts: for_elif_stmts . for_elif_stmt
 
-    $default  reduce using rule 110 (for_if_header)
+    ELSE  shift, and go to state 275
+    ELIF  shift, and go to state 276
+
+    $default  reduce using rule 125 (for_elif_else)
+
+    for_else_stmt    go to state 321
+    for_elif_stmt    go to state 322
+    for_elif_header  go to state 282
 
 
 state 281
 
-  116 for_else_stmt: ELSE for_block .
+  128 for_elif_stmts: for_elif_stmt .
 
-    $default  reduce using rule 116 (for_else_stmt)
+    $default  reduce using rule 128 (for_elif_stmts)
 
 
 state 282
 
-  121 for_elif_header: ELIF '(' . relation_stmt ')'
+  130 for_elif_stmt: for_elif_header . for_block
 
-    ID  shift, and go to state 28
+    NEWLINE  shift, and go to state 89
 
-    relation_stmt  go to state 304
+    for_block  go to state 323
 
 
 state 283
 
-  120 for_elif_header: ELIF relation_stmt .
+  100 range_args: '(' NUMBER ')' .
 
-    $default  reduce using rule 120 (for_elif_header)
+    $default  reduce using rule 100 (range_args)
 
 
 state 284
 
-  113 for_elif_else: for_elif_stmts for_else_stmt .
+  101 range_args: '(' NUMBER ',' . NUMBER ')'
+  102           | '(' NUMBER ',' . NUMBER ',' NUMBER ')'
 
-    $default  reduce using rule 113 (for_elif_else)
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 324
 
 
 state 285
 
-  118 for_elif_stmts: for_elif_stmts for_elif_stmt .
+  152 case_statement: CASE argp block .
 
-    $default  reduce using rule 118 (for_elif_stmts)
+    $default  reduce using rule 152 (case_statement)
 
 
 state 286
 
-  119 for_elif_stmt: for_elif_header for_block .
+  153 final_case: CASE '_' . block
 
-    $default  reduce using rule 119 (for_elif_stmt)
+    NEWLINE  shift, and go to state 44
+
+    block  go to state 325
 
 
 state 287
 
-   90 range_args: '(' NUMBER ',' NUMBER . ')'
-   91           | '(' NUMBER ',' NUMBER . ',' NUMBER ')'
+  154 match_block: NEWLINE INDENT case_statements final_case DEDENT .
 
-    ')'  shift, and go to state 305
-    ','  shift, and go to state 306
+    $default  reduce using rule 154 (match_block)
 
 
 state 288
 
-  142 final_case: CASE '_' block .
+  161 with_item: ID '(' inside_brackets ')' AS target .
+  167 target: target . '.' ID
 
-    $default  reduce using rule 142 (final_case)
+    '.'  shift, and go to state 235
+
+    $default  reduce using rule 161 (with_item)
 
 
 state 289
 
-  176 return_stmt: RETURN ID .
+  167 target: target . '.' ID
+  170 targets: targets ',' target .
 
-    $default  reduce using rule 176 (return_stmt)
+    '.'  shift, and go to state 235
+
+    $default  reduce using rule 170 (targets)
 
 
 state 290
 
-  177 return_stmt: RETURN STRING .
+  227 data_type: LIST '[' INT . ']'
 
-    $default  reduce using rule 177 (return_stmt)
+    ']'  shift, and go to state 326
 
 
 state 291
 
-  175 return_stmt: RETURN NUMBER .
+  228 data_type: LIST '[' FLOAT . ']'
 
-    $default  reduce using rule 175 (return_stmt)
+    ']'  shift, and go to state 327
 
 
 state 292
 
-  180 nonlocal_stmt: NONLOCAL ID .
+  229 data_type: LIST '[' STR . ']'
 
-    $default  reduce using rule 180 (nonlocal_stmt)
+    ']'  shift, and go to state 328
 
 
 state 293
 
-  178 yield_stmt: YIELD ID .
+  191 return_stmt: RETURN . NUMBER
+  192            | RETURN . NUMBER ',' NUMBER
+  193            | RETURN . ID
+  194            | RETURN . ID ',' ID
+  195            | RETURN . STRING
+  196            | RETURN . STRING ',' STRING
 
-    $default  reduce using rule 178 (yield_stmt)
+    ID            shift, and go to state 329
+    STRING        shift, and go to state 330
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 331
 
 
 state 294
 
-   63 func_if_header: IF '(' . relation_stmt ')'
+  199 nonlocal_stmt: NONLOCAL . ID
 
-    ID  shift, and go to state 28
-
-    relation_stmt  go to state 307
+    ID  shift, and go to state 332
 
 
 state 295
 
-   62 func_if_header: IF relation_stmt .
+  197 yield_stmt: YIELD . ID
 
-    $default  reduce using rule 62 (func_if_header)
+    ID  shift, and go to state 333
 
 
 state 296
 
-   51 func_while_stmt: WHILE relation_stmt . func_for_block
+   66 func_if_header: IF . relation_stmt
+   67               | IF . '(' relation_stmt ')'
 
-    NEWLINE  shift, and go to state 308
+    ID   shift, and go to state 35
+    '('  shift, and go to state 334
 
-    func_for_block  go to state 309
+    relation_stmt  go to state 335
 
 
 state 297
 
-   52 func_for_stmt: FOR ID . IN RANGE range_args func_for_block
-   53              | FOR ID . IN ARRAY func_for_block
+   55 func_while_stmt: WHILE . relation_stmt func_for_block
 
-    IN  shift, and go to state 310
+    ID  shift, and go to state 35
+
+    relation_stmt  go to state 336
 
 
 state 298
 
-   34 function_block: NEWLINE INDENT function_stmts DEDENT .
+   56 func_for_stmt: FOR . ID IN RANGE range_args func_for_block
+   57              | FOR . ID IN ARRAY func_for_block
 
-    $default  reduce using rule 34 (function_block)
+    ID  shift, and go to state 337
 
 
 state 299
 
-   36 function_stmts: function_stmts function_stmt_ .
+   54 function_compound_stmt: function .
 
-    $default  reduce using rule 36 (function_stmts)
+    $default  reduce using rule 54 (function_compound_stmt)
 
 
 state 300
 
-   39 function_stmt_: function_sp_stmt NEWLINE .
+   38 function_block: NEWLINE INDENT function_stmts . DEDENT
+   40 function_stmts: function_stmts . function_stmt_
 
-    $default  reduce using rule 39 (function_stmt_)
+    ID        shift, and go to state 1
+    RETURN    shift, and go to state 293
+    GLOBAL    shift, and go to state 217
+    NONLOCAL  shift, and go to state 294
+    YIELD     shift, and go to state 295
+    DEDENT    shift, and go to state 338
+    IF        shift, and go to state 296
+    DEF       shift, and go to state 3
+    WHILE     shift, and go to state 297
+    FOR       shift, and go to state 298
+    PRINT     shift, and go to state 6
+    INPUT     shift, and go to state 7
+    TRY       shift, and go to state 9
+    MATCH     shift, and go to state 10
+    WITH      shift, and go to state 11
+    PASS      shift, and go to state 12
+
+    function                go to state 299
+    function_stmt_          go to state 339
+    function_sp_stmt        go to state 302
+    function_compound_stmt  go to state 303
+    func_while_stmt         go to state 304
+    func_for_stmt           go to state 305
+    func_if_stmt            go to state 306
+    func_if_header          go to state 307
+    function_call           go to state 160
+    try_except_stmt         go to state 308
+    match_stmt              go to state 309
+    with_statement          go to state 310
+    simple_stmt             go to state 311
+    assignment              go to state 168
+    return_stmt             go to state 312
+    yield_stmt              go to state 313
+    global_stmt             go to state 314
+    nonlocal_stmt           go to state 315
+    pass                    go to state 169
 
 
 state 301
 
-   61 func_if_stmt: func_if_header function_block . func_elif_else_
+   39 function_stmts: function_stmt_ .
 
-    ELSE  shift, and go to state 311
-    ELIF  shift, and go to state 312
-
-    $default  reduce using rule 64 (func_elif_else_)
-
-    func_elif_else_   go to state 313
-    func_elif_else    go to state 314
-    func_else_stmt    go to state 315
-    func_elif_stmts   go to state 316
-    func_elif_stmt    go to state 317
-    func_elif_header  go to state 318
+    $default  reduce using rule 39 (function_stmts)
 
 
 state 302
 
-   37 function_stmt_: simple_stmt NEWLINE .
+   43 function_stmt_: function_sp_stmt . NEWLINE
 
-    $default  reduce using rule 37 (function_stmt_)
+    NEWLINE  shift, and go to state 340
 
 
 state 303
 
-   33 function: DEF ID '(' args ')' '-' GT data_type function_block .
+   42 function_stmt_: function_compound_stmt .
 
-    $default  reduce using rule 33 (function)
+    $default  reduce using rule 42 (function_stmt_)
 
 
 state 304
 
-  121 for_elif_header: ELIF '(' relation_stmt . ')'
+   49 function_compound_stmt: func_while_stmt .
 
-    ')'  shift, and go to state 319
+    $default  reduce using rule 49 (function_compound_stmt)
 
 
 state 305
 
-   90 range_args: '(' NUMBER ',' NUMBER ')' .
+   50 function_compound_stmt: func_for_stmt .
 
-    $default  reduce using rule 90 (range_args)
+    $default  reduce using rule 50 (function_compound_stmt)
 
 
 state 306
 
-   91 range_args: '(' NUMBER ',' NUMBER ',' . NUMBER ')'
+   48 function_compound_stmt: func_if_stmt .
 
-    INT_NUMBER    shift, and go to state 42
-    FLOAT_NUMBER  shift, and go to state 43
-
-    NUMBER  go to state 320
+    $default  reduce using rule 48 (function_compound_stmt)
 
 
 state 307
 
-   63 func_if_header: IF '(' relation_stmt . ')'
+   65 func_if_stmt: func_if_header . function_block func_elif_else_
 
-    ')'  shift, and go to state 321
+    NEWLINE  shift, and go to state 243
+
+    function_block  go to state 341
 
 
 state 308
 
-   54 func_for_block: NEWLINE . INDENT func_for_stmts DEDENT
+   51 function_compound_stmt: try_except_stmt .
 
-    INDENT  shift, and go to state 322
+    $default  reduce using rule 51 (function_compound_stmt)
 
 
 state 309
 
-   51 func_while_stmt: WHILE relation_stmt func_for_block .
+   53 function_compound_stmt: match_stmt .
 
-    $default  reduce using rule 51 (func_while_stmt)
+    $default  reduce using rule 53 (function_compound_stmt)
 
 
 state 310
 
-   52 func_for_stmt: FOR ID IN . RANGE range_args func_for_block
-   53              | FOR ID IN . ARRAY func_for_block
+   52 function_compound_stmt: with_statement .
 
-    ARRAY  shift, and go to state 323
-    RANGE  shift, and go to state 324
+    $default  reduce using rule 52 (function_compound_stmt)
 
 
 state 311
 
-   69 func_else_stmt: ELSE . function_block
+   41 function_stmt_: simple_stmt . NEWLINE
 
-    NEWLINE  shift, and go to state 205
-
-    function_block  go to state 325
+    NEWLINE  shift, and go to state 342
 
 
 state 312
 
-   73 func_elif_header: ELIF . relation_stmt
-   74                 | ELIF . '(' relation_stmt ')'
+   44 function_sp_stmt: return_stmt .
 
-    ID   shift, and go to state 28
-    '('  shift, and go to state 326
-
-    relation_stmt  go to state 327
+    $default  reduce using rule 44 (function_sp_stmt)
 
 
 state 313
 
-   61 func_if_stmt: func_if_header function_block func_elif_else_ .
+   47 function_sp_stmt: yield_stmt .
 
-    $default  reduce using rule 61 (func_if_stmt)
+    $default  reduce using rule 47 (function_sp_stmt)
 
 
 state 314
 
-   65 func_elif_else_: func_elif_else .
+   45 function_sp_stmt: global_stmt .
 
-    $default  reduce using rule 65 (func_elif_else_)
+    $default  reduce using rule 45 (function_sp_stmt)
 
 
 state 315
 
-   68 func_elif_else: func_else_stmt .
+   46 function_sp_stmt: nonlocal_stmt .
 
-    $default  reduce using rule 68 (func_elif_else)
+    $default  reduce using rule 46 (function_sp_stmt)
 
 
 state 316
 
-   66 func_elif_else: func_elif_stmts . func_else_stmt
-   67               | func_elif_stmts .
-   71 func_elif_stmts: func_elif_stmts . func_elif_stmt
+   37 function: DEF ID '(' args ')' '-' GT data_type . function_block
 
-    ELSE  shift, and go to state 311
-    ELIF  shift, and go to state 312
+    NEWLINE  shift, and go to state 243
 
-    $default  reduce using rule 67 (func_elif_else)
-
-    func_else_stmt    go to state 328
-    func_elif_stmt    go to state 329
-    func_elif_header  go to state 318
+    function_block  go to state 343
 
 
 state 317
 
-   70 func_elif_stmts: func_elif_stmt .
+  121 for_if_header: IF '(' relation_stmt ')' .
 
-    $default  reduce using rule 70 (func_elif_stmts)
+    $default  reduce using rule 121 (for_if_header)
 
 
 state 318
 
-   72 func_elif_stmt: func_elif_header . function_block
+  127 for_else_stmt: ELSE for_block .
 
-    NEWLINE  shift, and go to state 205
-
-    function_block  go to state 330
+    $default  reduce using rule 127 (for_else_stmt)
 
 
 state 319
 
-  121 for_elif_header: ELIF '(' relation_stmt ')' .
+  132 for_elif_header: ELIF '(' . relation_stmt ')'
 
-    $default  reduce using rule 121 (for_elif_header)
+    ID  shift, and go to state 35
+
+    relation_stmt  go to state 344
 
 
 state 320
 
-   91 range_args: '(' NUMBER ',' NUMBER ',' NUMBER . ')'
+  131 for_elif_header: ELIF relation_stmt .
 
-    ')'  shift, and go to state 331
+    $default  reduce using rule 131 (for_elif_header)
 
 
 state 321
 
-   63 func_if_header: IF '(' relation_stmt ')' .
+  124 for_elif_else: for_elif_stmts for_else_stmt .
 
-    $default  reduce using rule 63 (func_if_header)
+    $default  reduce using rule 124 (for_elif_else)
 
 
 state 322
 
-   54 func_for_block: NEWLINE INDENT . func_for_stmts DEDENT
+  129 for_elif_stmts: for_elif_stmts for_elif_stmt .
 
-    ID        shift, and go to state 1
-    RETURN    shift, and go to state 256
-    BREAK     shift, and go to state 166
-    CONTINUE  shift, and go to state 167
-    GLOBAL    shift, and go to state 184
-    NONLOCAL  shift, and go to state 257
-    YIELD     shift, and go to state 258
-    IF        shift, and go to state 168
-    WHILE     shift, and go to state 4
-    FOR       shift, and go to state 5
-    PRINT     shift, and go to state 6
-    INPUT     shift, and go to state 7
-    TRY       shift, and go to state 9
-    MATCH     shift, and go to state 10
-    WITH      shift, and go to state 11
-
-    function_sp_stmt   go to state 332
-    func_for_stmts     go to state 333
-    func_for_stmt_     go to state 334
-    while_stmt         go to state 169
-    for_stmt           go to state 170
-    for_sp_stmt        go to state 335
-    for_compound_stmt  go to state 336
-    for_if_stmt        go to state 175
-    for_if_header      go to state 176
-    function_call      go to state 129
-    try_except_stmt    go to state 177
-    match_stmt         go to state 178
-    with_statement     go to state 179
-    simple_stmt        go to state 337
-    assignment         go to state 137
-    return_stmt        go to state 275
-    yield_stmt         go to state 276
-    global_stmt        go to state 277
-    nonlocal_stmt      go to state 278
+    $default  reduce using rule 129 (for_elif_stmts)
 
 
 state 323
 
-   53 func_for_stmt: FOR ID IN ARRAY . func_for_block
+  130 for_elif_stmt: for_elif_header for_block .
 
-    NEWLINE  shift, and go to state 308
-
-    func_for_block  go to state 338
+    $default  reduce using rule 130 (for_elif_stmt)
 
 
 state 324
 
-   52 func_for_stmt: FOR ID IN RANGE . range_args func_for_block
+  101 range_args: '(' NUMBER ',' NUMBER . ')'
+  102           | '(' NUMBER ',' NUMBER . ',' NUMBER ')'
 
-    '('  shift, and go to state 182
-
-    range_args  go to state 339
+    ')'  shift, and go to state 345
+    ','  shift, and go to state 346
 
 
 state 325
 
-   69 func_else_stmt: ELSE function_block .
+  153 final_case: CASE '_' block .
 
-    $default  reduce using rule 69 (func_else_stmt)
+    $default  reduce using rule 153 (final_case)
 
 
 state 326
 
-   74 func_elif_header: ELIF '(' . relation_stmt ')'
+  227 data_type: LIST '[' INT ']' .
 
-    ID  shift, and go to state 28
-
-    relation_stmt  go to state 340
+    $default  reduce using rule 227 (data_type)
 
 
 state 327
 
-   73 func_elif_header: ELIF relation_stmt .
+  228 data_type: LIST '[' FLOAT ']' .
 
-    $default  reduce using rule 73 (func_elif_header)
+    $default  reduce using rule 228 (data_type)
 
 
 state 328
 
-   66 func_elif_else: func_elif_stmts func_else_stmt .
+  229 data_type: LIST '[' STR ']' .
 
-    $default  reduce using rule 66 (func_elif_else)
+    $default  reduce using rule 229 (data_type)
 
 
 state 329
 
-   71 func_elif_stmts: func_elif_stmts func_elif_stmt .
+  193 return_stmt: RETURN ID .
+  194            | RETURN ID . ',' ID
 
-    $default  reduce using rule 71 (func_elif_stmts)
+    ','  shift, and go to state 347
+
+    $default  reduce using rule 193 (return_stmt)
 
 
 state 330
 
-   72 func_elif_stmt: func_elif_header function_block .
+  195 return_stmt: RETURN STRING .
+  196            | RETURN STRING . ',' STRING
 
-    $default  reduce using rule 72 (func_elif_stmt)
+    ','  shift, and go to state 348
+
+    $default  reduce using rule 195 (return_stmt)
 
 
 state 331
 
-   91 range_args: '(' NUMBER ',' NUMBER ',' NUMBER ')' .
+  191 return_stmt: RETURN NUMBER .
+  192            | RETURN NUMBER . ',' NUMBER
 
-    $default  reduce using rule 91 (range_args)
+    ','  shift, and go to state 349
+
+    $default  reduce using rule 191 (return_stmt)
 
 
 state 332
 
-   60 func_for_stmt_: function_sp_stmt .
+  199 nonlocal_stmt: NONLOCAL ID .
 
-    $default  reduce using rule 60 (func_for_stmt_)
+    $default  reduce using rule 199 (nonlocal_stmt)
 
 
 state 333
 
-   54 func_for_block: NEWLINE INDENT func_for_stmts . DEDENT
-   56 func_for_stmts: func_for_stmts . func_for_stmt_
+  197 yield_stmt: YIELD ID .
+
+    $default  reduce using rule 197 (yield_stmt)
+
+
+state 334
+
+   67 func_if_header: IF '(' . relation_stmt ')'
+
+    ID  shift, and go to state 35
+
+    relation_stmt  go to state 350
+
+
+state 335
+
+   66 func_if_header: IF relation_stmt .
+
+    $default  reduce using rule 66 (func_if_header)
+
+
+state 336
+
+   55 func_while_stmt: WHILE relation_stmt . func_for_block
+
+    NEWLINE  shift, and go to state 351
+
+    func_for_block  go to state 352
+
+
+state 337
+
+   56 func_for_stmt: FOR ID . IN RANGE range_args func_for_block
+   57              | FOR ID . IN ARRAY func_for_block
+
+    IN  shift, and go to state 353
+
+
+state 338
+
+   38 function_block: NEWLINE INDENT function_stmts DEDENT .
+
+    $default  reduce using rule 38 (function_block)
+
+
+state 339
+
+   40 function_stmts: function_stmts function_stmt_ .
+
+    $default  reduce using rule 40 (function_stmts)
+
+
+state 340
+
+   43 function_stmt_: function_sp_stmt NEWLINE .
+
+    $default  reduce using rule 43 (function_stmt_)
+
+
+state 341
+
+   65 func_if_stmt: func_if_header function_block . func_elif_else_
+
+    ELSE  shift, and go to state 354
+    ELIF  shift, and go to state 355
+
+    $default  reduce using rule 68 (func_elif_else_)
+
+    func_elif_else_   go to state 356
+    func_elif_else    go to state 357
+    func_else_stmt    go to state 358
+    func_elif_stmts   go to state 359
+    func_elif_stmt    go to state 360
+    func_elif_header  go to state 361
+
+
+state 342
+
+   41 function_stmt_: simple_stmt NEWLINE .
+
+    $default  reduce using rule 41 (function_stmt_)
+
+
+state 343
+
+   37 function: DEF ID '(' args ')' '-' GT data_type function_block .
+
+    $default  reduce using rule 37 (function)
+
+
+state 344
+
+  132 for_elif_header: ELIF '(' relation_stmt . ')'
+
+    ')'  shift, and go to state 362
+
+
+state 345
+
+  101 range_args: '(' NUMBER ',' NUMBER ')' .
+
+    $default  reduce using rule 101 (range_args)
+
+
+state 346
+
+  102 range_args: '(' NUMBER ',' NUMBER ',' . NUMBER ')'
+
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 363
+
+
+state 347
+
+  194 return_stmt: RETURN ID ',' . ID
+
+    ID  shift, and go to state 364
+
+
+state 348
+
+  196 return_stmt: RETURN STRING ',' . STRING
+
+    STRING  shift, and go to state 365
+
+
+state 349
+
+  192 return_stmt: RETURN NUMBER ',' . NUMBER
+
+    INT_NUMBER    shift, and go to state 49
+    FLOAT_NUMBER  shift, and go to state 50
+
+    NUMBER  go to state 366
+
+
+state 350
+
+   67 func_if_header: IF '(' relation_stmt . ')'
+
+    ')'  shift, and go to state 367
+
+
+state 351
+
+   58 func_for_block: NEWLINE . INDENT func_for_stmts DEDENT
+
+    INDENT  shift, and go to state 368
+
+
+state 352
+
+   55 func_while_stmt: WHILE relation_stmt func_for_block .
+
+    $default  reduce using rule 55 (func_while_stmt)
+
+
+state 353
+
+   56 func_for_stmt: FOR ID IN . RANGE range_args func_for_block
+   57              | FOR ID IN . ARRAY func_for_block
+
+    ARRAY  shift, and go to state 369
+    RANGE  shift, and go to state 370
+
+
+state 354
+
+   73 func_else_stmt: ELSE . function_block
+
+    NEWLINE  shift, and go to state 243
+
+    function_block  go to state 371
+
+
+state 355
+
+   77 func_elif_header: ELIF . relation_stmt
+   78                 | ELIF . '(' relation_stmt ')'
+
+    ID   shift, and go to state 35
+    '('  shift, and go to state 372
+
+    relation_stmt  go to state 373
+
+
+state 356
+
+   65 func_if_stmt: func_if_header function_block func_elif_else_ .
+
+    $default  reduce using rule 65 (func_if_stmt)
+
+
+state 357
+
+   69 func_elif_else_: func_elif_else .
+
+    $default  reduce using rule 69 (func_elif_else_)
+
+
+state 358
+
+   72 func_elif_else: func_else_stmt .
+
+    $default  reduce using rule 72 (func_elif_else)
+
+
+state 359
+
+   70 func_elif_else: func_elif_stmts . func_else_stmt
+   71               | func_elif_stmts .
+   75 func_elif_stmts: func_elif_stmts . func_elif_stmt
+
+    ELSE  shift, and go to state 354
+    ELIF  shift, and go to state 355
+
+    $default  reduce using rule 71 (func_elif_else)
+
+    func_else_stmt    go to state 374
+    func_elif_stmt    go to state 375
+    func_elif_header  go to state 361
+
+
+state 360
+
+   74 func_elif_stmts: func_elif_stmt .
+
+    $default  reduce using rule 74 (func_elif_stmts)
+
+
+state 361
+
+   76 func_elif_stmt: func_elif_header . function_block
+
+    NEWLINE  shift, and go to state 243
+
+    function_block  go to state 376
+
+
+state 362
+
+  132 for_elif_header: ELIF '(' relation_stmt ')' .
+
+    $default  reduce using rule 132 (for_elif_header)
+
+
+state 363
+
+  102 range_args: '(' NUMBER ',' NUMBER ',' NUMBER . ')'
+
+    ')'  shift, and go to state 377
+
+
+state 364
+
+  194 return_stmt: RETURN ID ',' ID .
+
+    $default  reduce using rule 194 (return_stmt)
+
+
+state 365
+
+  196 return_stmt: RETURN STRING ',' STRING .
+
+    $default  reduce using rule 196 (return_stmt)
+
+
+state 366
+
+  192 return_stmt: RETURN NUMBER ',' NUMBER .
+
+    $default  reduce using rule 192 (return_stmt)
+
+
+state 367
+
+   67 func_if_header: IF '(' relation_stmt ')' .
+
+    $default  reduce using rule 67 (func_if_header)
+
+
+state 368
+
+   58 func_for_block: NEWLINE INDENT . func_for_stmts DEDENT
 
     ID        shift, and go to state 1
-    RETURN    shift, and go to state 256
-    BREAK     shift, and go to state 166
-    CONTINUE  shift, and go to state 167
-    GLOBAL    shift, and go to state 184
-    NONLOCAL  shift, and go to state 257
-    YIELD     shift, and go to state 258
-    DEDENT    shift, and go to state 341
-    IF        shift, and go to state 168
+    RETURN    shift, and go to state 293
+    BREAK     shift, and go to state 199
+    CONTINUE  shift, and go to state 200
+    GLOBAL    shift, and go to state 217
+    NONLOCAL  shift, and go to state 294
+    YIELD     shift, and go to state 295
+    IF        shift, and go to state 201
     WHILE     shift, and go to state 4
     FOR       shift, and go to state 5
     PRINT     shift, and go to state 6
@@ -3715,115 +4410,245 @@ state 333
     TRY       shift, and go to state 9
     MATCH     shift, and go to state 10
     WITH      shift, and go to state 11
+    PASS      shift, and go to state 12
 
-    function_sp_stmt   go to state 332
-    func_for_stmt_     go to state 342
-    while_stmt         go to state 169
-    for_stmt           go to state 170
-    for_sp_stmt        go to state 335
-    for_compound_stmt  go to state 336
-    for_if_stmt        go to state 175
-    for_if_header      go to state 176
-    function_call      go to state 129
-    try_except_stmt    go to state 177
-    match_stmt         go to state 178
-    with_statement     go to state 179
-    simple_stmt        go to state 337
-    assignment         go to state 137
-    return_stmt        go to state 275
-    yield_stmt         go to state 276
-    global_stmt        go to state 277
-    nonlocal_stmt      go to state 278
-
-
-state 334
-
-   55 func_for_stmts: func_for_stmt_ .
-
-    $default  reduce using rule 55 (func_for_stmts)
+    function_sp_stmt   go to state 378
+    func_for_stmts     go to state 379
+    func_for_stmt_     go to state 380
+    while_stmt         go to state 202
+    for_stmt           go to state 203
+    for_sp_stmt        go to state 381
+    for_compound_stmt  go to state 382
+    for_if_stmt        go to state 208
+    for_if_header      go to state 209
+    function_call      go to state 160
+    try_except_stmt    go to state 210
+    match_stmt         go to state 211
+    with_statement     go to state 212
+    simple_stmt        go to state 383
+    assignment         go to state 168
+    return_stmt        go to state 312
+    yield_stmt         go to state 313
+    global_stmt        go to state 314
+    nonlocal_stmt      go to state 315
+    pass               go to state 169
 
 
-state 335
+state 369
 
-   59 func_for_stmt_: for_sp_stmt . NEWLINE
+   57 func_for_stmt: FOR ID IN ARRAY . func_for_block
 
-    NEWLINE  shift, and go to state 343
+    NEWLINE  shift, and go to state 351
 
-
-state 336
-
-   58 func_for_stmt_: for_compound_stmt .
-
-    $default  reduce using rule 58 (func_for_stmt_)
+    func_for_block  go to state 384
 
 
-state 337
+state 370
 
-   57 func_for_stmt_: simple_stmt . NEWLINE
+   56 func_for_stmt: FOR ID IN RANGE . range_args func_for_block
 
-    NEWLINE  shift, and go to state 344
+    '('  shift, and go to state 215
 
-
-state 338
-
-   53 func_for_stmt: FOR ID IN ARRAY func_for_block .
-
-    $default  reduce using rule 53 (func_for_stmt)
+    range_args  go to state 385
 
 
-state 339
+state 371
 
-   52 func_for_stmt: FOR ID IN RANGE range_args . func_for_block
+   73 func_else_stmt: ELSE function_block .
 
-    NEWLINE  shift, and go to state 308
-
-    func_for_block  go to state 345
+    $default  reduce using rule 73 (func_else_stmt)
 
 
-state 340
+state 372
 
-   74 func_elif_header: ELIF '(' relation_stmt . ')'
+   78 func_elif_header: ELIF '(' . relation_stmt ')'
 
-    ')'  shift, and go to state 346
+    ID  shift, and go to state 35
 
-
-state 341
-
-   54 func_for_block: NEWLINE INDENT func_for_stmts DEDENT .
-
-    $default  reduce using rule 54 (func_for_block)
+    relation_stmt  go to state 386
 
 
-state 342
+state 373
 
-   56 func_for_stmts: func_for_stmts func_for_stmt_ .
+   77 func_elif_header: ELIF relation_stmt .
 
-    $default  reduce using rule 56 (func_for_stmts)
-
-
-state 343
-
-   59 func_for_stmt_: for_sp_stmt NEWLINE .
-
-    $default  reduce using rule 59 (func_for_stmt_)
+    $default  reduce using rule 77 (func_elif_header)
 
 
-state 344
+state 374
 
-   57 func_for_stmt_: simple_stmt NEWLINE .
+   70 func_elif_else: func_elif_stmts func_else_stmt .
 
-    $default  reduce using rule 57 (func_for_stmt_)
-
-
-state 345
-
-   52 func_for_stmt: FOR ID IN RANGE range_args func_for_block .
-
-    $default  reduce using rule 52 (func_for_stmt)
+    $default  reduce using rule 70 (func_elif_else)
 
 
-state 346
+state 375
 
-   74 func_elif_header: ELIF '(' relation_stmt ')' .
+   75 func_elif_stmts: func_elif_stmts func_elif_stmt .
 
-    $default  reduce using rule 74 (func_elif_header)
+    $default  reduce using rule 75 (func_elif_stmts)
+
+
+state 376
+
+   76 func_elif_stmt: func_elif_header function_block .
+
+    $default  reduce using rule 76 (func_elif_stmt)
+
+
+state 377
+
+  102 range_args: '(' NUMBER ',' NUMBER ',' NUMBER ')' .
+
+    $default  reduce using rule 102 (range_args)
+
+
+state 378
+
+   64 func_for_stmt_: function_sp_stmt . NEWLINE
+
+    NEWLINE  shift, and go to state 387
+
+
+state 379
+
+   58 func_for_block: NEWLINE INDENT func_for_stmts . DEDENT
+   60 func_for_stmts: func_for_stmts . func_for_stmt_
+
+    ID        shift, and go to state 1
+    RETURN    shift, and go to state 293
+    BREAK     shift, and go to state 199
+    CONTINUE  shift, and go to state 200
+    GLOBAL    shift, and go to state 217
+    NONLOCAL  shift, and go to state 294
+    YIELD     shift, and go to state 295
+    DEDENT    shift, and go to state 388
+    IF        shift, and go to state 201
+    WHILE     shift, and go to state 4
+    FOR       shift, and go to state 5
+    PRINT     shift, and go to state 6
+    INPUT     shift, and go to state 7
+    TRY       shift, and go to state 9
+    MATCH     shift, and go to state 10
+    WITH      shift, and go to state 11
+    PASS      shift, and go to state 12
+
+    function_sp_stmt   go to state 378
+    func_for_stmt_     go to state 389
+    while_stmt         go to state 202
+    for_stmt           go to state 203
+    for_sp_stmt        go to state 381
+    for_compound_stmt  go to state 382
+    for_if_stmt        go to state 208
+    for_if_header      go to state 209
+    function_call      go to state 160
+    try_except_stmt    go to state 210
+    match_stmt         go to state 211
+    with_statement     go to state 212
+    simple_stmt        go to state 383
+    assignment         go to state 168
+    return_stmt        go to state 312
+    yield_stmt         go to state 313
+    global_stmt        go to state 314
+    nonlocal_stmt      go to state 315
+    pass               go to state 169
+
+
+state 380
+
+   59 func_for_stmts: func_for_stmt_ .
+
+    $default  reduce using rule 59 (func_for_stmts)
+
+
+state 381
+
+   63 func_for_stmt_: for_sp_stmt . NEWLINE
+
+    NEWLINE  shift, and go to state 390
+
+
+state 382
+
+   62 func_for_stmt_: for_compound_stmt .
+
+    $default  reduce using rule 62 (func_for_stmt_)
+
+
+state 383
+
+   61 func_for_stmt_: simple_stmt . NEWLINE
+
+    NEWLINE  shift, and go to state 391
+
+
+state 384
+
+   57 func_for_stmt: FOR ID IN ARRAY func_for_block .
+
+    $default  reduce using rule 57 (func_for_stmt)
+
+
+state 385
+
+   56 func_for_stmt: FOR ID IN RANGE range_args . func_for_block
+
+    NEWLINE  shift, and go to state 351
+
+    func_for_block  go to state 392
+
+
+state 386
+
+   78 func_elif_header: ELIF '(' relation_stmt . ')'
+
+    ')'  shift, and go to state 393
+
+
+state 387
+
+   64 func_for_stmt_: function_sp_stmt NEWLINE .
+
+    $default  reduce using rule 64 (func_for_stmt_)
+
+
+state 388
+
+   58 func_for_block: NEWLINE INDENT func_for_stmts DEDENT .
+
+    $default  reduce using rule 58 (func_for_block)
+
+
+state 389
+
+   60 func_for_stmts: func_for_stmts func_for_stmt_ .
+
+    $default  reduce using rule 60 (func_for_stmts)
+
+
+state 390
+
+   63 func_for_stmt_: for_sp_stmt NEWLINE .
+
+    $default  reduce using rule 63 (func_for_stmt_)
+
+
+state 391
+
+   61 func_for_stmt_: simple_stmt NEWLINE .
+
+    $default  reduce using rule 61 (func_for_stmt_)
+
+
+state 392
+
+   56 func_for_stmt: FOR ID IN RANGE range_args func_for_block .
+
+    $default  reduce using rule 56 (func_for_stmt)
+
+
+state 393
+
+   78 func_elif_header: ELIF '(' relation_stmt ')' .
+
+    $default  reduce using rule 78 (func_elif_header)

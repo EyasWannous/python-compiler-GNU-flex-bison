@@ -2,6 +2,7 @@ def majd() -> int:
     x =  y - 5
     z = 100
     print(x)
+    return x, y
     for i in range(1,10):
         return x
     return x
