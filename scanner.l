@@ -63,6 +63,7 @@
     int spaces = 0;
 
     extern YYSTYPE yylval;
+// bool        "True"|"False"
 %}
 
 %option yylineno
@@ -90,7 +91,6 @@ array       "["(({literal}|{num}|{id})","" "*)*?({literal}|{num}|{id})"]"
 
 ws          [ \t]
 
-bool        "True"|"False"
 
 comment_1   #.*
 

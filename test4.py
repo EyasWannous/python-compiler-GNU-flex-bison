@@ -3,7 +3,7 @@ def majd(x: float) -> float:
 
 if x > 10 :
     try :
-        print(y"hello"5)
+        print(y,"hello",5)
     except :
         print(z)
 ''' comment is here '''
