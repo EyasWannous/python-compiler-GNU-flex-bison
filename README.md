@@ -87,10 +87,6 @@ dot -Tpng -op1.png p1.gv
 
 Feel free to clone the repository, experiment with the code, and contribute by sending pull requests. Your contributions are welcome!
 
-//## License
-
-//This project is licensed under the [MIT License](LICENSE).
-
 ---
 
 Let me know if you have any additional information or changes you'd like to make!
