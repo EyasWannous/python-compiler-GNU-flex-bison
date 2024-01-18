@@ -1,0 +1,591 @@
+digraph G {
+	root [label="Statements"]
+	root -> majd_Generic;
+	majd_Generic [label="Declare Fun : majd_Generic"]
+	majd_Generic -> stmt5;
+	stmt5 [label="Statements"]
+	stmt5 -> assignment3;
+	assignment3 [label="assignment"]
+	assignment3 -> iden4;
+	iden4 [shape=box,label="Identifier: x"]
+	assignment3 -> sub2;
+	sub2 [label="-"]
+	sub2 -> iden0;
+	iden0 [shape=box,label="Identifier: y"]
+	sub2 -> int1;
+	int1 [shape=box,label="int: 5"]
+	stmt5 -> assignment7;
+	assignment7 [label="assignment"]
+	assignment7 -> iden8;
+	iden8 [shape=box,label="Identifier: z"]
+	assignment7 -> int6;
+	int6 [shape=box,label="int: 100"]
+	stmt5 -> print11;
+	print11 [label="Funiction Call : print11"]
+	print11 -> arg10;
+	arg10 [label="Arguments"]
+	arg10 -> iden9;
+	iden9 [shape=box,label="Identifier: x"]
+	stmt5 -> return12;
+	return12 [label="ReturnStatement"]
+	return12 -> iden13;
+	iden13 [shape=box,label="Identifier: x"]
+	return12 -> iden14;
+	iden14 [shape=box,label="Identifier: y"]
+	stmt5 -> for21;
+	for21 [label="for"]
+	for21 -> range22;
+	range22 [label="Funiction Call : range22"]
+	range22 -> arg17;
+	arg17 [label="Arguments"]
+	arg17 -> int15;
+	int15 [shape=box,label="int: 1"]
+	arg17 -> int16;
+	int16 [shape=box,label="int: 10"]
+	for21 -> stmt20;
+	stmt20 [label="Statements"]
+	stmt20 -> return18;
+	return18 [label="ReturnStatement"]
+	return18 -> iden19;
+	iden19 [shape=box,label="Identifier: x"]
+	stmt5 -> return23;
+	return23 [label="ReturnStatement"]
+	return23 -> iden24;
+	iden24 [shape=box,label="Identifier: x"]
+	stmt5 -> asd;
+	asd [label="Declare Fun : asd"]
+	asd -> arg26;
+	arg26 [label="Arguments"]
+	arg26 -> iden25;
+	iden25 [shape=box,label="Identifier: a"]
+	arg26 -> iden27;
+	iden27 [shape=box,label="Identifier: b"]
+	asd -> stmt33;
+	stmt33 [label="Statements"]
+	stmt33 -> assignment31;
+	assignment31 [label="assignment"]
+	assignment31 -> iden32;
+	iden32 [shape=box,label="Identifier: w"]
+	assignment31 -> multi30;
+	multi30 [label="*"]
+	multi30 -> iden28;
+	iden28 [shape=box,label="Identifier: q"]
+	multi30 -> int29;
+	int29 [shape=box,label="int: 3"]
+	stmt33 -> assignment35;
+	assignment35 [label="assignment"]
+	assignment35 -> iden36;
+	iden36 [shape=box,label="Identifier: e"]
+	assignment35 -> int34;
+	int34 [shape=box,label="int: 12"]
+	stmt33 -> majd_func_call40;
+	majd_func_call40 [label="Funiction Call : majd_func_call40"]
+	majd_func_call40 -> arg38;
+	arg38 [label="Arguments"]
+	arg38 -> int37;
+	int37 [shape=box,label="int: 1"]
+	arg38 -> int39;
+	int39 [shape=box,label="int: 2"]
+	stmt33 -> while46;
+	while46 [label="While"]
+	while46 -> gt42;
+	gt42 [label=">"]
+	gt42 -> iden43;
+	iden43 [shape=box,label="Identifier: x"]
+	gt42 -> int41;
+	int41 [shape=box,label="int: 10"]
+	while46 -> stmt45;
+	stmt45 [label="Statements"]
+	stmt45 -> break44;
+	break44 [shape=box,label="break"]
+	stmt33 -> yield47;
+	yield47 [label="yieldStatement"]
+	yield47 -> iden48;
+	iden48 [shape=box,label="Identifier: a"]
+	root -> input51;
+	input51 [label="Funiction Call : input51"]
+	input51 -> string52;
+	string52 [shape=box,label="string: Hi:"]
+	root -> f;
+	f [label="Declare Fun : f"]
+	f -> arg54;
+	arg54 [label="Arguments"]
+	arg54 -> iden53;
+	iden53 [shape=box,label="Identifier: x"]
+	f -> stmt84;
+	stmt84 [label="Statements"]
+	stmt84 -> if83;
+	if83 [label="If"]
+	if83 -> equal56;
+	equal56 [label="=="]
+	equal56 -> iden57;
+	iden57 [shape=box,label="Identifier: x"]
+	equal56 -> int55;
+	int55 [shape=box,label="int: 5"]
+	if83 -> stmt60;
+	stmt60 [label="Statements"]
+	stmt60 -> return58;
+	return58 [label="ReturnStatement"]
+	return58 -> iden59;
+	iden59 [shape=box,label="Identifier: x"]
+	if83 -> block82;
+	block82 [label="Elif..._Else"]
+	block82 -> block69;
+	block69 [label="Elif..."]
+	block69 -> elif68;
+	elif68 [label="ElIf"]
+	elif68 -> equal62;
+	equal62 [label="=="]
+	equal62 -> iden63;
+	iden63 [shape=box,label="Identifier: x"]
+	equal62 -> int61;
+	int61 [shape=box,label="int: 10"]
+	elif68 -> stmt67;
+	stmt67 [label="Statements"]
+	stmt67 -> assignment65;
+	assignment65 [label="assignment"]
+	assignment65 -> iden66;
+	iden66 [shape=box,label="Identifier: x"]
+	assignment65 -> int64;
+	int64 [shape=box,label="int: 5"]
+	block69 -> elif77;
+	elif77 [label="ElIf"]
+	elif77 -> equal71;
+	equal71 [label="=="]
+	equal71 -> iden72;
+	iden72 [shape=box,label="Identifier: x"]
+	equal71 -> int70;
+	int70 [shape=box,label="int: 10"]
+	elif77 -> stmt76;
+	stmt76 [label="Statements"]
+	stmt76 -> assignment74;
+	assignment74 [label="assignment"]
+	assignment74 -> iden75;
+	iden75 [shape=box,label="Identifier: x"]
+	assignment74 -> int73;
+	int73 [shape=box,label="int: 5"]
+	block82 -> else81;
+	else81 [label="Else"]
+	else81 -> stmt80;
+	stmt80 [label="Statements"]
+	stmt80 -> return78;
+	return78 [label="ReturnStatement"]
+	return78 -> iden79;
+	iden79 [shape=box,label="Identifier: x"]
+	root -> if114;
+	if114 [label="If"]
+	if114 -> equal87;
+	equal87 [label="=="]
+	equal87 -> iden88;
+	iden88 [shape=box,label="Identifier: x"]
+	equal87 -> int86;
+	int86 [shape=box,label="int: 5"]
+	if114 -> stmt92;
+	stmt92 [label="Statements"]
+	stmt92 -> assignment90;
+	assignment90 [label="assignment"]
+	assignment90 -> iden91;
+	iden91 [shape=box,label="Identifier: x"]
+	assignment90 -> int89;
+	int89 [shape=box,label="int: 1"]
+	if114 -> block113;
+	block113 [label="Elif..._Else"]
+	block113 -> block101;
+	block101 [label="Elif..."]
+	block101 -> elif100;
+	elif100 [label="ElIf"]
+	elif100 -> equal94;
+	equal94 [label="=="]
+	equal94 -> iden95;
+	iden95 [shape=box,label="Identifier: x"]
+	equal94 -> int93;
+	int93 [shape=box,label="int: 10"]
+	elif100 -> stmt99;
+	stmt99 [label="Statements"]
+	stmt99 -> assignment97;
+	assignment97 [label="assignment"]
+	assignment97 -> iden98;
+	iden98 [shape=box,label="Identifier: x"]
+	assignment97 -> int96;
+	int96 [shape=box,label="int: 5"]
+	block101 -> elif109;
+	elif109 [label="ElIf"]
+	elif109 -> equal103;
+	equal103 [label="=="]
+	equal103 -> iden104;
+	iden104 [shape=box,label="Identifier: x"]
+	equal103 -> int102;
+	int102 [shape=box,label="int: 10"]
+	elif109 -> stmt108;
+	stmt108 [label="Statements"]
+	stmt108 -> assignment106;
+	assignment106 [label="assignment"]
+	assignment106 -> iden107;
+	iden107 [shape=box,label="Identifier: x"]
+	assignment106 -> int105;
+	int105 [shape=box,label="int: 5"]
+	block113 -> else112;
+	else112 [label="Else"]
+	else112 -> stmt111;
+	stmt111 [label="Statements"]
+	stmt111 -> pass110;
+	pass110 [shape=box,label="Pass"]
+	root -> assignment116;
+	assignment116 [label="assignment"]
+	assignment116 -> iden117;
+	iden117 [shape=box,label="Identifier: x"]
+	assignment116 -> int115;
+	int115 [shape=box,label="int: 10"]
+	root -> while123;
+	while123 [label="While"]
+	while123 -> gt119;
+	gt119 [label=">"]
+	gt119 -> iden120;
+	iden120 [shape=box,label="Identifier: x"]
+	gt119 -> int118;
+	int118 [shape=box,label="int: 10"]
+	while123 -> stmt122;
+	stmt122 [label="Statements"]
+	stmt122 -> break121;
+	break121 [shape=box,label="break"]
+	root -> for129;
+	for129 [label="for"]
+	for129 -> range130;
+	range130 [label="Funiction Call : range130"]
+	range130 -> arg126;
+	arg126 [label="Arguments"]
+	arg126 -> int124;
+	int124 [shape=box,label="int: 1"]
+	arg126 -> int125;
+	int125 [shape=box,label="int: 10"]
+	for129 -> stmt128;
+	stmt128 [label="Statements"]
+	stmt128 -> pass127;
+	pass127 [shape=box,label="Pass"]
+	root -> ahmed;
+	ahmed [label="Declare Class : ahmed"]
+	ahmed -> stmt132;
+	stmt132 [label="Statements"]
+	stmt132 -> pass131;
+	pass131 [shape=box,label="Pass"]
+	root -> try147;
+	try147 [label="try"]
+	try147 -> stmt137;
+	stmt137 [label="Statements"]
+	stmt137 -> assignment135;
+	assignment135 [label="assignment"]
+	assignment135 -> iden136;
+	iden136 [shape=box,label="Identifier: x"]
+	assignment135 -> int134;
+	int134 [shape=box,label="int: 10"]
+	try147 -> block143;
+	block143 [label="Except..."]
+	block143 -> except142;
+	except142 [label="except"]
+	except142 -> stmt141;
+	stmt141 [label="Statements"]
+	stmt141 -> assignment139;
+	assignment139 [label="assignment"]
+	assignment139 -> iden140;
+	iden140 [shape=box,label="Identifier: x"]
+	assignment139 -> int138;
+	int138 [shape=box,label="int: 1"]
+	block143 -> except146;
+	except146 [label="except"]
+	except146 -> stmt145;
+	stmt145 [label="Statements"]
+	stmt145 -> pass144;
+	pass144 [shape=box,label="Pass"]
+	root -> match163;
+	match163 [label="Match"]
+	match163 -> iden164;
+	iden164 [shape=box,label="Identifier: x"]
+	match163 -> block162;
+	block162 [label="Match Block"]
+	block162 -> block152;
+	block152 [label="Case..."]
+	block152 -> case151;
+	case151 [label="Case Statement"]
+	case151 -> int148;
+	int148 [shape=box,label="int: 10"]
+	case151 -> stmt150;
+	stmt150 [label="Statements"]
+	stmt150 -> pass149;
+	pass149 [shape=box,label="Pass"]
+	block152 -> case156;
+	case156 [label="Case Statement"]
+	case156 -> int153;
+	int153 [shape=box,label="int: 15"]
+	case156 -> stmt155;
+	stmt155 [label="Statements"]
+	stmt155 -> pass154;
+	pass154 [shape=box,label="Pass"]
+	block162 -> case161;
+	case161 [label="Default Statement"]
+	case161 -> stmt160;
+	stmt160 [label="Statements"]
+	stmt160 -> assignment158;
+	assignment158 [label="assignment"]
+	assignment158 -> iden159;
+	iden159 [shape=box,label="Identifier: x"]
+	assignment158 -> int157;
+	int157 [shape=box,label="int: 0"]
+	root -> fun;
+	fun [label="Declare Fun : fun"]
+	fun -> arg166;
+	arg166 [label="Arguments"]
+	arg166 -> iden165;
+	iden165 [shape=box,label="Identifier: x"]
+	fun -> stmt218;
+	stmt218 [label="Statements"]
+	stmt218 -> if217;
+	if217 [label="If"]
+	if217 -> lt168;
+	lt168 [label="<"]
+	lt168 -> iden169;
+	iden169 [shape=box,label="Identifier: x"]
+	lt168 -> int167;
+	int167 [shape=box,label="int: 5"]
+	if217 -> stmt173;
+	stmt173 [label="Statements"]
+	stmt173 -> assignment171;
+	assignment171 [label="assignment"]
+	assignment171 -> iden172;
+	iden172 [shape=box,label="Identifier: y"]
+	assignment171 -> int170;
+	int170 [shape=box,label="int: 5"]
+	if217 -> block216;
+	block216 [label="Elif..._Else"]
+	block216 -> block185;
+	block185 [label="Elif..."]
+	block185 -> elif184;
+	elif184 [label="ElIf"]
+	elif184 -> equal175;
+	equal175 [label="=="]
+	equal175 -> iden176;
+	iden176 [shape=box,label="Identifier: h"]
+	equal175 -> int174;
+	int174 [shape=box,label="int: 124"]
+	elif184 -> stmt180;
+	stmt180 [label="Statements"]
+	stmt180 -> assignment178;
+	assignment178 [label="assignment"]
+	assignment178 -> iden179;
+	iden179 [shape=box,label="Identifier: u"]
+	assignment178 -> int177;
+	int177 [shape=box,label="int: 1"]
+	stmt180 -> assignment182;
+	assignment182 [label="assignment"]
+	assignment182 -> iden183;
+	iden183 [shape=box,label="Identifier: l"]
+	assignment182 -> int181;
+	int181 [shape=box,label="int: 5"]
+	block185 -> elif196;
+	elif196 [label="ElIf"]
+	elif196 -> equal187;
+	equal187 [label="=="]
+	equal187 -> iden188;
+	iden188 [shape=box,label="Identifier: b"]
+	equal187 -> int186;
+	int186 [shape=box,label="int: 14"]
+	elif196 -> stmt192;
+	stmt192 [label="Statements"]
+	stmt192 -> assignment190;
+	assignment190 [label="assignment"]
+	assignment190 -> iden191;
+	iden191 [shape=box,label="Identifier: n"]
+	assignment190 -> iden189;
+	iden189 [shape=box,label="Identifier: y"]
+	stmt192 -> assignment194;
+	assignment194 [label="assignment"]
+	assignment194 -> iden195;
+	iden195 [shape=box,label="Identifier: k"]
+	assignment194 -> int193;
+	int193 [shape=box,label="int: 7"]
+	block185 -> elif207;
+	elif207 [label="ElIf"]
+	elif207 -> equal198;
+	equal198 [label="=="]
+	equal198 -> iden199;
+	iden199 [shape=box,label="Identifier: o"]
+	equal198 -> int197;
+	int197 [shape=box,label="int: 12"]
+	elif207 -> stmt203;
+	stmt203 [label="Statements"]
+	stmt203 -> assignment201;
+	assignment201 [label="assignment"]
+	assignment201 -> iden202;
+	iden202 [shape=box,label="Identifier: dd"]
+	assignment201 -> iden200;
+	iden200 [shape=box,label="Identifier: p"]
+	stmt203 -> assignment205;
+	assignment205 [label="assignment"]
+	assignment205 -> iden206;
+	iden206 [shape=box,label="Identifier: jj"]
+	assignment205 -> int204;
+	int204 [shape=box,label="int: 65"]
+	block216 -> else215;
+	else215 [label="Else"]
+	else215 -> stmt211;
+	stmt211 [label="Statements"]
+	stmt211 -> assignment209;
+	assignment209 [label="assignment"]
+	assignment209 -> iden210;
+	iden210 [shape=box,label="Identifier: d"]
+	assignment209 -> int208;
+	int208 [shape=box,label="int: 56"]
+	stmt211 -> assignment213;
+	assignment213 [label="assignment"]
+	assignment213 -> iden214;
+	iden214 [shape=box,label="Identifier: k"]
+	assignment213 -> iden212;
+	iden212 [shape=box,label="Identifier: z"]
+	root -> if273;
+	if273 [label="If"]
+	if273 -> iden220;
+	iden220 [shape=box,label="Identifier: q"]
+	if273 -> stmt272;
+	stmt272 [label="Statements"]
+	stmt272 -> if271;
+	if271 [label="If"]
+	if271 -> lt222;
+	lt222 [label="<"]
+	lt222 -> iden223;
+	iden223 [shape=box,label="Identifier: x"]
+	lt222 -> int221;
+	int221 [shape=box,label="int: 5"]
+	if271 -> stmt227;
+	stmt227 [label="Statements"]
+	stmt227 -> assignment225;
+	assignment225 [label="assignment"]
+	assignment225 -> iden226;
+	iden226 [shape=box,label="Identifier: y"]
+	assignment225 -> int224;
+	int224 [shape=box,label="int: 5"]
+	if271 -> block270;
+	block270 [label="Elif..._Else"]
+	block270 -> block239;
+	block239 [label="Elif..."]
+	block239 -> elif238;
+	elif238 [label="ElIf"]
+	elif238 -> equal229;
+	equal229 [label="=="]
+	equal229 -> iden230;
+	iden230 [shape=box,label="Identifier: h"]
+	equal229 -> int228;
+	int228 [shape=box,label="int: 124"]
+	elif238 -> stmt234;
+	stmt234 [label="Statements"]
+	stmt234 -> assignment232;
+	assignment232 [label="assignment"]
+	assignment232 -> iden233;
+	iden233 [shape=box,label="Identifier: u"]
+	assignment232 -> iden231;
+	iden231 [shape=box,label="Identifier: i"]
+	stmt234 -> assignment236;
+	assignment236 [label="assignment"]
+	assignment236 -> iden237;
+	iden237 [shape=box,label="Identifier: l"]
+	assignment236 -> int235;
+	int235 [shape=box,label="int: 5"]
+	block239 -> elif250;
+	elif250 [label="ElIf"]
+	elif250 -> equal241;
+	equal241 [label="=="]
+	equal241 -> iden242;
+	iden242 [shape=box,label="Identifier: b"]
+	equal241 -> int240;
+	int240 [shape=box,label="int: 14"]
+	elif250 -> stmt246;
+	stmt246 [label="Statements"]
+	stmt246 -> assignment244;
+	assignment244 [label="assignment"]
+	assignment244 -> iden245;
+	iden245 [shape=box,label="Identifier: n"]
+	assignment244 -> iden243;
+	iden243 [shape=box,label="Identifier: y"]
+	stmt246 -> assignment248;
+	assignment248 [label="assignment"]
+	assignment248 -> iden249;
+	iden249 [shape=box,label="Identifier: k"]
+	assignment248 -> int247;
+	int247 [shape=box,label="int: 7"]
+	block239 -> elif261;
+	elif261 [label="ElIf"]
+	elif261 -> equal252;
+	equal252 [label="=="]
+	equal252 -> iden253;
+	iden253 [shape=box,label="Identifier: o"]
+	equal252 -> int251;
+	int251 [shape=box,label="int: 12"]
+	elif261 -> stmt257;
+	stmt257 [label="Statements"]
+	stmt257 -> assignment255;
+	assignment255 [label="assignment"]
+	assignment255 -> iden256;
+	iden256 [shape=box,label="Identifier: dd"]
+	assignment255 -> iden254;
+	iden254 [shape=box,label="Identifier: p"]
+	stmt257 -> assignment259;
+	assignment259 [label="assignment"]
+	assignment259 -> iden260;
+	iden260 [shape=box,label="Identifier: jj"]
+	assignment259 -> int258;
+	int258 [shape=box,label="int: 65"]
+	block270 -> else269;
+	else269 [label="Else"]
+	else269 -> stmt265;
+	stmt265 [label="Statements"]
+	stmt265 -> assignment263;
+	assignment263 [label="assignment"]
+	assignment263 -> iden264;
+	iden264 [shape=box,label="Identifier: d"]
+	assignment263 -> int262;
+	int262 [shape=box,label="int: 56"]
+	stmt265 -> assignment267;
+	assignment267 [label="assignment"]
+	assignment267 -> iden268;
+	iden268 [shape=box,label="Identifier: k"]
+	assignment267 -> iden266;
+	iden266 [shape=box,label="Identifier: z"]
+	root -> with291;
+	with291 [label="with"]
+	with291 -> block281;
+	block281 [label="With Head"]
+	block281 -> block280;
+	block280 [label="With Item"]
+	block280 -> iden280;
+	iden280 [shape=box,label="Identifier: open"]
+	block280 -> block275;
+	block275 [label="Parameters"]
+	block275 -> string274;
+	string274 [shape=box,label="string: file-path"]
+	block275 -> string276;
+	string276 [shape=box,label="string: w"]
+	block280 -> block278;
+	block278 [label="Targets"]
+	block278 -> iden277;
+	iden277 [shape=box,label="Identifier: file"]
+	block278 -> iden279;
+	iden279 [shape=box,label="Identifier: majd"]
+	block281 -> block286;
+	block286 [label="With Item"]
+	block286 -> iden286;
+	iden286 [shape=box,label="Identifier: open"]
+	block286 -> block283;
+	block283 [label="Parameters"]
+	block283 -> string282;
+	string282 [shape=box,label="string: file-path"]
+	block283 -> string284;
+	string284 [shape=box,label="string: w"]
+	block286 -> iden285;
+	iden285 [shape=box,label="Identifier: file"]
+	with291 -> stmt290;
+	stmt290 [label="Statements"]
+	stmt290 -> assignment288;
+	assignment288 [label="assignment"]
+	assignment288 -> iden289;
+	iden289 [shape=box,label="Identifier: x"]
+	assignment288 -> int287;
+	int287 [shape=box,label="int: 5"]
+}

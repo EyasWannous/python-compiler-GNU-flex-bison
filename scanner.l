@@ -5,6 +5,11 @@
     #include <string.h>
     #include "parser.tab.h"
 
+    #pragma warning (disable: 4005)
+    #include "parser.hpp"
+    #include "astNodes.hpp"
+    using namespace std;
+
     #define Stack_SIZE 100
     void push();
     void pop();
@@ -57,7 +62,8 @@
     int current_indentation = 0;
     int spaces = 0;
 
-    extern YYSTYPE yylval; 
+    extern YYSTYPE yylval;
+// bool        "True"|"False"
 %}
 
 %option yylineno
@@ -75,7 +81,7 @@ id          ({letter}|"_")({letter}|{digit}|"_")*
 
 int         -?{digit}+
 
-float       -?{digit}+\.{digit}+
+float       -?{digit}+"."{digit}+
 
 num         ({int}|{float})
 
@@ -84,6 +90,7 @@ keyword     "yield"|"with"|"try"|"True"|"return"|"raise"|"pass"|"or"|"and"|"not"
 array       "["(({literal}|{num}|{id})","" "*)*?({literal}|{num}|{id})"]"
 
 ws          [ \t]
+
 
 comment_1   #.*
 
@@ -106,6 +113,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 %x INDENTSTATE
 %x DEDENTALLSTATE
 %x DEDENTSTATE
+%x NEWNEW
 
 %%
 
@@ -158,16 +166,19 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 {newL}{comments}        {}
 
 <<EOF>>         {
-                    BEGIN(DEDENTALLSTATE);
+                    BEGIN(NEWNEW);
                     unput(' ');
 
                     if(stack_arr[top] == 0)
                         return 0;
                 }
 
+
 {ws}                    {}
 
 \\$                     {}
+
+@.*                     {}
 
 {sp}                    {yylval.strval = strdup(yytext); return yytext[0];}
 
@@ -177,7 +188,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 "="                     {yylval.strval = strdup(yytext); return yytext[0];}
 
-"+"|"-"|"*"|"/"|"_"     {yylval.strval = strdup(yytext); return yytext[0];}
+"+"|"-"|"*"|"/"|"_"|"|"|"&"     {yylval.strval = strdup(yytext); return yytext[0];}
 
 "["|"]"|"{"|"}"|"("|")" {yylval.strval = strdup(yytext); return yytext[0];} 
 
@@ -351,19 +362,39 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                             return PASS;
                         }
 
+"or"                    {
+                            yylval.strval = strdup(yytext);
+                            return OR;
+                        }
+
+"and"                   {
+                            yylval.strval = strdup(yytext);
+                            return AND;
+                        }
+
+"True"                  {
+                            yylval.strval = strdup(yytext);
+                            return TRUE_TOK;
+                        }
+
+"False"                 {
+                            yylval.strval = strdup(yytext);
+                            return FALSE_TOK;
+                        }
+
 
 {id}                    {
-                            yylval.strval = strdup(yytext);
+                            yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
                             return ID;
                         }
 
 {int}                   {
-                            yylval.intval = atoi(yytext);
+                            yylval.astNode = new NumberNode("INT", "int", atoi(yytext));
                             return INT_NUMBER;
                         }
 
 {float}                 {
-                            yylval.flval = atof(yytext);
+                            yylval.astNode = new NumberNode("FLOAT", "float", atoi(yytext));
                             return FLOAT_NUMBER;
                         }
 
@@ -423,10 +454,19 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
     }
 }
 
+<NEWNEW>{
+    [ ] {
+        BEGIN(DEDENTALLSTATE);
+        unput(' ');
+        return NEWLINE;
+    }
+}
+
+
 \"       { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
 
 <DOUBLE_STRING>{
-    \"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;} 
+    \"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;} 
     \\\n {              }
     \n   {printf("error in line %d\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -444,7 +484,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
 
 \'        { string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }    
 <SINGLE_STRING>{
-    \'  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+    \'  {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;}
     \\\n {              }
     \n   {printf("line%d, ERROR: new line in string\n", yylineno); BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -491,7 +531,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                         }
 
 <COMMENT_STRING>{
-    "'''"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+    "'''"  {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;}
     \\\n {}
     \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
@@ -537,7 +577,7 @@ literal_2   ({keyword}" "|(("["|"{"|"("|",")|"="{ws}*))
                         }
 
 <COMMENT_STRING_DOUBLE>{
-    \"{3}   {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+    \"{3}   {*string_buf_ptr = '\0'; BEGIN(INITIAL); yylval.astNode = new StringNode("STRING", "string", string_buf); return STRING;}
     \\\n {}
     \n   {*string_buf_ptr++ = '\n';}
     \\n  {*string_buf_ptr++ = '\n';}
