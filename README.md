@@ -1,10 +1,10 @@
 # Python Compiler
 
-A Python compiler written in C and C++ with the assistance of Lex and Yacc, utilizing Flex, Bison, Win_Flex, and Win_Bison. The project aims to replicate Python's syntax, providing error checking and generating an Abstract Syntax Tree (AST) visualization.
+A Python compiler written in C and C++ with the assistance of `Lex` and `Yacc`, utilizing `Flex`, `Bison`, `Win_Flex`, and `Win_Bison`. The project aims to replicate Python's syntax, providing error checking and generating an Abstract Syntax Tree (AST) visualization. [GNU's flex bison](https://www.gnu.org/software/bison/manual/).
 
 ## Overview
 
-The Python compiler supports a wide range of Python syntax, including defining functions, classes, expressions, assignment statements, if conditions, loops (for and while), and various other language structures. It handles features like inheritance, data types, arrays (lists), decorations, and more. The compiler goes through three phases: scanning the code, parsing for validation, and generating an AST for code visualization.
+The Python compiler supports a wide range of Python syntax, including `defining functions`, `classes`, `expressions`, `assignment statements`, `if conditions`, `loops (for and while)`, and various other language structures. It handles features like `inheritance`, `data types`, `arrays (lists)`, `decorations`, and more. The compiler goes through three phases: scanning the code, parsing for validation, and generating an AST for code visualization.
 
 ## Target Audience
 
@@ -45,7 +45,7 @@ Before running the project, ensure you have the following installed:
 2. Navigate to the project directory:
 
     ```bash
-    cd python-compiler
+    cd Python-Compiler
     ```
 
 3. Run the following commands:
@@ -54,6 +54,7 @@ Before running the project, ensure you have the following installed:
     Flex scanner.l
     bison -d parser.y
     bison -v parser.y
+    gcc parser.tab.c lex.yy.c
     win_flex scanner.l -o scanner.cpp
     win_bison -d parser.y -o parser.cpp
     g++ ast.cpp scanner.cpp parser.cpp
@@ -78,7 +79,7 @@ Before running the project, ensure you have the following installed:
 To run the compiler on a sample Python file and visualize the AST:
 
 ```bash
-a.exe < Tests/sample.py > p1.gv
+a.exe < Tests/test1.py > p1.gv
 dot -Tpng -op1.png p1.gv
 ```
 
@@ -86,12 +87,13 @@ dot -Tpng -op1.png p1.gv
 
 Feel free to clone the repository, experiment with the code, and contribute by sending pull requests. Your contributions are welcome!
 
-## License
+//## License
 
-This project is licensed under the [MIT License](LICENSE).
+//This project is licensed under the [MIT License](LICENSE).
 
 ---
 
 Let me know if you have any additional information or changes you'd like to make!
 ## Authors
-- [@fadel-hasan](https://www.github.com/fadel-hasan)
+- [@Eyas-Wannous](https://github.com/EyasWannous)
+- [@Majd-Hammad](https://github.com/Majdham000)
