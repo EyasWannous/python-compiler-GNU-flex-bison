@@ -79,7 +79,7 @@ Before running the project, ensure you have the following installed:
 To run the compiler on a sample Python file and visualize the AST:
 
 ```bash
-a.exe < Tests/test1.py > p1.gv
+a.exe < Tests/p1.py > p1.gv
 dot -Tpng -op1.png p1.gv
 ```
 
