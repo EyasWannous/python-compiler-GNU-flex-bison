@@ -45,7 +45,7 @@ Before running the project, ensure you have the following installed:
 2. Navigate to the project directory:
 
     ```bash
-    cd Python-Compiler
+    cd python-compiler-GNU-flex-bison
     ```
 
 3. Run the following commands:
